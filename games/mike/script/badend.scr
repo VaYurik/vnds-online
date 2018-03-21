@@ -1,0 +1,320 @@
+;#You are the clone. Sarah says you're the clone
+
+music ~
+bgload room/01.jpg
+setimg m/mikesideglance.png 156 0
+setimg s/sarahnormalcross.png 30 25
+text Сара поворачивается ко мне.
+text [Сара] Итак, Майк.
+text [Ты] Да?
+setimg m/mikesidepanic.png 156 0
+setimg s/sarahdetermined.png 30 25
+setimg m/mikesideglance.png ~
+setimg s/sarahnormalcross.png ~
+
+text К моему ужасу Сара направляет на меня пистолет. Она настроена решительно.
+sound finaldecision2.ogg
+bgload cg/gunsarah.jpg 20
+text [Сара] Кто ты на самом деле?
+text [Ты] Боже, Сара! Что ты делаешь?!
+text [Майк] Сара?! Зачем ты взяла пистолет с собой?!
+text [Сара] Что ж, ты не рад?
+text [Ты] Так, давайте успокоимся.
+text [Сара] Хо-хо. Не испытывай моё терпение, дружок.  Мой палец на курке начинает зудеть.
+text [Сара] Отвечай на вопрос.
+text [Сара] Кто ты? И что делаешь в обличии моего парня?
+text [Майк] Ха-а... Будто кошмар становится явью.
+
+choice Отрицать | Признаться
+if selected == 2
+	goto nothis
+fi
+
+text [Ты] Сара, прошу, убери оружие.
+text [Сара] Ты взаправду считал, что вся эта ложь сойдёт тебе с рук?
+text [Сара] Я спрошу ещё раз.
+text [Сара] Зачем тебе всё это?
+
+choice Отрицать | Признаться
+if selected == 2
+	goto nothis
+fi
+text [Ты] Сара, я Майк!
+text [Ты] Ты совершаешь большую ошибку!
+text [Сара] Ох, правда? Ошибаюсь, подонок? Поспорим?
+sound gunclick.ogg
+text Глаза Сары гневно вспыхивают.
+text Моё тело напрягается. Я покрываюсь липким потом.
+text [Майк] Сара, ты меня пугаешь.
+text [Сара] Отлично. Тебе следует бояться.
+text Она кивает на пистолет.
+text [Сара] По большей части его.
+text [Сара] Есть и другие как ты? Какова ваша цель? Отвечай!
+
+choice Отрицать | Признаться
+if selected == 2
+	goto nothis
+fi
+text [Ты] Опусти оружие, Сара!
+sound gunshot.ogg
+bgload cg/bloodyfoot.jpg 20
+text От прозвучавшего выстрела звенит в ушах.
+text [Ты] Агх!
+text [Майк] О боже! Ты прострелила ему ногу!
+bgload red.png
+sound dripcrack.ogg
+delay 1
+bgload cg/bloodyfoot.jpg 20
+text Горячая пульсирующая боль разносится по всей ноге.
+text [Сара] Теперь ты не сможешь сбежать.
+text [Сара] Следующая пуля отправится в твой пищевод.
+text [Майк] Сара! Тебе надо остыть!
+text [Сара] Не говори мне успокоиться, Майк.
+text [Сара] Чем бы он ни был, ничего хорошего он из себя не представляет.
+text [Майк] Я просто обеспокоен, пойми.
+text [Майк] Ты только что выстрелила в "другого меня" с каменным лицом!
+text [Майк] И ты слишком спокойна на этот счёт.
+text [Сара] Скажем так, у моего воображения было много практики.
+text [Майк] Ч-что?!
+text [Сара] Не волнуйся, милый. Всё будет в порядке.
+
+choice Отрицать | Признаться
+if selected == 2
+	goto nothis
+fi
+text [Ты] Сара!.. П-прошу!
+text [Ты] Я сказал тебе всё, что мог.
+text [Сара] Нет, не сказал.
+text [Сара] Ты лжец.
+text [Сара] И это твой последний шанс.
+text [Сара] Я спрошу в последний раз.
+text [Сара] Кто ты?
+
+choice Отрицать | Признаться
+if selected == 2
+	goto nothis
+fi
+text [Ты] Поверь мне, Сара!
+text [Сара] Неправильный ответ.
+music ~
+bgload red.png
+sound gunshot.ogg
+delay 1
+bgload cg/bloodyfoot.jpg
+sound dripcrack.ogg
+text Грохот выстрела стоит в моих ушах.
+bgload black.png 30
+text Боли нет.
+text Лишь темнота.
+bgload black.png
+delay 10
+bgload red.png 30
+delay 30
+bgload black.png 30
+music ~
+text Концовка 8 - Звон смерти
+jump main.scr
+
+label nothis
+music ~
+text [Ты] ...
+text [Ты] Я просто играл в игру.
+
+bgload room/01.jpg 20
+setimg y/dopesmallsmile.png 88 0
+text [Ты] Думал, будет весело.
+text [Сара] Итак, ты наконец показал своё истинное лицо.
+setimg y/dopeclosed.png 88 0
+setimg y/dopesmallsmile.png ~
+sound double.ogg
+text [Ты] У меня нет "истинного" лица. Это скучно.
+text [Ты] Вы, люди, привязываетесь к таким мелочам.
+text Я наблюдаю, как Сара едва заметно меняет свою позу.
+setimg y/dopesmallsmile.png 88 0
+setimg y/dopeclosed.png ~
+text Она настроена крайне серьёзно.
+text Даже Майк вновь поднял биту.
+setimg y/dopeclosedsmile.png 88 0
+setimg y/dopesmallsmile.png ~
+text [Сара] Что ты такое?
+
+choice Ответить | Атаковать
+if selected == 2
+	goto attack
+fi
+setimg y/dopetalk2.png 88 0
+setimg y/dopeclosedsmile.png ~
+text [Ты] Действительно ли это имеет значение?
+setimg y/dopecheeky.png 88 0
+setimg y/dopetalk2.png ~
+text [Ты] Я просто потерянная душа, что проголодалась.
+setimg y/dopenormal.png 88 0
+setimg y/dopecheeky.png ~
+text [Ты] Давайте остановимся на этом.
+text [Майк] Почему я? Почему моё лицо? Что я сделал, что заслужил подобное?
+
+choice Ответить | Атаковать
+if selected == 2
+	goto attack
+fi
+setimg y/dopesmallsmile.png 88 0
+setimg y/dopenormal.png ~
+text [Ты] Не было особых причин.
+text [Ты] Лично я верю, что это дело рук судьбы.
+setimg y/dopeclosedsmile.png 88 0
+setimg y/dopesmallsmile.png ~
+text [Ты] Прошёл приличный срок с того времени, как я ел последний раз. И твоя жизнь показалась мне достаточно вкусной.
+setimg y/dopenormal.png 88 0
+setimg y/dopeclosedsmile.png ~
+text [Сара] Тьфу!
+text [Майк] Эм... Спасибо?
+setimg y/dopesmallsmile.png 88 0
+setimg y/dopenormal.png ~
+text [Ты] Не стоит благодарности.
+text [Сара] Майк! Ты сейчас серьёзно перекидываешься любезностями с существом, использующим твоё лицо?!
+text [Майк] ...
+setimg y/dopetalk.png 88 0
+setimg y/dopesmallsmile.png ~
+text [Ты] Ха-ха!
+text [Сара] Есть ли ещё подобные тебе?
+
+choice Ответить | Атаковать
+if selected == 2
+	goto attack
+fi
+setimg y/dopetalk2.png 88 0
+setimg y/dopetalk.png ~
+text [Ты] Уверена, что хочешь копнуть глубже?
+text [Ты] Меньше знаешь - крепче спишь. Не думаю, что вы переживёте правду.
+setimg y/dopeclosed.png 88 0
+setimg y/dopetalk2.png ~
+text [Ты] Но есть ещё подобные мне.
+text [Ты] Мы стары. Мы голодны. Мы движемся в тенях в поисках жертвы.
+setimg y/dopenormal.png 88 0
+setimg y/dopeclosed.png ~
+text [Ты] Это всё, что вам надо знать.
+text [Майк] ...
+text [Сара] Выходит, ты поедаешь жизнь Майка?!
+
+choice Ответить | Атаковать
+if selected == 2
+	goto attack
+fi
+
+setimg y/dopecalm.png 88 0
+setimg y/dopenormal.png ~
+text [Ты] Да. Это занимает около недели.
+text [Ты] Его навыки, знания и личность дезинтегрируют, пока мы разговариваем.
+text [Майк] ...!
+text [Ты] Даже его воспоминания.
+setimg y/dopenormal.png 88 0
+setimg y/dopecalm.png ~
+text [Ты] Вероятно, поэтому Майк и не помнит событий вчерашнего дня.
+setimg y/dopecalm.png 88 0
+setimg y/dopenormal.png ~
+text [Ты] Скоро, когда не останется и следа от всего, что делает его человеком, его тело выйдет из строя и атрофируется.
+text [Ты] Сперва сердце, затем внутренние органы и мозг.
+text [Ты] И, когда он будет не более чем просто шелухой, я усвою остатки его жизненной силы.
+setimg y/dopenormal.png 88 0
+setimg y/dopecalm.png ~
+text [Майк] ... 
+text [Майк] Звучит как безудержное веселье.
+text [Сара] Я не допущу этого!
+music ~
+
+choice Мирно уйти | Атаковать
+if selected == 2
+	goto attack
+fi
+setimg y/dopeclosed.png 88 0
+setimg y/dopenormal.png ~
+text [Ты] Во время переваривания я наиболее уязвим.
+text [Ты] Я больше...
+text [Ты] ...Человек.
+setimg y/dopenormal.png 88 0
+setimg y/dopeclosed.png ~
+delay 10
+setimg y/dopeclosedsmile.png 88 0
+setimg y/dopenormal.png ~
+text [Сара] ...
+setimg y/dopetalk2.png 88 0
+setimg y/dopeclosedsmile.png ~
+text [Ты] Сара. Всё, что я говорил, правда.
+setimg y/dopecalm.png 88 0
+setimg y/dopetalk2.png ~
+text [Ты] Я всё ещё Майк. Сердцем и разумом. Я - это он. И он - это я.
+setimg y/dopenormal.png 88 0
+setimg y/dopecalm.png ~
+text [Ты] Сейчас, по крайней мере.
+text [Ты] Я не могу причинить тебе боль, Сара. Я чувствую химические вещества в крови.
+text [Ты] Мои воспоминания...
+text [Ты] Моё суждение. Всё затуманено.
+setimg y/dopeclosed.png 88 0
+setimg y/dopenormal.png ~
+text [Ты] *вздох*
+text [Ты] И свезло ведь выбрать одно из немногих с непорочным сердцем.
+text [Майк] Н-непорочным?!
+text [Майк] Как насчёт "целиком положительного парня", м? Можно звать меня так?
+text [Сара] Лучше поскорей избавься от своего порнотайника, непорочный мальчик. Печалька ангелов.
+setimg y/dopecalm.png 88 0
+setimg y/dopeclosed.png ~
+text [Ты] Если вы меня сейчас отпустите, я разрушу проклятие.
+text [Майк] ...!
+text [Майк] Ты можешь это сделать?!
+text [Ты] Будет нелегко.
+text [Ты] Но да, могу.
+text [Ты] Только я и могу.
+setimg y/dopenormal.png 88 0
+setimg y/dopecalm.png ~
+text [Сара] Как мы можем быть уверены?
+text [Сара] Ты можешь просто обманывать нас, чтобы мы тебя отпустили!
+setimg y/dopeclosed.png 88 0
+setimg y/dopenormal.png ~
+text [Ты] ...
+sound fakesarahdeath.ogg
+text [Ты] Если ты доверяешь Майку, тогда доверься и мне.
+setimg y/dopemike.png 88 0
+setimg y/dopeclosed.png ~
+text [Ты] Я не могу врать тебе...
+text [Ты] ...Сара.
+text ...
+text Хватка Сары на пистолете ослабла.
+bgload cg/angrysarah.jpg 30
+text [Сара] Тогда вперёд. Уходи.
+text [Сара] Но позволь кое-что прояснить.
+text [Сара] Если состояние Майка ухудшится в течение недели, можешь быть уверен: я тебя из-под земли достану.
+text [Сара] Если ты всё ещё Майк, то осознаёшь всю мою серьёзность.
+text [Сара] Я ясно выразилась?
+text [Ты] Да.
+bgload black.png 30
+text [Ты] Прощай, Сара.
+text ...
+music ~
+text Концовка 7 - Незнакомец
+jump main.scr
+
+label attack
+setimg y/dopeangrysmile.png 88 0
+setimg y/dopeclosedsmile.png ~
+text [Ты] Думаю, всё это затянулось!
+text Я бросаюсь на оружие.
+text [Майк] САРА!
+music ~
+bgload white.png
+sound gunshot.ogg
+delay 1
+bgload black.png
+text Звук выстрела эхом раздаётся в моих ушах.
+text Понятия не имею, почему я так поступил.
+text ...
+text Я с лёгкостью одолел бы их.
+text Но почему-то . . .
+text В последнюю секунду я заколебался.
+bgload black.png
+delay 10
+bgload red.png 30
+delay 30
+bgload black.png 30
+music ~
+text Концовка 8 - Звон смерти
+jump main.scr

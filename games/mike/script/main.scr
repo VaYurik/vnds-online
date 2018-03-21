@@ -1,0 +1,1843 @@
+﻿;setvar timer_range = 0
+;setvar timer_jump = 0
+    
+
+choice Начать игру | Debug
+if selected == 1
+	jump start
+fi
+if selected == 2
+	jump debug
+fi
+
+label debug
+choice earlyend | deadend | badend | truend | bonusend | credits
+if selected == 1
+	jump earlyend.scr
+fi
+if selected == 2
+	jump deadend.scr
+fi
+if selected == 3
+	jump badend.scr
+fi
+if selected == 4
+	jump truend.scr
+fi
+if selected == 5
+	jump bonusend.scr
+fi
+if selected == 6
+	jump credits.scr
+fi
+
+
+label start
+
+;############# STORY STARTS HERE ###########
+
+music ~
+
+setvar truth = 0
+setvar lie = 0
+setvar agree = 0
+setvar disagree = 0
+setvar truthcount = 0
+setvar liecount = 0
+setvar agreecount = 0
+setvar disagreecount = 0
+
+bgload black.png
+delay 20
+bgload white.png
+delay 1
+sound thump2.ogg
+bgload black.png
+delay 10
+bgload room/blur.jpg
+
+text [Ты] Агх! Моя голова!
+text Мой затылок резко запульсировал настойчивой болью.
+text Головокружение исчезает так же быстро, как и наступает.
+text Что-?
+music room.ogg
+text Сейчас вечер. 
+text Плотно закрытые шторы и стук крови в ушах делают тишину зловещей.
+text Я у себя дома.
+text Но я дезориентирован. Что-то тут неладно.
+text Меня окутывает некое жуткое ощущение, заставляющее встать волосы на руках дыбом.
+text Щурюсь, пытаясь осмотреться.
+text Мои очки...
+text Где же они?
+text Я... во что-то врезался? Или-
+bgload black.png
+delay 10
+bgload white.png
+delay 1
+bgload room/blur.jpg
+setimg m/mikeblurredangry.png 148 0
+delay 10
+
+text [???] С-стой на месте, кто бы ты ни был!
+setimg m/mikeblurredscared.png 148 0
+setimg m/mikeblurredangry.png ~
+text Я почувствовал чьё-то присутствие в комнате, прежде чем услышал голос.
+text Это оправдывает внушающее мне страх беспокойство.
+setimg m/mikeblurredangry.png 148 0
+setimg m/mikeblurredscared.png ~
+text [???] П-просто... Не двигайся!!!
+setimg m/mikeblurredscared.png 148 0
+setimg m/mikeblurredangry.png ~
+text О боже.
+text В моём доме...
+text Какой-то незнакомец!
+text Он стоит чуть поодаль, в руках у него бейсбольная бита.
+setimg m/mikeblurredangry.png 148 0
+setimg m/mikeblurredscared.png ~
+text [???] Н-назад!
+setimg m/mikeblurredscared.png 148 0
+setimg m/mikeblurredangry.png ~
+text Я не знаю, что делать.
+text Пытаюсь подобрать слова.
+text "Не бей меня"?
+text "Прошу, покинь дом"?
+text "Чего ты хочешь?
+text В конце концов я просто стою как воды в рот набравший и томлюсь от пробившего холодного пота.
+text Что он вообще здесь делает?
+text Если он вор, то выбрал не тот дом.
+text ...
+text Могу ли я... знать его?
+text Я прищурился, глядя на его размытую фигуру, пытаясь заменить нечёткие очертания мужчины на что-нибудь более ясное.
+text Он выглядит...
+text Я подхожу ближе.
+text Его рука с битой тревожно вздрагивает.
+setimg m/mikeblurredangry.png 148 0
+setimg m/mikeblurredscared.png ~
+text [???] Я-я сказал: "Не двигаться!
+text [???] Агх!
+setimg m/mikeblurredscared.png 148 0
+setimg m/mikeblurredangry.png ~
+text Он дрожит?
+text ...
+text Он ведёт себя растеряннее меня, при том, что это он ворвался в мой дом.
+text Может, глупо так думать, но он совсем не выглядит опасным.
+setimg m/mikeblurredangry.png 148 0
+setimg m/mikeblurredscared.png ~
+text [???] Просто уйди, пожалуйста... Пожалуйста...
+setimg m/mikeblurredscared.png 148 0
+setimg m/mikeblurredangry.png ~
+text Он всё бормочет себе под нос, панически заглатывая воздух.
+text Ох.
+text [Ты] Эй, эм. Думаю, у тебя паническая атака.
+text [Ты] Вдыхай через нос и выдыхай через рот.
+setimg m/mikeblurredshy.png 148 0
+setimg m/mikeblurredscared.png ~
+text ...
+text Чёрт...
+text Я действительно сейчас дал указания по дыхательному упражнению правонарушителю?
+text Видимо, Сара была права. Моя доброта когда-нибудь убьёт меня.
+text Как бы там ни было, незнакомец заметно расслабился.
+text Я неуверенно слегка улыбнулся ему.
+text [Ты] Ты в порядке?
+text [???] ...
+text [???] Что... Что ты такое?
+text [Ты] Эм... Прощу прощения?
+text [Ты] Меня зовут Майк Дженсен, и ты в моём доме.
+text [Ты] Кто ты?
+text [???] ...
+text [Ты] Забей.
+text [Ты] Я где-то потерял очки.
+text [Ты] Если позволишь мне найти их, уверен, мы сможем со всем разобраться. Ты не похож на плохого парня.
+text Бита выпадает из его рук на пол. Мужчина вздыхает.
+text [???] Кажется, под журнальным столиком.
+text [Ты] Спасибо.
+text Я шарю по полу, молясь, чтобы незнакомец не атаковал меня, пока я столь беззащитен.
+text Но он просто стоит на месте, шаркая ногами и тихонько бормоча.
+text Он не выглядит угрожающе, на самом деле. Уверен, бедный паренёк просто запутался.
+text Кроме того, в нём есть что-то знакомое. Но я никак не могу понять что.
+text Может, его поза или этот красный свитер.
+text Готов поклясться, что он выглядит точь-в-точь как мой.
+text [???] Прости, что угрожал тебе битой.
+text [Ты] Ох... Да ничего.
+text [???] Если это что-то изменит, то я не собирался, на самом деле, бить тебя.
+text Я, наконец, нащупываю рукой очки и достаю их.
+text [???] Я... не думаю, что вообще способен ранить кого-то, даже в подобной ситуации.
+text [???] Сара всегда говорит-
+text Мир приобретает чёткость, как только я водружаю очки на нос.
+
+bgload room/01.jpg
+setimg m/mikesad.png 156 0
+text [???] Что доброта когда-нибудь убьёт меня.
+text [Ты] ...!
+text [Майк] Что ж, эм...
+text [Майк] Теперь ты видишь меня.
+setimg m/mikeunsure.png 156 0
+setimg m/mikesad.png ~
+text [Майк] ...Привет.
+text Мужчина неуклюже помахал рукой.
+setimg m/mikeunsure2.png 156 0
+setimg m/mikeunsure.png ~
+text Я стою с отвисшей челюстью и пялюсь на него.
+text Он... есть я.
+text ...Отдельно существующий человек.
+text У него моё лицо, волосы, осанка...
+text Мой... свитер.
+text Ничего удивительного, что его свитер выглядит как мой, он и есть мой!
+setimg m/mikeunsure3.png 156 0 
+setimg m/mikeunsure2.png ~
+text [Ты] Это...
+text Просто сон. Это просто сон. Так и есть.
+text Успокойся, не теряй рассудок. Расслабься.
+text Но сколько ни твержу себе это, никак не могу совладать с ситуацией.
+text Ощущение, будто комната одновременно и тесная, и огромная.
+text Чувствую себя ребёнком, потерявшимся в толпе и слепо тянущимся к руке матери.
+text Только чтобы в ужасе обнаружить, что рука принадлежит незнакомцу.
+text ...
+text [Ты] Ха-а!
+setimg m/mikeworried2.png 156 0
+setimg m/mikeunsure3.png ~
+text [Майк] О-окей.
+text [Майк] Теперь твоя очередь не паниковать, слышишь?
+setimg m/mikenervous.png 156 0
+setimg m/mikeworried2.png ~
+text [Майк] Дыши глубже!
+text Он что-то вроде клона? Призрак из моего будущего? Что?
+text Что?!
+text Что он такое?
+text Я протягиваю руку, чтобы коснуться его, желая убедиться в его реальности, что он не плод воображения.
+text Другой "Майк" отпрянывает и отталкивает мою руку.
+setimg m/mikeannoyed.png 156 0
+setimg m/mikenervous.png ~
+text [Майк] Слушай, всё это странно для нас обоих.
+text [Майк] Не ухудшай положение!
+setimg m/mikesideunimpressed.png 156 0
+setimg m/mikeannoyed.png ~
+text Он материален, так что не может быть призраком.
+text Он способен формировать отличные от моих мысли.
+text И он осознает, что мы одна и та же личность.
+text [Ты] Ч-что ты такое?
+text [Ты] Почему у тебя моё лицо?
+setimg m/mikeannoyed.png 156 0
+setimg m/mikesideunimpressed.png ~
+text [Майк] Прошу прощения?
+text [Майк] Твоё лицо?
+text [Майк] К твоему сведению, для меня это была обычная ночь, пока ты не влез в мой дом!
+text [Майк] Так почему бы тебе не сказать, что ты делаешь в моей гостиной?
+text Я открыл было рот, чтобы оспорить его, но тут же понял, что не могу ничего вспомнить.
+text Мои последние воспоминания состоят из миски чипсов и вечерних ТВ-программ.
+text А также боли в затылке...
+text [Ты] Я...
+text [Ты] Я не могу вспомнить-
+setimg m/mikevic.png 156 0
+setimg m/mikeannoyed.png ~
+text [Майк] АГА!
+text [Майк] Видишь? Так все фальшивки и говорят! Дело закрыто.
+text [Ты] Фальшивка?! Что, прости?
+setimg m/mikeannoyed.png 156 0
+setimg m/mikevic.png ~
+text [Майк] Ты что-то вроде некой аномалии. Это единственное объяснение.
+setimg m/mikesideunimpressed.png 156 0
+setimg m/mikeannoyed.png ~
+text [Майк] Не помню, чтобы недавно делал что-нибудь особенное.
+text [Майк] Если у тебя мои воспоминания, уверен, ты согласишься.
+setimg m/mikesmirk.png 156 0
+setimg m/mikesideunimpressed.png ~
+text [Майк] У тебя же провал в памяти.
+text [Майк] Так что ты либо причина всего, либо просто результат.
+text [Майк] Следовательно, аномалия.
+text [Ты] Ну да.
+text [Ты] Что ж, раз пошёл такой разговор, я могу также заявить, что ты лжёшь о состоянии своей памяти.
+text [Ты] Именно с твоим появлением началась эта ненормальность, с твоим появлением я потерял фрагмент памяти.
+text [Ты] Вероятность, что ты - причина и результат моей внезапной амнезии, очень высока.
+text [Ты] Таким образом, фальшивка - ты.
+setimg m/mikeannoyed.png 156 0
+setimg m/mikesmirk.png ~
+text [Майк] Ты не можешь это доказать.
+text [Ты] Но и ты не можешь опровергнуть, раз у нас будут одни и те же аргументы-
+setimg m/mikesad.png 156 0
+setimg m/mikeannoyed.png ~
+text [Майк] И мы будем ходить по кругу. Понимаю, к чему ты клонишь.
+setimg m/mikeunsure3.png 156 0
+setimg m/mikesad.png ~
+text [Ты] ...
+text [Майк] ...
+setimg m/mikeunsure.png 156 0
+setimg m/mikeunsure3.png ~
+text [Майк] Тем не менее всё это довольно увлекательно.
+text [Майк] Не так ли?
+
+choice Что ж, пожалуй | Не особо
+if selected == 1
+	text [Ты] Что ж, пожалуй.
+	text [Ты] TEST
+	text [Ты] В конце концов, не каждый день встречаешь точную копию себя.
+	setvar agree + 1
+	setvar agreecount + 1
+fi
+if selected == 2
+	text [Ты] Не особо.
+	text [Ты] Я не настолько самолюбив, чтобы находить удовольствие в разговоре со своим клоном.
+	setvar disagree + 1
+	setvar disagreecount + 1
+fi
+
+setimg m/mikeannoyed.png 156 0
+setimg m/mikeunsure.png ~
+text [Майк] Так говоришь, будто копия здесь я.
+text [Ты] А разве нет?
+text [Майк] Вот только не надо по новой!
+text [Ты] ...
+text [Майк] ...
+text [Ты] Вот же заноза в заднице.
+setimg m/mikesad.png 156 0
+setimg m/mikeannoyed.png ~
+text [Майк] А то я не знаю.
+text Что могло вызвать это?
+text Какой выкидон природы мог сотворить другого меня?
+text Видимо, я должен быть польщён, но я не лучший экземпляр в качестве материала для клонирования.
+text *вздох*
+text По крайней мере он не выглядит... опасно.
+text Никакой вражды или агрессии с его стороны.
+text Я и сам не чувствую к нему негатива.
+text Но это так дико, что у нас одинаковый маленький шрам на подбородке.
+text И даже идентичные рубцы от подросткового акне.
+text Поддавшись внезапному импульсу, притрагиваюсь к своему лицу.
+text Я всё ещё я...
+text ...Верно?
+music ~
+sound door.ogg
+
+text Тут мы слышим звук открывающейся наверху двери.
+
+setimg m/mikescared.png 156 0
+setimg m/mikesad.png ~
+delay 15
+setimg m/mikeworried.png 156 0
+setimg m/mikescared.png ~
+text [Майк] О нет! Сара!
+text [Ты] Сара!
+setimg m/mikeworried2.png 156 0
+setimg m/mikeworried.png ~
+music earlyend.ogg
+text [Майк] Так и знал, что Сара слышала тот шум!
+text [Майк] Быстрее, спрячься где-нибудь!
+text [Майк] Я постараюсь отвлечь её, а ты уходи через входную дверь!
+text [Ты] ЧТО?
+text [Ты] Погоди минутку.
+text [Ты] Ты избавляешься от меня!
+setimg m/mikeannoyed.png 156 0
+setimg m/mikeworried2.png ~
+text [Майк] Нет, не избавляюсь!
+text [Майк] Два Майка в одном доме - большой риск. Ты и сам знаешь.
+text [Ты] Тогда почему бы тебе не уйти?
+setimg m/mikeregret.png 156 0
+setimg m/mikeannoyed.png ~
+text [Майк] Шутишь?
+text [Майк] Тебя будто поезд сбил!
+text Он прав. Я весь грязный.
+text Как это произошло?
+text [Майк] Слушай.
+text [Майк] Завтра мы со всем разберёмся.
+text [Майк] Кто знает, может твои утраченные воспоминания даже вернутся.
+text [Ты] Но ты выкидываешь меня из моего собственного дома!
+setimg m/mikesad.png 156 0
+setimg m/mikeregret.png ~
+text [Майк] Не выкидываю я тебя!
+text [Майк] Это временная мера.
+text [Майк] Дай мне разобраться с Сарой, и завтра мы разберёмся с этим бардаком.
+text [Майк] Просто уйди сейчас, ладно?
+
+choice Хорошо, разберёмся с этим завтра | Я остаюсь
+if selected == 1
+	jump earlyend.scr
+fi
+
+text У меня щемит под ложечкой.
+text Его предложение имеет смысл, но мои ноги попросту отказываются двигаться.
+text Почему мне надо прятаться?
+text Почему мне надо сбегать от моей девушки, из моего дома?
+text Это неправильно.
+text Лёгкий гнев разливается по моей грудной клетке.
+text [Ты] Ну уж нет.
+setimg m/mikeworried.png 156 0
+setimg m/mikesad.png ~
+text [Майк] Что?
+text [Ты] Я не уйду.
+setimg m/mikeannoyed.png 156 0
+setimg m/mikeworried.png ~
+text [Майк] Брось, парень!
+text [Майк] Не упрямься!
+setimg m/mikeworried2.png 156 0
+setimg m/mikeannoyed.png ~
+text [Майк] Если Сара увидит это... это...
+setimg m/mikefreaked.png 156 0
+setimg m/mikeworried2.png ~
+text [Майк] Ни для кого из нас дело хорошо не закончится!
+text [Ты] Но если кто и может нам помочь, то-
+music ~
+sound stairs.ogg
+
+setimg m/mikeworried2.png 156 0
+setimg m/mikefreaked.png ~
+text [Майк] Ш-ш-ш!
+setimg m/mikesideworried2.png 156 0
+setimg m/mikeworried2.png ~
+
+;####################SARAH ARRIVES################################
+
+text [Сара] Майки. Уже поздно. Ты не идёшь спать?
+text Её голос звучит со второго этажа.
+text В гостиной темно, и она, видимо, не видит "нас" при столь слабом освещении.
+text Мы оба задерживаем дыхание.
+text [Майк] А-ах...
+text [Майк] Я... отвлёкся.
+setimg s/sarahnormal.png 30 25
+text Сара подходит к нам. Выражение её лица беззаботно.
+setimg s/sarahconfused.png 30 25
+setimg s/sarahnormal.png ~
+text [Сара] Ты не один? Довольно поздно для гостей.
+text [Майк] Эм...
+setimg s/sarahsuspicious.png 30 25
+setimg s/sarahconfused.png ~
+text [Сара] Это твой бра-
+setimg s/sarahshock.png 30 25
+setimg s/sarahsuspicious.png ~
+music sarah.ogg
+text Майк бросает на меня взгляд.
+setimg s/sarahcomicshock.png 30 25
+setimg s/sarahshock.png ~
+text [Майк] Послушай... Сара.
+setimg s/sarahwtf.png 30 25
+setimg s/sarahcomicshock.png ~
+text [Ты] Прошу, не паникуй.
+
+;#Sarah stares in shock
+
+text [Сара] ...!
+text [Сара] О.
+
+setimg s/sarahohshit.png 30 25
+setimg s/sarahwtf.png ~
+text [Сара] Мой.
+setimg m/mikecringe.png 156 0
+setimg s/sarahholyshit.png 30 25
+setimg m/mikesideworried2.png ~
+setimg s/sarahohshit.png ~
+text [Сара] БОГ!
+setimg s/sarahohshit.png 30 25
+setimg m/mikesideworried.png 156 0
+setimg s/sarahholyshit.png ~
+setimg m/mikecringe.png ~
+text [Майк] Сара, успокойся.
+
+;#Sarah stares at main character then Mike then back at character again.
+
+text [Сара] ЧТО-
+setimg s/sarahholyshit.png 30 25
+setimg m/mikecringe.png 156 0
+setimg s/sarahohshit.png ~
+setimg m/mikesideworried.png ~
+text [Сара] ЧТО ЗА ХРЕНЬ?!
+setimg s/sarahohshit.png 30 25
+setimg m/mikeshy.png 156 0
+setimg s/sarahholyshit.png ~
+setimg m/mikecringe.png ~
+text [Ты] Что ж...
+text [Ты] Я... знаю, выглядит всё как-то не очень, но-
+setimg s/sarahholyshit.png 30 25
+setimg s/sarahohshit.png ~
+text [Сара] КАК-ТО НЕ ОЧЕНЬ?
+setimg s/sarahohshit.png 30 25
+setimg s/sarahholyshit.png ~
+text [Сара] Майк, я вижу двух тебя!
+setimg s/sarahfuckthat.png 30 25
+setimg s/sarahohshit.png ~
+text [Сара] Думаю, стадия "как-то не очень" далеко позади!
+setimg m/mikesidesad.png 156 0
+setimg s/sarahohplease.png 30 25
+setimg m/mikeshy.png ~
+setimg s/sarahfuckthat.png ~
+text [Майк] ...
+setimg s/sarahohplease2.png 30 25
+setimg s/sarahohplease.png ~
+text [Сара] Это какой-то фокус, да? С парой зеркал и прочей фигнёй?
+setimg m/mikecringe.png 156 0
+setimg m/mikesidesad.png ~
+text [Ты] Это не шутка, Сара.
+setimg m/mikeshy.png 156 0
+setimg s/sarahohshit2.png 30 25
+setimg m/mikecringe.png ~
+setimg s/sarahohplease2.png ~
+text [Майк] Всё на самом деле.
+setimg s/sarahohshit.png 30 25
+setimg s/sarahohplease2.png ~
+delay 20
+setimg s/sarahohshit2.png 30 25
+setimg s/sarahohshit.png ~
+delay 20
+setimg s/sarahohshit.png 30 25
+setimg s/sarahohshit2.png ~
+text [Ты] И мы понятия не имеем, что делать.
+setimg s/sarahugh.png 30 25
+setimg s/sarahohshit.png ~
+text [Сара] Стоп!
+setimg m/mikecringe.png 156 0
+setimg s/sarahpain.png 30 25
+setimg m/mikeshy.png ~
+setimg s/sarahugh.png ~
+text [Сара] Прекратите говорить!
+setimg s/sarahpain2.png 30 25
+setimg s/sarahpain.png ~
+text [Сара] У меня голова кружится от одного взгляда на вас, разговаривающих одновременно!
+setimg m/mikeunsure4.png 156 0
+setimg s/sarahgoofypain.png 30 25
+setimg m/mikecringe.png ~
+setimg s/sarahpain2.png ~
+text [Майк] Эм. Дыши глубже?
+text [Сара] Я...
+setimg s/sarahpain2.png 30 25
+setimg s/sarahgoofypain.png ~
+text [Сара] Мне надо прилечь.
+setimg s/sarahgoofypain.png 30 25
+setimg m/mikeunsure2.png 156 0
+setimg s/sarahpain2.png ~
+setimg m/mikeunsure4.png ~
+text ...
+text [Сара] Я отойду на минуту.
+setimg s/sarahgoofypain.png ~
+
+;####################################SARAH LEAVES######################
+
+text [Ты] Что ж!
+text [Ты] Прошло лучше, чем ожидалось!
+setimg m/mikeannoyed2.png 156 0
+setimg m/mikeunsure2.png ~
+text [Майк] Если под этим ты подразумеваешь "моя девушка чуть ежа не родила", то да, конечно.
+setimg m/mikeannoyed.png 156 0
+setimg m/mikeannoyed2.png ~
+text [Майк] Я говорил, что это плохая идея!
+
+choice Да ничего, она будет в порядке! | Да, надо всё исправить!
+if selected == 1
+	text [Ты] Она будет в порядке!
+	text [Ты] Офицер полиции, как-никак.
+	text [Ты] Она привыкла к подобного рода стрессовым ситуациям, согласись?
+	text [Майк] Не думаю, что ты вообще имеешь понятие, о чём говоришь.
+	setvar disagree + 1
+	setvar disagreecount + 2
+fi
+if selected == 1
+	text [Ты] Как считаешь, мы всё ещё можем пойти на попятную?
+	text [Майк] Не думаю.
+	setvar agree + 1
+	setvar agreecount + 2
+fi
+
+setimg m/mikesad.png 156 0
+setimg m/mikeannoyed.png ~
+text [Майк] *вздох* Думаю, остаётся только смириться.
+
+;###################################Sarah comes back#########################
+
+setimg m/mikeunsure2.png 156 0
+setimg s/sarahsuspicious.png 30 25
+setimg m/mikesad.png ~
+text [Сара] Ладно, мальчики. Я немного успокоилась.
+text [Сара] Ну а теперь к делу.
+setimg m/mikeshy.png 156 0
+setimg s/sarahdubious.png 30 25
+setimg m/mikeunsure2.png ~
+setimg s/sarahsuspicious.png ~
+text [Сара] Какого чёрта?
+text ...
+setimg s/sarahsidedubious.png 30 25
+setimg s/sarahdubious.png ~
+text [Майк] Понятия не имею.
+setimg s/sarahsidedubious2.png 30 25
+setimg s/sarahsidedubious.png ~
+text [Сара] В таком случае начни с начала.
+setimg m/mikeunsure2.png 156 0
+setimg s/sarahsidenormalcross.png 30 25
+setimg m/mikeshy.png ~
+setimg s/sarahsidedubious2.png ~
+text [Майк] Ну...
+text [Майк] Я услышал шум и пошёл проверить, в чём дело.
+text [Майк] В гостиной обнаружился некто.
+text [Майк] Я запаниковал, взял бейсбольную биту. Хотел просто отпугнуть.
+setimg m/mikeunsure3.png 156 0
+setimg m/mikeunsure2.png ~
+text [Майк] И затем я увидел его.
+text [Майк] С моим лицом.
+setimg s/sarahdubious.png 30 25
+setimg m/mikefreaked.png 156 0
+setimg s/sarahsidenormalcross.png ~
+setimg m/mikeunsure3.png ~
+text [Майк] Я подумал, что сошёл с ума!
+setimg m/mikeshy.png 156 0
+setimg s/sarahsidenormalcross.png 30 25
+setimg m/mikefreaked.png ~
+setimg s/sarahdubious.png ~
+text [Майк] Но тут он собрался подниматься наверх, поэтому мне пришлось как-то противостоять ему.
+text [Майк] Если честно, я даже думал схватить распятие или ещё чего.
+setimg s/sarahsidedubious.png 30 25
+setimg s/sarahsidenormalcross.png ~
+text [Сара] Мило.
+setimg m/mikeunsure3.png 156 0
+setimg s/sarahnormalcross.png 30 25
+setimg m/mikeshy.png ~
+setimg s/sarahsidedubious.png ~
+text [Ты] Я не помню ничего из этого.
+text [Ты] Я просто проснулся с раскалывающейся головой.
+setimg m/mikeunsure2.png 156 0
+setimg m/mikeunsure3.png ~
+text [Сара] Что последнее, что ты помнишь?
+
+;#########################QUESTIONNAIRE########################
+
+;############### Q3 ###
+
+choice Сказать правду | Солгать
+
+if selected == 1
+	text [Ты] Я помню, как услышал шум на кухне, но посчитал, что просто померещилось.
+	text [Ты] Затем взял пиво из холодильника.
+	text [Ты] И тут меня огрели чем-то по голове.
+	setimg m/mikeunsure3.png 156 0
+	setimg m/mikeunsure2.png ~
+	setvar truth + 1
+	setvar truthcount + 1
+fi
+if selected == 2
+	setimg s/sarahsidedubious.png 30 25
+	setimg s/sarahnormalcross.png ~
+	text [Ты] Мы с тобой поужинали, а потом я заснул перед телевизором.
+	setimg m/mikeunsure3.png 156 0
+	setimg m/mikeunsure2.png ~
+	setimg s/sarahsuspicious.png 30 25
+	setimg s/sarahsidedubious.png ~
+	text [Сара] Очень насыщенно.
+	setimg s/sarahnormalcross.png 30 25
+	setimg s/sarahsuspicious.png ~
+	setvar lie + 1
+	setvar liecount + 1
+fi
+
+text [Ты] Следующее, что помню, - я в гостиной и этот парень машет битой перед моим лицом.
+setimg m/mikesmirk.png 156 0
+setimg s/sarahsidenormalcross.png 30 25
+setimg m/mikeunsure3.png ~
+setimg s/sarahnormalcross.png ~
+text [Майк] Неправда!
+text [Майк] Он дошёл досюда, шатаясь словно пьяный.
+text [Майк] А затем споткнулся об этот идиотский ковёр.
+
+;################# Q4 ###
+
+choice Агх, ненавижу этот ковёр | Нет, ты ударил меня битой
+
+if selected == 1
+	setimg s/sarahdubious.png 30 25
+	setimg s/sarahsidenormalcross.png ~
+	text [Ты] Я ненавижу этот ковёр.
+	setimg s/sarahsidedubious.png 30 25
+	setimg s/sarahdubious.png ~
+	text [Ты] И что это за ухмылочка?
+	setimg m/mikeannoyed.png 156 0
+	setimg m/mikesmirk.png ~
+	text [Ты] Будто ты сама не спотыкалась об него.
+	setimg m/mikeannoyed2.png 156 0
+	setimg m/mikeannoyed.png ~
+	text [Майк] ...Ох.
+	setimg s/sarahexasperated.png 30 25
+	setimg s/sarahsidedubious.png ~
+	text [Сара] Моя сестра дала нам этот ковёр из доброты душевной.
+	setimg m/mikesmirk.png 156 0
+	setimg s/sarahsidesuspicious.png 30 25
+	setimg m/mikeannoyed2.png ~
+	setimg s/sarahexasperated.png ~
+	text [Майк] ...Это так многое объясняет.
+	setimg s/sarahohplease.png 30 25
+	setimg s/sarahsidesuspicious.png ~
+	text [Сара] Хмф.
+	setimg s/sarahdubious2.png 30 25
+	setimg m/mikenormalsad.png 156 0
+	setimg s/sarahohplease.png ~
+	setimg m/mikesmirk.png ~
+	setvar agree + 1
+	setvar agreecount + 3
+fi
+if selected == 2
+	text [Ты] Ты ударил меня по голове битой!
+	setimg s/sarahsidesuspicious.png 30 25
+	setimg s/sarahsidenormalcross.png ~
+	text [Майк] Я не ударял. Я был слишком обескуражен!
+	text [Майк] И не надо меня винить в своей неуклюжести!
+	text [Майк] У меня у самого её через край!
+	setimg m/mikeshy.png 156 0
+	setimg s/sarahsideamused.png 30 25
+	setimg m/mikesmirk.png ~
+	setimg s/sarahsidesuspicious.png ~
+	text [Сара] И не говори.
+	setimg s/sarahdubious.png 30 25
+	setimg s/sarahsideamused.png ~
+	text [Сара] ...
+	text [Ты] ...
+	text [Сара] Думаю, это было неуместно.
+	setimg s/sarahdubious2.png 30 25
+	setimg m/mikenormalsad.png 156 0
+	setimg s/sarahdubious.png ~
+	setimg m/mikeshy.png ~
+	setvar disagree + 1
+	setvar disagreecount + 3
+fi
+
+text [Сара] Так...
+text [Сара] У меня такое чувство, что здесь уже дело в чём-то другом.
+text [Майк] ...
+text [Сара] Вы, ребята, пытаетесь выставить друг друга ненастоящими?
+setimg m/mikeunsure2.png 156 0
+setimg s/sarahsidedubious.png 30 25
+setimg m/mikenormalsad.png ~
+setimg s/sarahdubious2.png ~
+text [Ты] Ну...
+text [Майк] Два Майка Дженсена не может быть, не так ли?
+setimg m/mikeshy.png 156 0
+setimg s/sarahnormalcross.png 30 25
+setimg m/mikeunsure2.png ~
+setimg s/sarahsidedubious.png ~
+text [Ты] Может, ты поможешь нам выяснить это.
+setimg s/sarahdubious2.png 30 25
+setimg s/sarahnormalcross.png ~
+text [Сара] Чего?
+text [Сара] Решить, кто из вас двоих настоящий?
+text [Ты] Да.
+text [Сара] И как же?
+setimg m/mikenormalsad.png 156 0
+setimg s/sarahnormalcross.png 30 25
+setimg m/mikeshy.png ~
+setimg s/sarahdubious2.png ~
+text [Ты] Оу, я не знаю. Задай личные вопросы или ещё как.
+setimg m/mikeunsure2.png 156 0
+setimg m/mikenormalsad.png ~
+text [Майк] Хм. Да! Почему бы и нет?
+setimg m/mikeunsure3.png 156 0
+setimg m/mikeunsure2.png ~
+text [Майк] Возможно, кто-нибудь из нас ошибётся.
+setimg m/mikeunsure2.png 156 0
+setimg s/sarahthinking.png 30 25
+setimg m/mikeunsure3.png ~
+setimg s/sarahnormalcross.png ~
+text [Сара] Ну да.
+text [Сара] Давайте отнесёмся ко всему, как к какой-то чёртовой пустячной игре.
+setimg m/mikeshy.png 156 0
+setimg s/sarahangrythinking.png 30 25
+setimg m/mikeunsure2.png ~
+setimg s/sarahthinking.png ~
+text ...
+setimg s/sarahdubious.png 30 25
+setimg m/mikeunsure2.png 156 0
+setimg s/sarahangrythinking.png ~
+setimg m/mikeshy.png ~
+delay 10
+setimg s/sarahdetermined.png 30 25
+setimg s/sarahdubious.png ~
+text [Сара] Слушайте, парни. Не думаю, что это сработает.
+setimg m/mikeregret2.png 156 0
+setimg s/sarahsuspicious.png 30 25
+setimg m/mikeunsure2.png ~
+setimg s/sarahdetermined.png ~
+text [Сара] Нельзя судить о чьей-либо подлинности, задав ему зараз 20 вопросов.
+setimg s/sarahangrythinking.png 30 25
+setimg s/sarahsuspicious.png ~
+text [Сара] Мы должны найти другой способ.
+setimg m/mikesad.png 156 0
+setimg m/mikeregret2.png ~
+text [Ты] К примеру?
+setimg s/sarahohplease.png 30 25
+setimg s/sarahangrythinking.png ~
+text [Сара] Анализ крови? ДНК-тест?
+text [Сара] Экзорцизм?
+setimg m/mikeshy.png 156 0
+setimg s/sarahpain2.png 30 25
+setimg m/mikesad.png ~
+setimg s/sarahohplease.png ~
+text [Сара] Не знаю я!
+setimg s/sarahohplease2.png 30 25
+setimg s/sarahpain2.png ~
+text [Сара] Но прошу!
+setimg s/sarahpain.png 30 25
+setimg s/sarahohplease2.png ~
+text [Сара] Не заставляйте меня выбирать одного из вас!
+setimg m/mikeregret.png 156 0
+setimg s/sarahgoofypain.png 30 25
+setimg m/mikeshy.png ~
+setimg s/sarahpain.png ~
+text [Ты] Сара, я- мы понимаем, что это несправедливо.
+setimg s/sarahohplease.png 30 25
+setimg s/sarahgoofypain.png ~
+text [Ты] Но только один человек может помочь нам. И это ты.
+setimg m/mikeunsure2.png 156 0
+setimg s/sarahdubious2.png 30 25
+setimg m/mikeregret.png ~
+setimg s/sarahohplease.png ~
+text [Сара] Майки, ты ведь знаешь, что я люблю тебя? Мы так давно вместе.
+setimg s/sarahsuspicious.png 30 25
+setimg s/sarahdubious2.png ~
+text [Сара] Я видела рентген твоего кишечника и знаю о твоём нездоровом фанатстве Джейсоном Стейтемом.
+setimg m/mikeshy.png 156 0
+setimg m/mikeunsure2.png ~
+text [Майк] Эм-м...
+setimg m/mikeunsure2.png 156 0
+setimg s/sarahpain.png 30 25
+setimg m/mikeshy.png ~
+setimg s/sarahsuspicious.png ~
+text [Сара] Впрочем, я не представляю себе ни одного человека, созданного для этой ерунды.
+setimg s/sarahconcerned.png 30 25
+setimg m/mikeshy.png 156 0
+setimg s/sarahpain.png ~
+setimg m/mikeunsure2.png ~
+delay 10
+setimg s/sarahangrythinking.png 30 25
+setimg s/sarahconcerned.png ~
+text ...
+setimg s/sarahsidedubious2.png 30 25
+setimg s/sarahangrythinking.png ~
+text [Сара] Может, просто позвоним твоей матери?
+setimg s/sarahsmug2.png 30 25
+setimg m/mikesideworried2.png 156 0
+setimg s/sarahsidedubious2.png ~
+setimg m/mikeshy.png ~
+delay 10
+setimg m/mikeworried2.png 156 0
+setimg m/mikesideworried2.png ~
+
+text [Ты и Майк] НЕТ!
+setimg s/sarahamused.png 30 25
+setimg s/sarahsmug2.png ~
+text [Сара] Ого! Даже ваши реакции одинаковы!
+setimg m/mikeworried.png 156 0
+setimg s/sarahsmug2.png 30 25
+setimg m/mikeworried2.png ~
+setimg s/sarahamused.png ~
+text [Сара] Поразительно.
+setimg m/mikeshy.png 156 0
+setimg s/sarahcomicshock.png 30 25
+setimg m/mikeworried.png ~
+setimg s/sarahsmug2.png ~
+text [Ты] Пожалуйста, крольчонок?
+setimg s/sarahblush.png 30 25
+setimg s/sarahcomicshock.png ~
+text [Ты] Пожа-а-а-а-луйста, выручи папу-кролика?
+setimg s/sarahbigblush.png 30 25
+setimg s/sarahblush.png ~
+text [Сара] Х-хватит!
+text [Сара] Разве я не говорила, что это прозвище только между нами двумя?
+setimg m/mikeunsure4.png 156 0
+setimg s/sarahbigblush2.png 30 25
+setimg m/mikeshy.png ~
+setimg s/sarahbigblush.png ~
+text [Майк] Эм-м... технически, это всё ещё так.
+setimg s/sarahfreaked.png 30 25
+setimg s/sarahbigblush2.png ~
+text [Сара] О боже.
+text [Сара] Это чертовски жутко.
+setimg m/mikeshy.png 156 0
+setimg s/sarahconcerned.png 30 25
+setimg m/mikeunsure4.png ~
+setimg s/sarahfreaked.png ~
+text [Сара] Одно понятно точно: мы должны исправить ситуацию.
+setimg s/sarahgoofypain.png 30 25
+setimg s/sarahconcerned.png ~
+text [Сара] Всё чересчур странно.
+setimg m/mikenormalsad.png 156 0
+setimg s/sarahsuspicious.png 30 25
+setimg m/mikeshy.png ~
+setimg s/sarahgoofypain.png ~
+text [Ты] Значит, поможешь нам?
+setimg s/sarahgoofypain.png 30 25
+setimg s/sarahsuspicious.png ~
+text Сара вздыхает и качает головой.
+text [Сара] Не думаю, что мне оставили выбор.
+text [Майк] По крайней мере, попытаться стоит.
+setimg s/sarahangrythinking.png 30 25
+setimg s/sarahgoofypain.png ~
+text [Сара] Погодите.
+setimg s/sarahdetermined.png 30 25
+setimg s/sarahangrythinking.png ~
+
+text [Сара] Когда это закончится, что мы будем делать с предполагаемой фальшивкой?
+setimg s/sarahsidedubious2.png 30 25
+setimg m/mikesidesad.png 156 0
+setimg s/sarahdetermined.png ~
+setimg m/mikenormalsad.png ~
+text [Сара] Вы об этом подумали?
+setimg m/mikeshy.png 156 0
+setimg s/sarahsidedubious.png 30 25
+setimg m/mikesidesad.png ~
+setimg s/sarahsidedubious2.png ~
+text [Майк] У-уверен, что позже мы разберёмся.
+
+;##########################  Q5 ###
+
+choice Да, обсудим это позже | Нет! Фальшивка должен уйти
+if selected == 1
+	setimg s/sarahdubious.png 30 25
+	setimg s/sarahsidedubious.png ~
+	text [Ты] Да. Давайте не будем спешить с этим решением.
+	text [Ты] Не стоит опережать события.
+	setimg m/mikenormal.png 156 0
+	setimg s/sarahexasperated.png 30 25
+	setimg m/mikeshy.png ~
+	setimg s/sarahdubious.png ~
+	setvar agree + 1
+	setvar agreecount + 4
+fi
+if selected == 2
+	setimg m/mikenormalsad.png 156 0
+	setimg s/sarahsuspicious.png 30 25
+	setimg m/mikeshy.png ~
+	setimg s/sarahsidedubious.png ~
+	text [Ты] Ну, что тут думать.
+	text [Ты] Фальшивка должен уйти.
+	text [Ты] Всё просто и справедливо.
+	setimg m/mikeunsure2.png 156 0
+	setimg s/sarahthinking.png 30 25
+	setimg m/mikenormalsad.png ~
+	setimg s/sarahsuspicious.png ~
+	text [Ты] И для этого нам нужен судья.
+	setimg m/mikenormal.png 156 0
+	setimg s/sarahexasperated.png 30 25
+	setimg m/mikeunsure2.png ~
+	setimg s/sarahthinking.png ~
+	setvar disagree + 1
+	setvar disagreecount + 4
+fi
+
+text [Сара] *вздох* Ладно. Неважно. Значит, вопросы личного характера.
+
+setimg s/sarahangrythinking.png 30 25
+setimg s/sarahexasperated.png ~
+text [Майк] ...
+text [Ты] ...
+setimg s/sarahsidedubious2.png 30 25
+setimg m/mikesidenormal.png 156 0
+setimg s/sarahangrythinking.png ~
+setimg m/mikenormal.png ~
+text [Сара] Годовщина?
+setimg s/sarahsidedubious.png 30 25
+setimg s/sarahsidedubious2.png ~
+text [Майк] 26 февраля 2009 года.
+
+;########################### Q6 ###
+
+choice Да, 26 февраля | 27 февраля!
+if selected == 1
+	setimg s/sarahdubious.png 30 25
+	setimg s/sarahsidedubious.png ~
+	text [Ты] 26 февраля, четверг.
+	setimg m/mikenormal.png 156 0
+	setimg s/sarahsmug3.png 30 25
+	setimg m/mikesidenormal.png ~
+	setimg s/sarahdubious.png ~
+	setvar agree + 1
+	setvar agreecount + 5
+fi
+if selected == 2
+	text [Ты] 27 февраля!
+	setimg m/mikeannoyed.png 156 0
+	setimg s/sarahconfused.png 30 25
+	setimg m/mikesidenormal.png ~
+	setimg s/sarahsidedubious.png ~
+	text [Майк] Что?
+	setimg s/sarahsuspicious.png 30 25
+	setimg s/sarahconfused.png ~
+	text [Ты] Ну, была полночь.  Так что технически было 27 число!
+	setimg m/mikeannoyed2.png 156 0
+	setimg m/mikeannoyed.png ~
+	text [Майк] Хмпф.
+	text [Майк] Дьявол кроется в мелочах!
+	setimg m/mikenormal.png 156 0
+	setimg s/sarahsmug3.png 30 25
+	setimg m/mikeannoyed2.png ~
+	setimg s/sarahsuspicious.png ~
+	setvar disagree + 1
+	setvar disagreecount + 5
+fi
+
+text [Сара] Слишком легко!
+setimg s/sarahsidenormalcross.png 30 25
+setimg m/mikesidenormal.png 156 0
+setimg s/sarahsmug3.png ~
+setimg m/mikenormal.png ~
+text [Сара] Имя брата?
+setimg m/mikehappy.png 156 0
+setimg m/mikesidenormal.png ~
+text [Майк] Майлз Джордан Дженсен.
+text [Майк] Он ненавидит его!
+
+;############################ Q7 ###
+
+choice Майлз Джордан Дженсен | Что? Кто?
+if selected == 1
+	setimg s/sarahdubious.png 30 25
+	setimg s/sarahsidenormalcross.png ~
+	text [Ты] Майлз Джордан Дженсен.
+	setimg s/sarahdubious.png 30 25
+	setimg s/sarahdubious.png ~
+	text [Ты] И именно поэтому я зову его полным именем при всяком подвернувшемся случае!
+	setimg m/mikevic.png 156 0
+	setimg s/sarahohplease.png 30 25
+	setimg m/mikehappy.png ~
+	setimg s/sarahdubious.png ~
+	text [Майк] Так-то!
+	setimg s/sarahpain2.png 30 25
+	setimg m/mikehappy.png 156 0
+	setimg s/sarahohplease.png ~
+	setimg m/mikevic.png ~
+	setvar agree + 1
+	setvar agreecount + 6
+fi
+if selected == 2
+	setimg s/sarahconfused.png 30 25
+	setimg s/sarahsidenormalcross.png ~
+	text [Ты] Кто?
+	setimg s/sarahohplease.png 30 25
+	setimg s/sarahconfused.png ~
+	#"The only brother I have is a beaver-faced alien named Buckteeth.
+	text [Ты] У меня есть только один брат, и это инопланетное существо по имени Бобрик.
+	setimg s/sarahexasperated.png 30 25
+	setimg s/sarahohplease.png ~
+	text [Майк] А-ха-ха!
+	setimg s/sarahdubious2.png 30 25
+	setimg s/sarahexasperated.png ~
+	text [Сара] Ладно вам, ребята, не такие у него и большие зубы!
+	setimg m/mikevic.png 156 0
+	setimg m/mikehappy.png ~
+	text [Майк] Ещё как большие!
+	setimg s/sarahpain2.png 30 25
+	setimg m/mikehappy.png 156 0
+	setimg s/sarahdubious2.png ~
+	setimg m/mikevic.png ~
+	setvar disagree + 1
+	setvar disagreecount + 6
+fi
+
+text [Сара] Вы, парни, такие взрослые.
+setimg m/mikenormal.png 156 0
+setimg s/sarahangrythinking.png 30 25
+setimg m/mikehappy.png ~
+setimg s/sarahpain2.png ~
+text [Сара] Так или иначе...
+setimg s/sarahsidedubious.png 30 25
+setimg s/sarahangrythinking.png ~
+text [Сара] Любимое животное?
+setimg s/sarahpain2.png 30 25
+setimg s/sarahsidedubious.png ~
+text [Сара] Я начинаю самой себе напоминать худший в истории интернета сайт знакомств.
+setimg m/mikehappy.png 156 0
+setimg s/sarahsidenormalcross.png 30 25
+setimg m/mikenormal.png ~
+setimg s/sarahpain2.png ~
+text [Майк] Собаки!
+
+;############################# Q8 ###
+
+choice Да! Обожаю собак! | Гиены
+if selected == 1
+	setimg s/sarahdubious.png 30 25
+	setimg s/sarahsidenormalcross.png ~
+	text [Ты] Ага! Я обожаю собак!
+	setimg s/sarahohplease.png 30 25
+	setimg s/sarahdubious.png ~
+	text [Ты] Надо не забыть завести одну, когда всё это разрешится.
+	setimg s/sarahamused.png 30 25
+	setimg s/sarahohplease.png ~
+	text [Сара] О, ну конечно!  Как только перестанешь забывать поливать цветочки.
+	setimg m/mikeshy.png 156 0
+	setimg s/sarahsmug2.png 30 25
+	setimg m/mikehappy.png ~
+	setimg s/sarahamused.png ~
+	delay 10
+	setimg m/mikenormal.png 156 0
+	setimg s/sarahdetermined.png 30 25
+	setimg m/mikeshy.png ~
+	setimg s/sarahsmug2.png ~
+	setvar agree + 1
+	setvar agreecount + 7
+fi
+if selected == 2
+	setimg s/sarahcomicshock.png 30 25
+	setimg s/sarahsidenormalcross.png ~
+	text [Ты] Гиены, чувак!
+	text [Ты] Гиены круты!
+	setimg m/mikeexcited.png 156 0
+	setimg m/mikehappy.png ~
+	text [Майк] Ох, да! Определённо!
+	setimg s/sarahconcerned.png 30 25
+	setimg s/sarahcomicshock.png ~
+	text [Сара] Вы серьёзно?
+	text [Сара] Внезапно, однако.
+	setimg m/mikehappy.png 156 0
+	setimg s/sarahsidesuspicious.png 30 25
+	setimg m/mikeexcited.png ~
+	setimg s/sarahconcerned.png ~
+	text [Майк] Я просто смотрел передачу про них на Animal Planet.
+	setimg m/mikeunsure.png 156 0
+	setimg m/mikehappy.png ~
+	text [Майк] Перед всем этим...
+	setimg m/mikeexcited.png 156 0
+	setimg m/mikeunsure.png ~
+	text [Майк] И они такие классные!
+	setimg s/sarahsuspicious.png 30 25
+	setimg s/sarahsidesuspicious.png ~
+	text [Ты] К тому же очень умные!
+	setimg m/mikehappy.png 156 0
+	setimg m/mikeexcited.png ~
+	text [Ты] Это стоит увидеть!
+	setimg s/sarahexasperated.png 30 25
+	setimg s/sarahsuspicious.png ~
+	text [Сара] Ох, ладно.
+	setimg m/mikenormal.png 156 0
+	setimg s/sarahdetermined.png 30 25
+	setimg m/mikehappy.png ~
+	setimg s/sarahexasperated.png ~
+	setvar disagree + 1
+	setvar disagreecount + 7
+fi
+
+text [Сара] Так. Достаточно.
+setimg s/sarahpain2.png 30 25
+setimg s/sarahdetermined.png ~
+text [Сара] Не думаю, что это помогает.
+setimg m/mikeannoyed.png 156 0
+setimg s/sarahsidenormalcross.png 30 25
+setimg m/mikenormal.png ~
+setimg s/sarahpain2.png ~
+text [Майк] Эй, подожди!
+setimg s/sarahsidedubious2.png 30 25
+setimg s/sarahsidenormalcross.png ~
+text [Майк] Давай поменяемся! Может, он просто слизывает мои ответы?
+setimg s/sarahnormalcross.png 30 25
+setimg s/sarahsidedubious2.png ~
+text [Ты] Я возмущён!
+setimg m/mikenormal.png 156 0
+setimg s/sarahangrythinking.png 30 25
+setimg m/mikeannoyed.png ~
+setimg s/sarahnormalcross.png ~
+text [Сара] Хорошо, хорошо.
+setimg s/sarahsmug3.png 30 25
+setimg s/sarahangrythinking.png ~
+text [Сара] Продолжим.
+setimg s/sarahamused.png 30 25
+setimg s/sarahsmug3.png ~
+text [Сара] Открой мне секрет, которым не делился со мной прежде.
+setimg s/sarahsmug2.png 30 25
+setimg m/mikeunsure4.png 156 0
+setimg s/sarahamused.png ~
+setimg m/mikenormal.png ~
+
+;################################## Q9 ###
+
+choice Сказать правду | Солгать
+if selected == 1
+	setimg m/mikeshy.png 156 0
+	setimg s/sarahangrythinking.png 30 25
+	setimg m/mikeunsure4.png ~
+	setimg s/sarahsmug2.png ~
+	text [Ты] Но ведь поэтому это и называется "секретом"!
+	text [Ты] Я не могу сказать тебе!
+	setimg s/sarahamused2.png 30 25
+	setimg s/sarahangrythinking.png ~
+	text [Сара] Милый!
+	text [Сара] Это про мою готовку?
+	setimg s/sarahsmug2.png 30 25
+	setimg s/sarahamused2.png ~
+	text [Ты] Ох...
+	text [Ты] ...Не знаю...
+	setimg s/sarahamused2.png 30 25
+	setimg s/sarahsmug2.png ~
+	text [Сара] ...
+	setvar truth + 1
+	setvar truthcount + 2
+fi
+if selected == 2
+	setimg m/mikeshy.png 156 0
+	setimg s/sarahdubious.png 30 25
+	setimg m/mikeunsure4.png ~
+	setimg s/sarahsmug2.png ~
+	text [Ты] Эм-м...
+	text [Ты] Я разбил лампу и сделал вид, что это была случайность.
+	setimg m/mikeunsure.png 156 0
+	setimg s/sarahamused2.png 30 25
+	setimg m/mikeshy.png ~
+	setimg s/sarahdubious.png ~
+	text [Сара] Это не секрет, Майк.
+	setvar lie + 1
+	setvar liecount + 2
+fi
+
+setimg s/sarahsideamused.png 30 25
+setimg s/sarahamused2.png 30 25
+text [Сара] Тот же вопрос.
+setimg m/mikenervous2.png 156 0
+if selected == 1
+		setimg m/mikeshy.png ~
+fi
+if selected == 2
+	setimg m/mikeunsure.png ~
+fi
+text [Майк] Э-э...
+text [Майк] Сара, я люблю тебя, но...
+setimg m/mikefreaked.png 156 0
+setimg m/mikenervous2.png ~
+text [Майк] Тазапеканкастунцомчтотыприготовилавпоследнийразопаршивейнекуда
+
+;################################## Q10 ####
+
+; TODO: Проверить 2
+choice *смешок* | Не-е, она не <i>настолько</i> плоха.
+if selected == 1
+	setimg s/sarahdubious.png 30 25
+	setimg s/sarahsideamused.png ~
+	text [Ты] *смешок*
+	setimg s/sarahamused2.png 30 25
+	setimg s/sarahdubious.png ~
+	setvar agree + 1
+	setvar agreecount + 8
+fi
+if selected == 2
+	text [Ты] Ну...
+	text [Ты] Она не настолько плоха.
+	setimg m/mikeworried.png 156 0
+	setimg m/mikefreaked.png ~
+	text [Майк] Эй! Не пытайся остаться в стороне!
+	setimg m/mikeannoyed.png 156 0
+	setimg m/mikeworried.png ~
+	text [Майк] Ты тоже об этом думал!
+	setimg s/sarahsmug2.png 30 25
+	setimg s/sarahsideamused.png ~
+	text [Ты] Эм-м...
+	setimg s/sarahamused2.png 30 25
+	setimg s/sarahsmug2.png ~
+	setvar disagree + 1
+	setvar disagreecount + 8
+fi
+
+text [Сара] Ага!
+setimg m/mikecringe.png 156 0
+setimg s/sarahverypissed.png 30 25
+if selected == 1
+	setimg m/mikefreaked.png ~
+fi
+if selected == 2
+	setimg m/mikeannoyed.png ~
+fi
+setimg s/sarahamused2.png ~
+text [Сара] Значит, чтобы ты признался, необходимо всего лишь появление твоего клона, а?
+setimg m/mikeworried2.png 156 0
+setimg m/mikecringe.png ~
+text [Ты и Майк] ...но...
+setimg m/mikefreaked.png 156 0
+setimg m/mikeworried2.png ~
+text [Сара] Следующий вопрос!
+setimg s/sarahpissed.png 30 25
+setimg s/sarahverypissed.png ~
+text [Сара] Сейчас у нас есть хоть что-то.
+text [Сара] По крайней мере один из вас должен говорить правду.
+text [Ты и Майк] *издают жалобные звуки*
+text [Сара] Итак, Майк. Что не так с запеканкой?
+setimg m/mikecringe.png 156 0
+setimg m/mikefreaked.png ~
+
+;################################## Q11 ####
+
+choice Сказать правду | Солгать
+if selected == 1
+	setimg s/sarahpissed2.png 30 25
+	setimg m/mikenervous.png 156 0
+	setimg s/sarahpissed.png ~
+	setimg m/mikecringe.png ~
+	text [Ты] М-м... Хорошо...
+	text [Ты] Ну, во-первых, было слишком много чили.
+	text [Ты] Язык жгло несколько дней. Прям кошмар какой-то.
+	text [Ты] Хм... констистенция тоже... Бр-р-р... Не знаю. Будто блевотину ешь.
+	text [Ты] В смысле, выглядело как блевотина...
+	text [Ты] А на вкус - смерть в чистом виде...
+	text [Ты] И этот запах на кухне после...
+	text [Ты] Я думал, кто-то на самом деле помер...
+	setimg m/mikenervous2.png 156 0
+	setimg m/mikenervous.png ~
+	text [Майк] ...Т-с-с-с... заткнись ты!
+	text [Майк] ...заткнись!
+	text [Ты] Н-н-но в остальном вышло хорошо!
+	text [Ты] И на тарелках такой красивый цветочный узор!
+	setimg m/mikenervous.png 156 0
+	setimg m/mikenervous2.png ~
+	text [Майк] Ха-ха...ха...ха...
+	setimg s/sarahpissed.png 30 25
+	setimg s/sarahpissed2.png ~
+	text [Сара] Тарелки!
+	setvar truth + 1
+	setvar truthcount + 3
+fi
+if selected == 2
+	text [Ты] Она была немного непропечённая.
+	setimg m/mikeunsure.png 156 0
+	setimg s/sarahpissed2.png 30 25
+	setimg s/sarahpissed.png ~
+	setimg m/mikecringe.png ~
+	text [Майк] Да, дорогая.
+	text [Майк] Тебе просто нужно немножко практики!
+	setimg m/mikeshy.png 156 0
+	setimg m/mikeunsure.png ~
+	text [Сара] О, вот  оно как?
+	setimg m/mikecringe.png 156 0
+	setimg s/sarahpissed.png 30 25
+	setimg m/mikeshy.png ~
+	setimg s/sarahpissed2.png ~
+	text [Сара] И поэтому ты заказываешь еду на дом каждый раз, когда я готовлю?
+	text [Сара] Тебе следует лучше избавляться от улик, милый.
+	setimg m/mikeshy.png 156 0
+	setimg m/mikecringe.png ~
+	setvar lie + 1
+	setvar liecount + 3
+fi
+
+text [Сара] Что-нибудь ещё? Ты прям разошёлся.
+if selected == 2
+	setimg m/mikenervous.png 156 0
+	setimg m/mikeshy.png ~
+fi
+setimg s/sarahpissed2.png 30 25
+setimg s/sarahpissed.png ~
+text [Майк] Ох... На этом всё.
+text [Майк] Но зато! Ты сделала отличные пиццалеты!
+
+;################################## Q12 ####
+
+choice Сказать правду | Солгать
+if selected == 1
+	text [Ты] Мне понравились макароны.
+	setimg m/mikeunsure.png 156 0
+	setimg m/mikenervous.png ~
+	text [Майк] Ага, они тоже были неплохи.
+	setimg m/mikeshy.png 156 0
+	setimg s/sarahpissed.png 30 25
+	setimg m/mikeunsure.png ~
+	setimg s/sarahpissed2.png ~
+	text [Сара] Макароны были приготовлены в микроволновке.
+	setimg s/sarahpissed2.png 30 25
+	setimg s/sarahpissed.png ~
+	text [Ты] ...
+	setvar truth + 1
+	setvar truthcount + 4
+fi
+if selected == 2
+	setimg s/sarahdubious.png 30 25
+	setimg s/sarahpissed2.png ~
+	delay 10
+	setimg s/sarahpissed2.png 30 25
+	setimg s/sarahdubious.png ~
+	text [Ты] Да.
+	text [Ты] Люблю эти пиццалеты.
+	setimg m/mikenervous2.png 156 0
+	setimg s/sarahpissed.png 30 25
+	setimg m/mikenervous.png ~
+	setimg s/sarahpissed2.png ~
+	text [Сара] Их сделала моя мама.
+	setimg s/sarahpissed2.png 30 25
+	setimg s/sarahpissed.png ~
+	text [Ты] ...Оу.
+	setvar lie + 1
+	setvar liecount + 4
+fi
+
+text [Сара] Короче говоря...
+if selected == 1
+	setimg m/mikenervous2.png 156 0
+	setimg m/mikeshy.png ~
+fi
+setimg s/sarahverypissed.png 30 25
+setimg s/sarahpissed2.png ~
+text [Сара] Вам ничего не нравится из моей готовки, лживые вы задницы.
+text [Майк] ...
+setimg m/mikenervous.png 156 0
+setimg m/mikenervous2.png ~
+text [Майк] Всё не-
+setimg m/mikeworried.png 156 0
+setimg m/mikenervous.png ~
+text [Ты] Отлично, Майк!
+text [Ты] Так она вышвырнет нас обоих!
+setimg s/sarahpissed.png 30 25
+setimg s/sarahverypissed.png ~
+text [Сара] Ладно! Ещё вопросы!
+setimg s/sarahpissed2.png 30 25
+setimg s/sarahpissed.png ~
+text [Сара] Тебе нравится наша соседка?
+setimg m/mikescared.png 156 0
+setimg m/mikeworried.png ~
+text [Ты] Что? Кто?
+setimg s/sarahpissed.png 30 25
+setimg s/sarahpissed2.png ~
+text [Сара] Пэрис Бофорт, модель, нагишом принимающая солнечные ванны по воскресеньям.
+setimg s/sarahpissed2.png 30 25
+setimg s/sarahpissed.png ~
+text [Ты] Чего? Это...
+setimg m/mikenervous2.png 156 0
+setimg m/mikescared.png ~
+text [Майк] С-Сара? Что за вопросы такие?
+text [Сара] Я просто беру от ситуации всё, Майки. Ты бы так не сделал?
+text [Сара] Тем более!
+setimg s/sarahscary.png 30 25
+setimg s/sarahpissed2.png ~
+text [Сара] Мне весело.
+setimg m/mikefreaked.png 156 0
+setimg s/sarahscary2.png 30 25
+setimg m/mikenervous2.png ~
+setimg s/sarahscary.png ~
+text [Майк] ...
+
+;################################## Q13 ####
+
+choice Сказать правду | Солгать
+if selected == 1
+	setimg m/mikenervous2.png 156 0
+	setimg m/mikefreaked.png ~
+	text [Ты] Спроси сперва его!
+	setimg s/sarahverypissed.png 30 25
+	setimg s/sarahscary2.png ~
+	text [Сара] Значит, это "да".
+	text [Ты] Нет!
+	setvar truth + 1
+	setvar truthcount + 5
+fi
+if selected == 2
+	setimg m/mikeunsure4.png 156 0
+	setimg s/sarahpissed2.png 30 25
+	setimg m/mikefreaked.png ~
+	setimg s/sarahscary2.png ~
+	text [Ты] Я считаю, что и Пэрис, и моя девушка, Сара Эллис, - обе привлекательные женщины, достойные восхваления, и этот факт совсем не влияет на глубину и прочность наших отношений с Сарой Эллис, любовью всей моей жизни.
+	text [Сара] ...
+	setimg s/sarahpissed.png 30 25
+	setimg s/sarahpissed2.png ~
+	text [Сара] Чушь собачья.
+	setimg m/mikecringe.png 156 0
+	setimg m/mikeunsure4.png ~
+	setvar lie + 1
+	setvar liecount + 5
+fi
+
+setimg m/mikenervous.png 156 0
+setimg s/sarahpissed2.png 30 25
+if selected == 1
+	setimg m/mikenervous2.png ~
+	setimg s/sarahverypissed.png ~
+fi
+if selected == 2
+	setimg m/mikecringe.png ~
+	setimg s/sarahpissed.png ~
+fi
+text [Майк] Эм-м... Она...
+text [Майк] Она красивая, окей?
+text [Майк] Вы обе.
+setimg m/mikeunsure4.png 156 0
+setimg s/sarahhmp.png 30 25
+setimg m/mikenervous.png ~
+setimg s/sarahpissed2.png ~
+text [Майк] Но ты моя родственная душа.
+text [Сара] Хмпф.
+
+;################################## Q14 ####
+
+choice Сказать правду | Солгать
+if selected == 1
+	setimg m/mikeunsure.png 156 0
+	setimg m/mikeunsure4.png ~
+	text [Ты] Она дружелюбна...
+	setimg s/sarahohplease.png 30 25
+	setimg s/sarahhmp.png ~
+	text [Ты] Я пару раз разговаривал с ней.
+	text [Ты] Она была любезна.
+	text [Сара] ...
+	text [Ты] Что?
+	setimg s/sarahannoyed.png 30 25
+	setimg s/sarahohplease.png ~
+	text [Сара] Хмпф!
+	setimg m/mikeshy.png 156 0
+	setimg m/mikeunsure.png ~
+	text [Ты] Я имею в виду, она не выглядела пугающей! Не пыталась откусить мне голову или ещё чего...
+	setimg s/sarahdubious.png 30 25
+	setimg s/sarahannoyed.png ~
+	text [Сара] Ну конечно!
+	setimg s/sarahannoyed.png 30 25
+	setimg s/sarahdubious.png ~
+	text [Сара] И то, что она разгуливает вечно, сверкая своими прелестями, не имеет никакого отношения к её любезности.
+	text [Ты] Я не знал даже об этом!
+	text [Ты] Но ты позови меня в следующий раз! Хе-хе-
+	setimg s/sarahohplease.png 30 25
+	setimg s/sarahannoyed.png ~
+	text [Ты] -хе...хе-*глоть*
+	text [Сара] ...
+	setvar truth + 1
+	setvar truthcount + 9
+fi
+if selected == 2
+	setimg s/sarahdubious.png 30 25
+	setimg s/sarahhmp.png ~
+	text [Ты] Она обычная девчонка! Большое дело!
+	setimg s/sarahannoyed.png 30 25
+	setimg s/sarahdubious.png ~
+	text [Сара] Ага, а ещё вы созванивались.
+	setimg m/mikesideconfused.png 156 0
+	setimg m/mikeunsure4.png ~
+	text [Майк] Что?
+	setimg s/sarahohplease.png 30 25
+	setimg s/sarahannoyed.png ~
+	text [Сара] Что-то насчёт починки её e-mail'а. Угу, как же!
+	setimg m/mikecringe.png 156 0
+	setimg m/mikesideconfused.png ~
+	text [Ты] Нет, нет! Всё так и было!
+	text [Ты] У неё были серьёзные проблемы с компьютерными вирусами!
+	setimg m/mikeunsure4.png 156 0
+	setimg m/mikecringe.png ~
+	text [Майк] Я ей сказал перестать кликать на эти сообщения "Избавиться от вялости мышц"...
+	setimg m/mikeshy.png 156 0
+	setimg m/mikeunsure4.png ~
+	text [Майк] Честное слово, эта женщина...
+	setimg s/sarahannoyed.png 30 25
+	setimg s/sarahohplease.png ~
+	text [Сара] ...
+	text [Ты] Я просто проявил учтивость!
+	text [Сара] ...
+	setimg s/sarahscary2.png 30 25
+	setimg s/sarahannoyed.png ~
+	text [Сара] Только попадись мне за чем-нибудь, чего делать тебе не стоит, дружочек.
+	text [Сара] У меня уши повсюду.
+	setimg m/mikefreaked.png 156 0
+	setimg m/mikeshy.png ~
+	text [Майк] Гах..
+	setvar lie + 1
+	setvar liecount + 9
+fi
+
+setimg s/sarahsmug.png 30 25
+if selected == 1
+	setimg s/sarahohplease.png ~
+fi
+if selected == 2
+	setimg m/mikeshy.png 156 0
+	setimg s/sarahscary2.png ~
+	setimg m/mikefreaked.png ~
+fi
+
+text [Сара] Что ж, всё это было очень познавательно.
+setimg s/sarahannoyed.png 30 25
+setimg s/sarahsmug.png ~
+text [Сара] Хотите что-то ещё сказать мне?
+
+;################################## Q15 ####
+
+choice Сказать правду | Солгать
+if selected == 1
+	setimg s/sarahhuh.png 30 25
+	setimg s/sarahannoyed.png ~
+	text [Ты] Пэрис Бофорт глупа, как пробка.
+	setimg m/mikesnicker.png 156 0
+	setimg m/mikeshy.png ~
+	text [Майк] *смешок*
+	text [Ты] Печально... но так оно и есть.
+	text [Ты] Она мила, но серьёзно...
+	text [Ты] Бедняжка думает, что Англия в Африке.
+	text [Ты] Кроме того, принимать солнечные ванны в перенаселённом жилом районе среднего класса с загрязнённым воздухом и низкими воротами...
+	text [Ты] Это уже многое говорит об уровне интеллекта.
+	setimg m/mikehappy.png 156 0
+	setimg m/mikesnicker.png ~
+	text [Майк] Ха-ха! Вот именно!
+	text [Сара] ...
+	setimg s/sarahamused3.png 30 25
+	setimg s/sarahhuh.png ~
+	text [Сара] *смешок*
+	setimg m/mikeregret.png 156 0
+	setimg s/sarahsidenormalcross.png 30 25
+	setimg m/mikehappy.png ~
+	setimg s/sarahamused3.png ~
+	setvar truth + 1
+	setvar truthcount + 6
+fi
+if selected == 2
+	setimg s/sarahdubious.png 30 25
+	setimg m/mikenormalsad.png 156 0
+	setimg s/sarahannoyed.png ~
+	setimg m/mikeshy.png ~
+	text [Ты] С тех пор, как увидел тебя...
+	setimg s/sarahblush.png 30 25
+	setimg s/sarahdubious.png ~
+	text [Ты] Я не нахожу других девушек привлекательными.
+	setimg m/mikenormal.png 156 0
+	setimg s/sarahsuspicious.png 30 25
+	setimg m/mikenormalsad.png ~
+	setimg s/sarahblush.png ~
+	text [Сара] Лжец.
+	setimg s/sarahsweet.png 30 25
+	setimg s/sarahsuspicious.png ~
+	text [Сара] *улыбка*
+	setimg m/mikeregret.png 156 0
+	setimg s/sarahsidenormalcross.png 30 25
+	setimg m/mikenormal.png ~
+	setimg s/sarahsweet.png ~
+	setvar lie + 1
+	setvar liecount + 6
+fi
+
+text [Майк] Как бы там ни было.
+text [Майк] Возвращаемся к нашей дилемме.
+setimg m/mikeregret2.png 156 0
+setimg s/sarahpain.png 30 25
+setimg m/mikeregret.png ~
+setimg s/sarahsidenormalcross.png ~
+text [Сара] По-моему, мы не особо добились прогресса.
+setimg s/sarahgoofypain.png 30 25
+setimg s/sarahpain.png ~
+text [Сара] Я всё ещё не знаю, кто из вас кто.
+setimg s/sarahpain2.png 30 25
+setimg s/sarahgoofypain.png ~
+text [Сара] Почему бы нам просто не подкинуть дурацкую монетку?
+
+;################################## Q16 ####
+
+choice Сказать правду | Солгать
+if selected == 1
+	setimg s/sarahnormalcross.png 30 25
+	setimg s/sarahpain2.png ~
+	setimg m/mikesmirk.png 156 0
+	setimg m/mikeregret2.png ~
+	text [Ты] Эй! А знаете, я очень даже "за"!
+	text [Ты] Может, мне повезёт?
+	setimg s/sarahsmug2.png 30 25
+	setimg s/sarahnormalcross.png ~
+	text [Майк] Да уж.
+	setimg m/mikesad.png 156 0
+	setimg s/sarahsideconcerned.png 30 25
+	setimg m/mikesmirk.png ~
+	setimg s/sarahsmug2.png ~
+	setvar truth + 1
+	setvar truthcount + 7
+fi
+if selected == 2
+	setimg s/sarahdubious.png 30 25
+	setimg s/sarahpain2.png ~
+	text [Ты] Я почти готов согласиться.
+	text [Ты] Хочу уже наконец покончить с этим.
+	setimg s/sarahpain.png 30 25
+	setimg s/sarahdubious.png ~
+	delay 10
+	setimg m/mikesad.png 156 0
+	setimg s/sarahsideconcerned.png 30 25
+	setimg m/mikeregret2.png ~
+	setimg s/sarahpain.png ~
+	setvar lie + 1
+	setvar liecount + 7
+fi
+
+text [Майк] Очень сомневаюсь, что это хорошая идея.
+text [Сара] Конечно нет.
+text [Сара] Но я действительно в растерянности.
+setimg m/mikeregret2.png 156 0
+setimg s/sarahconcerned.png 30 25
+setimg m/mikesad.png ~
+setimg s/sarahsideconcerned.png ~
+text ...
+setimg m/mikenormalsad.png 156 0
+setimg s/sarahexasperated.png 30 25
+setimg m/mikeregret2.png ~
+setimg s/sarahconcerned.png ~
+text [Майк] И всё же мы должны решить.
+text [Сара] *вздох*
+setimg s/sarahsidedubious2.png 30 25
+setimg s/sarahexasperated.png ~
+text [Сара] Хорошо.
+setimg s/sarahsidedubious.png 30 25
+setimg s/sarahsidedubious2.png ~
+text [Сара] Если ты настоящий Майк, что предлагаешь сделать с фальшивкой?
+setimg m/mikeshy.png 156 0
+setimg m/mikenormalsad.png ~
+text [Майк] Тяжёлый вопрос.
+setimg m/mikeunsure2.png 156 0
+setimg m/mikeshy.png ~
+text [Майк] М-м, если я настоящий Майк, тогда мне следует Майком и оставаться, верно?
+text [Майк] Другой должен уйти. Уйти навстречу миру и найти собственную индивидуальность. Мир ведь огромен.
+
+;################################## Q17 ####
+
+choice Я согласен | Решим всё в бою
+if selected == 1
+	setimg s/sarahdubious.png 30 25
+	setimg s/sarahsidedubious.png ~
+	text [Ты] Я согласен.
+	text [Ты] Вот только останусь я.
+	setimg s/sarahnormalcross.png 30 25
+	setimg s/sarahdubious.png ~
+	setvar agree + 1
+	setvar agreecount + 9
+fi
+if selected == 2
+	setimg s/sarahcomicshock.png 30 25
+	setimg s/sarahsidedubious.png ~
+	text [Ты] Решим всё классическим путём!
+	setimg m/mikeannoyed2.png 156 0
+	setimg s/sarahconfused.png 30 25
+	setimg m/mikeunsure2.png ~
+	setimg s/sarahcomicshock.png ~
+	text [Ты] С помощью дуэли. Или кулаками.
+	text [Ты] Лучший останется!
+	setimg s/sarahdubious.png 30 25
+	setimg s/sarahconfused.png ~
+	text [Сара] Я надеюсь, ты несерьёзно.
+	setimg s/sarahnormalcross.png 30 25
+	setimg s/sarahdubious.png ~
+	setvar disagree + 1
+	setvar disagreecount + 9
+fi
+
+text [Сара] Ты настоящий Майк?
+setimg m/mikeunsure3.png 156 0
+setimg s/sarahdubious.png 30 25
+if selected == 1
+	setimg m/mikeunsure2.png ~
+fi
+if selected == 2
+	setimg m/mikeannoyed2.png ~
+fi
+setimg s/sarahnormalcross.png ~
+text [Ты] Конечно настоящий!
+setimg m/mikeshy.png 156 0
+setimg s/sarahsidedubious.png 30 25
+setimg m/mikeunsure3.png ~
+setimg s/sarahdubious.png ~
+text [Майк] Снова один из твоих странных вопросов?
+text [Сара] Просто ответь.
+
+;################################## Q18 ####
+
+choice Сказать правду | Солгать
+if selected == 1
+	setimg s/sarahnormalcross.png 30 25
+	setimg s/sarahsidedubious.png ~
+	text [Ты] Да, я настоящий Майк.
+	setimg s/sarahsidedubious.png 30 25
+	setimg s/sarahnormalcross.png ~
+	setvar truth + 1
+	setvar truthcount + 8
+fi
+if selected == 2
+	setimg s/sarahdubious.png 30 25
+	setimg s/sarahsidedubious.png ~
+	text [Ты] Да, я настоящий Майк!
+	setimg s/sarahsidedubious.png 30 25
+	setimg s/sarahdubious.png ~
+	setvar lie + 1
+fi
+
+text [Сара] Что насчёт тебя? Настоящий ли ты Майк?
+setimg m/mikeunsure2.png 156 0
+setimg m/mikeshy.png ~
+text [Майк] Да.
+setimg s/sarahsidedubious2.png 30 25
+setimg s/sarahsidedubious.png ~
+text [Сара] Докажи тогда. Убеди меня.
+setimg m/mikeshy.png 156 0
+setimg s/sarahsidedubious.png 30 25
+setimg m/mikeunsure2.png ~
+setimg s/sarahsidedubious2.png ~
+text [Майк] Эм... Хорошо... Немного неловко...
+setimg m/mikeunsure2.png 156 0
+setimg s/sarahsidenormalcross.png 30 25
+setimg m/mikeshy.png ~
+setimg s/sarahsidedubious.png ~
+text [Майк] Но я Майк Дженсен. Сердцем и сознанием. Это единственное, что я знаю, честно. Понятия не имею, что ещё сказать.
+text [Сара] ...
+setimg m/mikeunsure3.png 156 0
+setimg s/sarahnormalcross.png 30 25
+setimg m/mikeunsure2.png ~
+setimg s/sarahsidenormalcross.png ~
+
+;################################## Q19 ####
+
+choice Нет, я не могу убедить тебя | Да, мы оба сделали что могли
+if selected == 1
+	text [Ты] Я не могу убедить тебя.
+	text [Ты] Это просто невозможно. Ты и сама так сказала.
+	text [Ты] Всё, что я знаю, - я Майк и никто другой.
+	setvar disagree + 1
+	setvar disagreecount + 10
+fi
+if selected == 2
+	setimg s/sarahdubious.png 30 25
+	setimg s/sarahnormalcross.png ~
+	text @[Ты] Как он и сказал,
+	text мы ответили на твои вопросы. Это пока всё, что мы можем сделать.
+	text [Ты] Но ты должна верить мне: я настоящий Майк.
+	setvar agree + 1
+	setvar agreecount + 10
+fi
+
+setimg s/sarahdubious2.png 30 25
+if selected == 1
+	setimg s/sarahnormalcross.png ~
+fi
+if selected == 2
+	setimg s/sarahdubious.png ~
+fi
+text [Сара] Что будешь делать, если я скажу, что фальшивка - ты?
+
+;################################## Q20 ####
+
+choice Сказать правду | Солгать
+if selected == 1
+	setimg s/sarahnormalcross.png 30 25
+	setimg s/sarahdubious2.png ~
+	text [Ты] Я не знаю.
+	text [Ты] Я не могу уйти. Я не хочу!
+	setvar truth + 1
+	setvar truthcount + 10
+fi
+if selected == 2
+	setimg s/sarahdubious.png 30 25
+	setimg s/sarahdubious2.png ~
+	text [Ты] Я приму это как мужчина и уйду сам.
+	setvar lie + 1
+	setvar liecount + 10
+fi
+
+text [Сара] ...
+setimg s/sarahangrythinking.png 30 25
+if selected == 1
+	setimg s/sarahnormalcross.png ~
+fi
+if selected == 2
+	setimg s/sarahdubious.png ~
+fi
+text [Сара] Хорошо. Думаю, мне нужно задать один последний вопрос.
+setimg s/sarahnormalcross.png 30 25
+setimg s/sarahangrythinking.png ~
+
+
+if truth >= 6
+	if agree >= 6
+		jump deadend.scr
+	fi
+	if disagree >= 6
+		jump truend.scr
+	fi
+fi
+if lie >= 6
+	if agree >= 6
+		jump badend.scr
+	fi
+	if disagree >= 6
+		jump bonusend.scr
+	fi
+fi
+jump deadend.scr
+
+goto start

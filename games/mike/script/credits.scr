@@ -1,0 +1,11 @@
+bgload black.png
+text История и арт: ameliori
+text Корректура: ColaCat
+text Дизайн UI: ameliori, Marionette
+text Музыка: Kevin Mcleod, Freesound.org
+text Отдельное спасибо: Morhighan, Lesleigh63, форумчанам Lemmasoft
+text Перевод на русский: Hisame<br>Редактура: DOOMer<br>Тех. часть: nobodycares
+text Who is Mike<br>a Renpy Game<br>All Rights Reserved 2015							 
+text <h2>Спасибо за игру!</h2>
+music ~
+jump main.scr

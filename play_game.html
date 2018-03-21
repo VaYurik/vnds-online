@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+	<head>
+		<title>VNDS-online</title>
+		<meta charset="utf-8">
+		<meta name="author" content="VaYurik [aka DOOMer]">
+		<meta name="description" content="Интерпретатор VNDS">
+		<link id="favicon" rel="icon" href="images/vnds.png">
+		<script src="js/jquery-3.2.1.min.js"></script>
+		<script src="js/functions.js"></script>
+		<script src="js/vnds.class.js"></script>
+
+	<!--[if lt IE 9]>
+		<script src="js/ie_html5_support.js"></script>
+	<![endif]-->
+
+		<link rel="stylesheet" href="css/styles.css">
+	</head>
+
+	<body>
+		<noscript>
+			<p>Включите JavaScript!</p>
+		</noscript>
+		<audio id="music" preload="auto"></audio>
+		<audio id="sound" preload="auto"></audio>
+		<section id="main_screen">
+			<h2>Выберите игру</h2>
+			<section id="main_menu"></section>
+		</section>
+		<section id="game_screen" class="centered">
+			<div id="overlay"></div>
+			<div id="background"></div>
+			<section id="sprites"></section>
+			<section id="game_menu" class="centered">
+				<button id="game_menu_start">Начать</button>
+				<button id="game_menu_cont">Продолжить</button>
+				<button id="game_menu_save">Сохранить</button>
+				<button id="game_menu_load">Загрузить</button>
+				<button id="game_menu_config">Настройки</button>
+				<button id="game_menu_exit">Выйти из игры</button>
+			</section>
+			<section id="choice_menu" class="centered"></section>
+			<section id="config_menu" class="centered">
+				<h2>Настройки</h2>
+				<label for="config_menu_text_size">Размер шрифта</label>
+				<input type="range" min="0" max="2" step="1" value="0" id="config_menu_text_size">
+				<label for="config_menu_text_speed">Скорость вывода текста</label>
+				<input type="range" min="0" max="20" step="1" value="5" id="config_menu_text_speed">
+				<label for="config_menu_auto_text_pause">Пауза при авточтении</label>
+				<input type="range" min="0" max="20" step="1" value="12" id="config_menu_auto_text_pause">
+				<label for="config_menu_sound_volume">Громкость звука</label>
+				<input type="range" min="0" max="9" step="1" value="5" id="config_menu_sound_volume">
+				<fieldset>
+					<div>
+						<input type="radio" name="log" value="0" id="config_menu_log_0" checked>
+						<label for="config_menu_log_0">консоль отключена</label>
+					</div>
+					<div>
+						<input type="radio" name="log" value="1" id="config_menu_log_1">
+						<label for="config_menu_log_1">команды VNDS</label>
+					</div>
+					<div>
+						<input type="radio" name="log" value="2" id="config_menu_log_2">
+						<label for="config_menu_log_2">все команды</label>
+					</div>
+				</fieldset>
+				<button id="config_menu_exit">Закрыть</button>
+			</section>
+			<section id="save_load_menu">
+				<div id="save_load_menu_left"></div>
+				<div id="save_load_menu_right"></div>
+			</section>
+			<section id="message_box">
+				<div id="message_box_menu">
+					<a href="#" id="message_box_menu_load">Загрузить</a>
+					<a href="#" id="message_box_menu_save">Сохранить</a>
+					<a href="#" id="message_box_menu_skip">Пропуск</a>
+					<a href="#" id="message_box_menu_auto">Авто</a>
+					<a href="#" id="message_box_menu_sound">Звук</a>
+					<a href="#" id="message_box_menu_menu">Меню</a>
+					<a href="#" id="message_box_menu_help">?</a>
+					<a href="#" id="message_box_menu_hide">X</a>
+				</div>
+				<div id="message_box_name"></div>
+				<div id="message_box_text"></div>
+				<a href="#" id="message_box_next">&#8680;</a>
+			</section>
+		</section>
+		<section id="info">
+			<ul>
+				<li>Игра: <span id="info_game_name"></span></li>
+				<li>Разрешение: <span id="info_game_resolution"></span></li>
+				<li>Скрипт: <span id="info_script_name"></span></li>
+				<li>Строка: <span id="info_script_line_num"></span></li>
+				<li>Фон: <span id="info_background"></span></li>
+				<li>Спрайт: <span id="info_sprites"></span></li>
+				<li>Музыка: <span id="info_music"></span></li>
+				<li>Звук: <span id="info_sound"></span></li>
+			</ul>
+			<div id="info_show">Инфо</div>
+		</section>
+		<section id="thanks">
+			<iframe frameborder="0" allowtransparency="true" scrolling="no" src="https://money.yandex.ru/embed/donate.xml?account=41001543226857&quickpay=donate&payment-type-choice=on&mobile-payment-type-choice=on&default-sum=200&targets=%D0%9D%D0%B0+%D1%80%D0%B0%D0%B7%D0%B2%D0%B8%D1%82%D0%B8%D0%B5+%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B0+%D0%B8+%D0%BD%D0%B0+%D0%BF%D0%B5%D1%87%D0%B5%D0%BD%D1%8C%D0%BA%D0%B8&project-name=%D0%9F%D0%B5%D1%80%D0%B5%D0%B2%D0%BE%D0%B4%D1%8B+%D0%B8+%D0%BD%D0%B5+%D1%82%D0%BE%D0%BB%D1%8C%D0%BA%D0%BE&project-site=http%3A%2F%2Fvayurik.ru&button-text=05&successURL=" width="508" height="93"></iframe>
+			<div id="thanks_show">Спасибо!</div>
+		</section>
+		<section id="version"><a href="versions.txt" target="_blank">Версия 1.00</a></section>
+		<section id="copy"><a href="https://vk.com/vayurik" target="_blank">&copy; VaYurik</a></section>
+		<section id="modal_screen">
+			<div id="modal_box" class="centered">
+				<div id="modal_box_text"></div>
+				<button id="modal_box_next">OK</button>
+			</div>
+		</section>
+		<section id="promo"><a href="#" target="_blank"></a></section>
+		<section id="cache"></section>
+	</body>
+</html>

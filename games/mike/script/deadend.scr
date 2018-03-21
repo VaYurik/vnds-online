@@ -1,0 +1,619 @@
+;#You are mike. Sarah says you're the clone.
+
+music ~
+bgload room/01.jpg
+setimg m/mikeregret.png 156 0
+setimg s/sarahconcerned.png 30 25
+text Сара поворачивается ко мне.
+text [Сара] Майк.
+text [Ты] Да?
+text [Сара] Какое сегодня число?
+text [Ты] Эм-м... 15 июня?
+setimg s/sarahpain.png 30 25
+setimg s/sarahconcerned.png ~
+text [Сара] Вообще-то уже 16 июня.
+setimg s/sarahconcerned.png 30 25
+setimg s/sarahpain.png ~
+text [Сара] Это значит, что что бы ни было причиной всего этого, произошло вчера ночью.
+text [Сара] Не припоминаешь ничего?
+setimg m/mikeregret2.png 156 0
+setimg m/mikeregret.png ~
+text [Ты] Не особо.
+text [Сара] Совсем ничего?
+setimg m/mikeregret.png 156 0
+setimg m/mikeregret2.png ~
+text [Ты] Извини, я пытаюсь! Но последнее, что я могу вспомнить, так это чувство усталости...
+text [Ты] И как заснул перед телевизором.
+setimg m/mikeregret2.png 156 0
+setimg s/sarahexasperated.png 30 25
+setimg m/mikeregret.png ~
+setimg s/sarahconcerned.png ~
+text [Сара] ...
+setimg s/sarahsideconcerned.png 30 25
+setimg s/sarahexasperated.png ~
+text [Майк] ...
+setimg m/mikeregret.png 156 0
+setimg s/sarahangrythinking.png 30 25
+setimg m/mikeregret2.png ~
+setimg s/sarahsideconcerned.png ~
+sound fakesarah.ogg
+text [Сара] Этот промежуток времени крайне важен.
+text [Сара] Недостающий фрагмент загадки.
+setimg s/sarahsideangry.png 30 25
+setimg s/sarahangrythinking.png ~
+text [Сара] Или в тот момент ты начал существовать, или ты нам что-то не договариваешь.
+setimg s/sarahconcerned.png 30 25
+setimg s/sarahsideangry.png ~
+text [Ты] ...!
+text [Ты] "Начал существовать?"
+setimg s/sarahexasperated.png 30 25
+setimg s/sarahconcerned.png ~
+text [Ты] Мне просто кажется, или я сейчас здесь белая ворона?
+setimg m/mikesad.png 156 0
+setimg s/sarahsideconcerned.png 30 25
+setimg m/mikeregret.png ~
+setimg s/sarahexasperated.png ~
+text [Сара] ...
+text [Майк] ...
+setimg m/mikeverysad.png 156 0
+setimg s/sarahsidepain.png 30 25
+setimg m/mikesad.png ~
+setimg s/sarahsideconcerned.png ~
+text [Майк] Мы лишь пытаемся помочь.
+setimg m/mikeregret.png 156 0
+setimg s/sarahouch.png 30 25
+setimg m/mikeverysad.png ~
+setimg s/sarahsidepain.png ~
+text [Майк] Ты наверняка тоже жертва.
+setimg s/sarahpain.png 30 25
+setimg s/sarahouch.png ~
+text [Ты] Это ещё что?!
+setimg m/mikeregret2.png 156 0
+setimg m/mikeregret.png ~
+text [Ты] Так, значит, вы оба сошлись, что я фальшивка?!
+text [Ты] Когда это было решено?!
+text [Сара] Ты появился из ниоткуда, Майк.
+setimg s/sarahouch.png 30 25
+setimg s/sarahpain.png ~
+text [Сара] Незнакомец, вломившийся в дом.
+text [Сара] Ко всему прочему, ты не помнишь вчерашних событий.
+setimg m/mikeverysad.png 156 0
+setimg m/mikeregret2.png ~
+text [Сара] Всё это лишено смысла.
+setimg s/sarahpain.png 30 25
+setimg s/sarahouch.png ~
+text [Сара] Ты не имеешь смысла.
+text В груди потяжелело от слов Сары.
+text Этого не может быть!
+text Всё обернулось против меня.
+text Даже Сара!
+setimg m/mikeregret.png 156 0
+setimg s/sarahexasperated.png 30 25
+setimg m/mikeverysad.png ~
+setimg s/sarahpain.png ~
+text [Ты] Что ты хочешь, чтобы я сказал?
+text [Ты] Я уже рассказал обо всём.
+setimg s/sarahhmp.png 30 25
+setimg s/sarahexasperated.png ~
+text [Ты] Вчера я пошёл на работу, пришёл домой, заснул перед телевизором...
+text [Ты] И вот проснулся!
+text [Ты] Я ведь уже говорил об этом!
+setimg m/mikeregret2.png 156 0
+setimg s/sarahohplease2.png 30 25
+setimg m/mikeregret.png ~
+setimg s/sarahhmp.png ~
+text [Сара] Что ж, как ты попал сюда?
+text [Сара] Пешком? На автобусе? Или тебя подвёз радужный пони?
+text [Сара] Факты, Майк. Мне нужны факты!
+setimg m/mikecringe.png 156 0
+setimg s/sarahohplease.png 30 25
+setimg m/mikeregret2.png ~
+setimg s/sarahohplease2.png ~
+text [Майк] Ребята, спокойствие.
+text [Майк] Видеть, как вы препираетесь... как-то дико.
+setimg m/mikeshy.png 156 0
+setimg s/sarahgoofypain.png 30 25
+setimg m/mikecringe.png ~
+setimg s/sarahohplease.png ~
+text [Сара] ...
+setimg s/sarahconcerned.png 30 25
+setimg s/sarahgoofypain.png ~
+text [Ты] Я правда не могу вспомнить, окей?
+text [Ты] Если бы мог, нет у меня причин скрывать это!
+text [Ты] Я говорил только правду всё это время!
+setimg m/mikesideglance.png 156 0
+setimg s/sarahangry.png 30 25
+setimg m/mikeshy.png ~
+setimg s/sarahconcerned.png ~
+text [Майк] Может, у него частичная амнезия?
+setimg m/mikesad.png 156 0
+setimg s/sarahdetermined.png 30 25
+setimg m/mikesideglance.png ~
+setimg s/sarahangry.png ~
+text [Сара] Это не причина. Лишь оправдание.
+setimg m/mikeregret.png 156 0
+setimg m/mikesad.png ~
+text [Ты] Я знаю, что я Майк. Прошу, поверь мне!
+setimg s/sarahannoyed.png 30 25
+setimg s/sarahdetermined.png ~
+text [Сара] Что если ты клон, и даже не подозреваешь об этом?
+text [Ты] Ч-чего?
+text [Ты] Клон?
+text ...
+text [Ты] Я-
+text [Сара] Ты бы даже и не знал.
+text ...
+text Клон?..
+text Возможно ли это?
+text И сейчас мои иллюзии разрушили?
+text Может, моё желание быть "Майком" сфабриковало мои воспоминания и привело меня сюда?
+setimg s/sarahgoofypain.png 30 25
+setimg s/sarahannoyed.png ~
+text Может, моё сознание заперло воспоминания последних часов, потому что я не хочу знать правду?
+text Я подавлен. В голове пульсирует.
+setimg m/mikeregret2.png 156 0
+setimg s/sarahpain.png 30 25
+setimg m/mikeregret.png ~
+setimg s/sarahgoofypain.png ~
+text Я поворачиваюсь к Саре.
+text В её глазах я не нахожу надежды, что мне так нужна.
+setimg m/mikenormalsad2.png 156 0
+setimg m/mikeregret2.png ~
+text [Ты] Сара... Пожалуйста!
+setimg s/sarahsideangry.png 30 25
+setimg s/sarahpain.png ~
+text [Сара] ...
+setimg m/mikeverysad.png 156 0
+setimg s/sarahsidepain.png 30 25
+setimg m/mikenormalsad2.png ~
+setimg s/sarahsideangry.png ~
+text [Сара] М-мне жаль!
+setimg s/sarahouch.png 30 25
+setimg s/sarahsidepain.png ~
+text [Сара] Просто...
+setimg s/sarahpain.png 30 25
+setimg s/sarahouch.png ~
+text Ошарашенный, я просто стою. Я совсем как утопающий, у которого отняли спасательный трос.
+text Я смотрю на Сару и Майка, но они только отводят глаза.
+text Никогда я не чувствовал себя таким одиноким.
+text Страх хлынул по моим венам. Затем он сменяется горьким чувством, что меня предали, и гневом.
+text Как Сара могла оставить меня в беде? Она нужна мне как никогда!
+text Но она и слушать не будет, если это не вяжется с её "теориями"!
+text Насколько она может быть права?
+text Это вопрос выбора и точки зрения.
+text И правда ясна так же, как проста.
+text Она просто решила не верить...
+text Мне.
+text Мои челюсти сжимаются.
+text [Ты] Я думал, что могу положиться на тебя, Сара. Я думал, ты не подведёшь меня.
+text [Сара] Не говори так! Ты не знаешь, как тяжело мне-!
+text [Ты] О да, а мне ужасно весело!
+text [Сара] ...
+setimg s/sarahohplease2.png 30 25
+setimg s/sarahpain.png ~
+text [Сара] Прекрати делать из меня злодейку, Майк! Я сделала то, о чём вы меня просили.
+text [Ты] Нет. Не сделала!
+setimg s/sarahpain.png 30 25
+setimg s/sarahohplease2.png ~
+text [Ты] Ты лишь сделала поспешные выводы и отказалась слушать мои аргументы.
+text [Ты] Сама сказала, что ночи тривиальных вопросов недостаточно.
+text [Ты] Но затем ты меняешь своё мнение и вот так запросто обвиняешь меня в каком-то сокрытии.
+text [Сара] ...
+text [Сара] Т-так нечестно-
+text [Ты] Нечестно? Нечестно? Да кто бы говорил!
+setimg s/sarahsidepain.png 30 25
+setimg s/sarahpain.png ~
+text [Майк] Майк.
+text [Майк] Прекрати.
+setimg m/mikenormalsad2.png 156 0
+setimg m/mikeverysad.png ~
+text [Майк] Ты делаешь ей больно.
+text [Ты] ...
+setimg s/sarahouch.png 30 25
+setimg s/sarahsidepain.png ~
+text [Майк] Я знаю, всё это очень нелегко, но тебе надо остыть.
+setimg m/mikeverysad.png 156 0
+setimg m/mikenormalsad2.png ~
+text [Ты] ...
+setimg s/sarahpain.png 30 25
+setimg s/sarahouch.png ~
+text [Сара] ...
+setimg m/mikenormalsad2.png 156 0
+setimg s/sarahouch.png 30 25
+setimg m/mikeverysad.png ~
+setimg s/sarahpain.png ~
+text [Майк] Мы тебе поможем, хорошо? При нынешнем стечении обстоятельств...
+text [Майк] Эмоции зашкаливают.
+setimg m/mikeregret.png 156 0
+setimg m/mikenormalsad2.png ~
+text [Майк] Нам всем надо сделать передышку.
+text [Майк] Почему бы тебе не зайти завтра снова, и мы всё обдумаем?
+setimg m/mikescared.png 156 0
+setimg s/sarahsideangry.png 30 25
+setimg m/mikeregret.png ~
+setimg s/sarahouch.png ~
+music ~
+text [Ты] Что?!
+setimg s/sarahsideconcerned.png 30 25
+setimg s/sarahsideangry.png ~
+text [Ты] Выпроваживаешь меня?!
+text [Майк] Нет- Ну...
+text [Майк] Если хочешь, я уйду тоже!
+text [Ты] Заткнись. Ты просто снова пытаешься избавиться от меня!
+setimg m/mikeworried.png 156 0
+setimg s/sarahsideangry.png 30 25
+setimg m/mikescared.png ~
+setimg s/sarahsideconcerned.png ~
+text [Майк] Я-я совсем не думал об этом... Просто...
+text [Майк] Я не...
+
+choice Успокоиться | Наброситься
+if selected == 1
+	text Это тяжело, но мне удаётся подавить эмоции и заполучить над ними контроль.
+	text Моё лицо горит.
+	text В голове пульсирует, в глазах кружится.
+	text Но пара глубоких вдохов, и я успокаиваюсь.
+	text Я смотрю на "Майка" и Сару.
+	text В доме стоит ощутимо напряжённая атмосфера.
+	text Тревога проела себе путь в моё сердце.
+	text Она пробуждает во мне самое худшее.
+	text Я не могу остаться.
+	sound fail.ogg
+	setimg m/mikescared.png 156 0
+	setimg m/mikeworried.png ~
+	text [Ты] ...
+	setimg m/mikesad.png 156 0
+	setimg m/mikescared.png ~
+	text [Ты] ...Х-хорошо. Я понял.
+	text [Ты] Я уйду.
+	setimg s/sarahsidepain.png 30 25
+	setimg s/sarahsideangry.png ~
+	text На лице Сары дёрнулась жилка; на нём видна тень беспокойства.
+	setimg m/mikeregret2.png 156 0
+	setimg s/sarahpain.png 30 25
+	setimg m/mikesad.png ~
+	setimg s/sarahsidepain.png ~
+	text [Сара] Ты...
+	text [Сара] Ты в самом деле не обязан.
+	setimg s/sarahsidepain.png 30 25
+	setimg s/sarahpain.png ~
+	text Забота, да. Но в её глазах я также вижу холод, что разбивает мне сердце.
+	text Пустая милость - это всё, что она может дать человеку с лицом её парня.
+	text Такое... слабое чувство, которое возникает, когда из утренней газеты узнаёшь об ужасной аварии.
+	text Я не могу больше выносить этот её взгляд, обращённый на меня.
+	text Я качаю головой.
+	setimg m/mikeregret.png 156 0
+	setimg s/sarahouch.png 30 25
+	setimg m/mikeregret2.png ~
+	setimg s/sarahsidepain.png ~
+	text [Ты] Нет. Я уйду.
+	setimg s/sarahpain.png 30 25
+	setimg s/sarahouch.png ~
+	text [Ты] В нескольких минутах езды есть мотель с моим именем.
+	text [Ты] Только одолжите мне денег, и я готов идти.
+	setimg s/sarahsidepain.png 30 25
+	setimg s/sarahpain.png ~
+	text Я выдавливаю из себя смешок, чтобы скрыть сожаление в своём голосе.
+	text Лучше бы я не говорил этого.
+	text Пусть Сара настоит... Прошу.
+	text Лишь ещё раз. Пусть скажет, что я могу остаться, ещё один раз.
+	text ...Но она молчит.
+	text А может оно и к лучшему.
+	setimg s/sarahouch.png 30 25
+	setimg s/sarahsidepain.png ~
+	text [Ты] Так лучше для всех нас.
+	text Я вздыхаю.
+	text [Майк] ...
+	setimg s/sarahgoofypain.png 30 25
+	setimg s/sarahouch.png ~
+	text [Сара] ...
+	setimg m/mikenormalsad2.png 156 0
+	setimg s/sarahconcerned.png 30 25
+	setimg m/mikeregret.png ~
+	setimg s/sarahgoofypain.png ~
+	text [Майк] С-слушай, если это что-то изменит, я уйду тоже.
+	setimg m/mikenormalsad.png 156 0
+	setimg s/sarahouch.png 30 25
+	setimg m/mikenormalsad2.png ~
+	setimg s/sarahconcerned.png ~
+	text [Майк] Так ведь будет справедливее?
+	text Я одаряю его грустной улыбкой.
+	setimg m/mikenormalsad2.png 156 0
+	setimg m/mikenormalsad.png ~
+	text [Ты] Я бы не оставил Сару одну после произошедшего, и тебе не следует.
+	setimg m/mikeregret2.png 156 0
+	setimg s/sarahpain.png 30 25
+	setimg m/mikenormalsad2.png ~
+	setimg s/sarahouch.png ~
+	text [Ты] Просто присмотри за ней сегодня, ладно?
+	setimg m/mikesad.png 156 0
+	setimg s/sarahgoofypain.png 30 25
+	setimg m/mikeregret2.png ~
+	setimg s/sarahpain.png ~
+	text [Майк] Л-ладно.
+	text [Ты] ...
+	text [Майк] Эй.
+	text [Майк] Постарайся отдохнуть. Завтра всё станет лучше.
+	text [Ты] Спасибо.
+
+;#Cut#
+
+	bgload black.png 30
+	text Мне нужно время подумать. Собраться с мыслями и проанализировать сложившуюся ситуацию.
+	text Возможно, они правы.
+	text Те несколько часов жизни, что выпали из моей памяти, могут быть ключом к разгадке.
+	text Завтра и выясню.
+	text Проходя мимо окна магазина, я замечаю своё отражение.
+	bgload cg/mirror.jpg 20
+	text Что за?..
+	text Мне кажется, или я выгляжу сильно осунувшимся?
+	bgload black.png
+	delay 10
+	bgload red.png
+	delay 1
+	bgload cg/mirror.jpg 20
+	sound heartbeat.ogg
+	text Как только эта мысль приходит на ум, моё сердце пронзает острая боль.
+	text Моя грудь беспорядочно вздымается, голова кружится.
+	sound thump2.ogg
+	bgload black.png
+	delay 10
+	bgload red.png
+	delay 1
+	bgload black.png
+	text Мои ноги подкашиваются от боли.
+	sound heartbeat.ogg
+	text Что?
+	sound dripcrack.ogg
+	bgload black.png
+	delay 10
+	bgload red.png
+	delay 1
+	bgload cg/mirror.jpg 20
+	text Из носа течёт кровь.
+	text [Ты] Чт-
+	text Со мной...
+	text Что-то происходит...
+	sound heartbeat.ogg
+	bgload black.png
+	delay 10
+	bgload red.png
+	delay 1
+	bgload cg/mirror.jpg 20
+	text Я должен вернуться! Не надо было мне уходить!
+	text [Ты] С-Сара!..
+	text Но в глазах всё плывёт, и я сбиваюсь с ног.
+	text Сара.
+	sound heartbeat.ogg
+	text Мне нужна чья-нибудь помощь.
+	text [Ты] П-помоги мне... Сара...
+	text Сара...
+	text Её имя снова и снова всплывает в моём сознании.
+	text Не знаю почему. Как если бы я хотел отчаянно зацепиться за него.
+	sound heartbeat.ogg
+	text Я осматриваюсь.
+	text ...?
+	text Где я?
+	text Почему... Почему я не могу вспомнить, как оказался здесь?
+	bgload black.png
+	delay 10
+	bgload white.png
+	delay 1
+	bgload cg/mirror.jpg 20
+	text [Ты] Гха...
+	sound heartbeat.ogg
+	text Моя... грудь.
+	text Так болит.
+	text Тяжело... дышать...
+	text Сара...
+	text Сара...
+	text К т о ? . .
+	sound heartbeat.ogg
+	bgload black.png
+	delay 10
+	bgload red.png 30
+	delay 30
+	bgload black.png 30
+	music ~
+	text Концовка 5 - Невиновный
+fi
+if selected == 2
+	text Страх и отчаяние оборачиваются обжигающей яростью.
+	text Да как он смеет предлагать мне уйти?!
+	text Этот ублюдок, отнимающий всё, что принадлежит мне!
+	setimg s/sarahdetermined.png 30 25
+	setimg s/sarahsideangry.png ~
+	text [Ты] Наглости тебе не занимать!
+	setimg s/sarahholyshit.png 30 25
+	setimg s/sarahdetermined.png ~
+	text [Сара] Майк!
+	sound hit.ogg
+	bgload black.png
+	delay 10
+	bgload white.png
+	delay 1
+	bgload black.png
+	text Я бью самозванца по лицу и валю его на пол.
+	sound thump2.ogg
+	bgload white.png
+	delay 1
+	bgload black.png
+	text Колочу его что есть мочи.
+	sound hit.ogg
+	bgload white.png
+	delay 1
+	bgload black.png
+	sound punch1.ogg
+	bgload white.png
+	delay 1
+	bgload black.png
+	sound punch2.ogg
+	bgload red.png
+	delay 1
+	bgload black.png
+	sound punch1.ogg
+	bgload red.png
+	delay 1
+	bgload black.png
+	sound punch2.ogg
+	bgload red.png
+	delay 1
+	bgload black.png
+	text Гневные предупреждающие крики Сары гаснут где-то на фоне.
+	sound thump2.ogg
+	bgload red.png
+	delay 1
+	bgload black.png
+	sound hit.ogg
+	bgload red.png
+	delay 1
+	bgload black.png
+	sound punch1.ogg
+	bgload red.png
+	delay 1
+	bgload black.png
+	text Всё кажется таким далёким.
+	sound punch1.ogg
+	bgload red.png
+	delay 1
+	bgload black.png
+	sound punch2.ogg
+	bgload red.png
+	delay 1
+	bgload black.png
+	sound hit.ogg
+	text Даже когда мой кулак встречается с его плотью, я чувствую себя странно отстранённым.
+	sound punch2.ogg
+	text Беспечно.
+	sound thump2.ogg
+	bgload red.png
+	delay 1
+	bgload black.png
+	sound punch1.ogg
+	bgload red.png
+	delay 1
+	bgload black.png
+	sound punch2.ogg
+	text Будто я просто призрак, со стороны наблюдающий за происходящим.
+	sound kick.ogg
+	bgload red.png
+	delay 1
+	bgload black.png
+	sound punch1.ogg
+	bgload red.png
+	delay 1
+	bgload black.png
+	sound kick.ogg
+	text Я даже не замечаю, как руки Сары пытаются меня остановить.
+	sound punch1.ogg
+	bgload red.png
+	delay 1
+	bgload black.png
+	sound punch2.ogg
+	text Я просто продолжаю избивать его, словно бешеное животное.
+	sound thump2.ogg
+	bgload red.png
+	delay 1
+	bgload black.png
+	text Ощущение, что я под чьим-то контролем.
+	text Я наслаждаюсь этим.
+	text Я позволяю это.
+	sound hit.ogg
+	bgload red.png
+	delay 1
+	bgload black.png
+	text Но его нижняя губа надвое разделена отвратительной раной.
+	sound dripcrack.ogg
+	text Тёплая кровь окрашивает мой кулак красным.
+	text Шокированный, я останавливаюсь.
+	text Ч-что я творю?
+	text Что я...
+	sound double.ogg
+	bgload cg/choke.jpg
+	text Но, когда я опускаю взгляд на него, его рот кривится в насмешливой улыбке.
+	text Его глаза светятся зловещим красным оттенком.
+	text [Майк] Ты ещё не начал сомневаться в себе, Майк?
+	text [Майк] Я бы не удивился.
+	text [Майк] Ты всегда был немного... мягок.
+	text [Майк] Как и твои удары.
+	text С его уст слетает хриплый смешок.
+	sound grip.ogg
+	bgload red.png
+	delay 1
+	bgload cg/choke.jpg
+	text Я свожу пальцы на его шее и крепко сжимаю его горло.
+	text [Ты] Мразь! Заткнись, или я убью тебя!
+	text Его голос был сухим и прерывистым, словно последние искры угасающего фейерверка.
+	text [Майк] Хм-м... Ты бы хотел этого, не так ли?
+	text [Майк] Не... нх... фантазировал... об этом?
+	text [Майк] Каково... это - убивать?
+	text [Майк] Обладать этой властью?
+	text [Майк] Ты сейчас на верном пути, поздравляю.
+	text [Ты] Заткни пасть!
+	text [Майк] Возбуждён ли... ты сейчас?
+	text [Майк] Твоему дружочку...нравится?
+	text [Ты] ПОШЁЛ! НА ХРЕН!
+	text Прежде чем успеваю осознать, мои руки хватают биту и замахиваются, чтобы со всей силы долбануть по его- своему лицу.
+	text [Ты] Я уб-
+	bgload cg/choke2.jpg
+	text [Майк] Сара! П-помоги мне! Агх!
+	text [Сара] Майк!
+	text Выражение его лица в мгновение ока сменяется со злобного на беспомощное.
+	sound gunshot.ogg
+	music ~
+	bgload red.png
+	delay 1
+	bgload black.png
+	text Меня разрывает дикая боль, как только пуля пронзает моё тело.
+	bgload red.png
+	sound dripcrack.ogg
+	delay 1
+	bgload black.png
+	sound batdrop.ogg
+	text Я оглядываюсь и вижу Сару...
+	bgload cg/sarahcries.jpg
+	text Мою прекрасную Сару.
+	text И у неё... пистолет в руках. Я должен был знать.
+	text В её глазах стоят слёзы.
+	text [Ты] Сара...
+	text [Ты] Это не твоя... вина...
+	text Я хотел сказать, что совсем не имел в виду те ужасные вещи, сказанные мною.
+	bgload red.png
+	sound dripcrack.ogg
+	delay 1
+	bgload cg/sarahcries.jpg 30
+	text Но, как только я открываю рот, тёплая кровь перекрывает дыхательные пути.
+	bgload black.png 30
+	text Утопаю...
+	text Ощущение...
+	text ...что я тону...
+	bgload cg/sarahcriesblur.jpg 30
+	text [Сара] ...М-Майк?..
+	text [Ты] Убегай...
+	text [Ты] Сара...
+	bgload black.png 30
+	sound thump2.ogg
+	text Я отчаянно борюсь за глоток воздуха, но лишь всё больше утопаю в боли.
+	text Нет!..
+	text Так не...
+	text Я борюсь... изо всех сил.
+	bgload cg/sarahcriesblur.jpg 30
+	delay 30
+	bgload black.png 30
+	text Смотрю на Сару, пока ещё могу.
+	text И меня поражает непреодолимое чувство одиночества.
+	text И вот я у самого порога конца, но думаю не о нём...
+	text Лишь о боли... и о том, как её остановить.
+	text ...
+	text Но, ах... Всё исчезает...
+	text И я лишь приветствую это.
+	text Мне . . .  хорошо.
+	bgload black.png
+	delay 10
+	bgload red.png 30
+	delay 30
+	bgload black.png 30
+	music ~
+	text Концовка 4 - Падший герой
+fi
+jump main.scr

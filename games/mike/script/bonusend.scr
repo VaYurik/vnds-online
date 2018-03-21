@@ -1,0 +1,279 @@
+;#You are the clone. Sarah says you're Mike. 
+
+music ~
+bgload room/01.jpg
+setimg m/mikeunsure3.png 156 0
+setimg s/sarahsidenormalcross.png 30 25
+text Сара поворачивается к другому Майку.
+text [Сара] Майк.
+setimg m/mikesideerr.png 156 0
+setimg s/sarahexasperated.png 30 25
+setimg m/mikeunsure3.png ~
+setimg s/sarahsidenormalcross.png ~
+text [Майк] Да?
+setimg s/sarahsidepain.png 30 25
+setimg s/sarahexasperated.png ~
+sound doom.ogg
+text [Сара] Ты говорил правду, что покинешь дом, если я посчитаю фальшивкой тебя?
+setimg m/mikesidepanic.png 156 0
+setimg s/sarahexasperated.png 30 25
+setimg m/mikesideerr.png ~
+setimg s/sarahsidepain.png ~
+text [Майк] С-Сара?
+text [Сара] ...
+text [Майк] Нет! Сара! Я настоящий Майк!
+setimg s/sarahsidenormalcross.png 30 25
+setimg s/sarahexasperated.png ~
+text [Сара] ...Я не знаю этого.
+text Я вздыхаю с искренней жалостью.
+setimg m/mikecornered.png 156 0
+setimg s/sarahgoofypain.png 30 25
+setimg m/mikesidepanic.png ~
+setimg s/sarahsidenormalcross.png ~
+text [Ты] ...Мне жаль.
+setimg m/mikesideangry.png 156 0
+setimg m/mikecornered.png ~
+text [Майк] Заткнись!
+setimg m/mikesidepanic.png 156 0
+setimg s/sarahexasperated.png 30 25
+setimg m/mikesideangry.png ~
+setimg s/sarahgoofypain.png ~
+text [Майк] Сара, почему?! Что я сделал не так?
+text [Майк] С-скажи мне!
+setimg m/mikeworried.png 156 0
+setimg s/sarahconcerned.png 30 25
+setimg m/mikesidepanic.png ~
+setimg s/sarahexasperated.png ~
+text [Сара] Ты не сделал ничего неправильного.
+text [Сара] Никто из вас.
+setimg s/sarahsideconcerned.png 30 25
+setimg s/sarahconcerned.png ~
+text [Сара] И поэтому это так тяжело.
+setimg m/mikesidepanic.png 156 0
+setimg s/sarahexasperated.png 30 25
+setimg m/mikeworried.png ~
+setimg s/sarahsideconcerned.png ~
+text [Майк] Т-тогда ты должна верить мне!
+text [Майк] Я настоящий Майк!
+setimg s/sarahconfused2.png 30 25
+setimg s/sarahexasperated.png ~
+text [Сара] Мои инстинкты говорят обратное, и я почти уверена в этом.
+setimg m/mikesideangry.png 156 0
+setimg s/sarahsideconcerned.png 30 25
+setimg m/mikesidepanic.png ~
+setimg s/sarahconfused2.png ~
+text [Майк] В таком случае твои инстинкты ошибаются!
+bgload white.png
+delay 1
+bgload room/01.jpg
+setimg m/mikesideangry.png 156 0
+setimg s/sarahsideconcerned.png 30 25
+text [Майк] Просто выслушай меня.
+text Другой Майк хватает Сару за плечи.
+text Сара морщится.
+
+choice Оттолкнуть его | Спокойно отчитать его
+if selected == 1
+	goto push
+fi
+text Я не собирался вмешиваться.
+text Думал, лучше промолчать из вежливости и ради его задетого эго.
+text Но он делает Саре больно, я должен пресечь это.
+text Его эмоции выходят из-под контроля и только разгораются. Кто знает, что он может предпринять.
+setimg m/mikecornered.png 156 0
+setimg s/sarahpain.png 30 25
+setimg m/mikesideangry.png ~
+setimg s/sarahsideconcerned.png ~
+text [Ты] Майк, прекрати.
+text Звук его имени из моих уст заставляет его поморщиться.
+setimg s/sarahexasperated.png 30 25
+setimg s/sarahpain.png ~
+text [Ты] Ты делаешь ей больно.
+setimg m/mikedefeat.png 156 0
+setimg m/mikecornered.png ~
+text [Майк] ...
+setimg s/sarahpain.png 30 25
+setimg s/sarahexasperated.png ~
+text Повисло напряжённое ожидание.
+text Он медленно освобождает плечи Сары, челюсти его сведены.
+text Я замечаю, как его руки дрожат в тихом гневе.
+
+;#After telling him off like that, more than ever, he was now the villain.
+
+text После моих слов теперь больше, чем когда-либо за этот вечер, он выглядит злодеем.
+text Положение одновременно неприятельское и оскорбительное.
+text Даже хуже, оно словно заявляет об обоснованности сомнений на его счёт.
+text [Ты] Слушай, я знаю, что тебе тоже тяжело.
+text [Ты] Но не вини в этом Сару.
+text [Майк] ...
+setimg s/sarahexasperated.png 30 25
+setimg s/sarahpain.png ~
+text [Ты] Она приняла решение, и мы должны уважать его.
+setimg m/mikeveryangry.png 156 0
+setimg m/mikedefeat.png ~
+text [Майк] Конечно!
+text [Майк] Легко тебе говорить, самодовольный ты ублюдок-
+setimg m/mikecornered.png 156 0
+setimg m/mikeveryangry.png ~
+text [Ты] Тебе надо остыть, приятель-
+setimg m/mikeveryangry.png 156 0
+setimg m/mikecornered.png ~
+sound woosh.ogg
+bgload black.png 30
+text [Сара] Майк!
+text Не успеваем мы опомниться, как другой Майк хватает биту со стола и валит меня на пол.
+bgload white.png
+sound thump2.ogg
+delay 1
+bgload black.png
+text [Майк] Теперь играешь роль моего друга, а, приятель?
+text [Майк] Здорово, наверное, притворяться невинным!
+goto fighty
+
+label push
+setimg m/mikeveryangry.png 156 0
+setimg m/mikesideangry.png ~
+bgload white.png
+sound grip.ogg
+delay 1
+bgload room/01.jpg
+text Я хватаю его за шиворот, оттаскивая подальше от Сары.
+sound thump2.ogg
+text Он слегка пошатнулся. Глаза его горят яростью и обидой.
+text Мы стоим, испепеляя друг друга взглядами, полными ненависти.
+text Я никогда не прощу его за причинённую Саре боль.
+text Его эго задето, ведь Сара назвала его фальшивкой.
+text Что ж, его действия только подтверждают это! В этом и смысл!
+text И, насколько мне известно, чужак не имеет никакого чёртового права и пальцем трогать мою девушку.
+text Я ощетиниваюсь.
+text [Ты] Не смей прикасаться к ней.
+text [Ты] Самозванец.
+text "Другой Майк" скрежещет зубами.
+sound woosh.ogg
+text Он поднимает деревянную биту с пола и бросается на меня.
+bgload white.png
+sound thump2.ogg
+delay 1
+bgload room/01.jpg
+
+label fighty
+text [Майк] Чёртов засранец!
+bgload white.png
+sound punch1.ogg
+delay 1
+bgload room/01.jpg
+text Мы перекатываемся по полу.
+bgload black.png
+sound hit.ogg
+delay 1
+bgload white.png
+sound punch1.ogg
+delay 1
+sound punch2.ogg
+bgload black.png
+delay 1
+bgload red.png
+delay 1
+sound bigcrash2.ogg
+bgload black.png
+sound punch2.ogg
+delay 1
+bgload red.png
+delay 1
+bgload black.png
+text Я чувствую исходящий от него горячий гнев.
+text Сара предпринимает попытки разнять нас, но все они терпят крах.
+text В конце концов он одолевает меня.
+bgload red.png
+delay 1
+sound grip.ogg
+bgload black.png
+text [Ты] Агх!
+text Он прижимает биту к моему горлу.  Я судорожно хватаю ртом воздух.
+bgload cg/angrymike.jpg 30
+text [Сара] О-остановись!
+text Сара пытается оттащить его.
+bgload white.png
+sound grip.ogg
+delay 1
+bgload cg/angrymike.jpg
+text [Ты] Гах!
+text [Майк] Ты пришёл в мой дом, украл мою жизнь, моё лицо...
+text [Майк] Почему бы тебе просто не умереть?!
+bgload red.png
+delay 1
+bgload cg/angrymike.jpg
+text Он откидывает биту в сторону, затем замахивается с намерением ударить по горлу и заткнуть меня навсегда.
+sound gunshot.ogg
+music ~
+bgload white.png
+delay 1
+bgload black.png
+text Раздаётся резкий звук выстрела.
+sound thump2.ogg
+text Тело мужчины безвольно обрушивается.
+bgload cg/sarahcries.jpg 30
+text Сара взяла свой пистолет с собой.
+text И почему я не удивлён?
+sound fall.ogg
+text Мгновение спустя Сара падает на колени; в её глазах стоят слёзы.
+sound fakesarahdeath.ogg
+text Я подбегаю к ней и стискиваю в объятиях.
+text Её потускневшие глаза широко распахнуты.
+bgload cg/mikedies.jpg 30
+text [Ты] ...
+text [Сара] ...
+text [Сара] Я выстрелила в тебя...
+text [Сара] Я... не знала, что делать... Я...
+text [Сара] Он не остановился бы...
+text [Ты] Ш-ш-ш... Я знаю, милая... Я знаю.
+text [Сара] ...
+text [Сара] ...Но я стреляла в тебя.
+text Слёзы катятся по щекам Сары.
+text Она не всхлипывает и не кричит.
+text Просто позволяет им литься, хоть и растеряна из-за того, что она плачет.
+text [Ты] Нет, Сара.
+text Я аккуратно вытираю её слёзы.
+text [Ты] Эй, посмотри на меня.
+text Я беру её лицо в руки.
+text [Ты] Посмотри на меня.
+text [Ты] Я всё ещё жив, не так ли?
+text [Ты] Я всё ещё здесь.
+text Она всматривается в меня сквозь слёзы.
+text На один краткий миг  на её лице появляется проблеск сомнения.
+text Я ожидаю, что она что-нибудь спросит, чтобы убедиться.
+text Но Сара лишь устало и с некоторой отчаянностью кивает.
+text Она прижимается к моей груди, успокаиваясь биением моего сердца.
+text [Сара] ...
+text [Сара] Меня... трясёт.
+text [Сара] Наверное, привыкнуть стрелять в человека просто невозможно. Даже на моей работе.
+text [Сара] Особенно если замешан дорогой тебе человек. Это просто выбило меня из колеи.
+text [Ты] Это нормально.
+text [Сара] Ужасно, что мне пришлось так поступить с тобой. В каком-то смысле.
+text [Сара] Мне будет необходима чёртова терапия после всего этого.
+text [Ты] Ты сделала то, что должна была, Сара. Не вини себя.
+text [Сара] ...
+bgload black.png 30
+text [Ты] Всё закончилось.
+text [Ты] Просто забудем о произошедшем.
+text [Сара] ...
+text [Сара] ...Да.
+text Я обнимаю её крепче, и она прижимается ближе.
+bgload cg/mikewins.jpg
+text [Сара] ...
+text [Сара] Майк.
+text [Ты] М-м?
+text [Сара] Я люблю тебя...
+text [Сара] Но, если ты опять появишься в двух экземплярах, я уйду.
+text [Ты] Я тоже люблю тебя, Сара.
+
+;#Mike's eyes glow red.
+
+text Я чувствую улыбку, тронувшую мои губы.
+bgload cg/dopewins.jpg
+text [Ты] Больше никогда...
+text [Ты] Я обещаю.
+bgload black.png 30
+music ~
+text Концовка 6 - Хитрец
+jump main.scr

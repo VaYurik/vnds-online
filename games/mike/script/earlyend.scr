@@ -1,0 +1,83 @@
+;#If you leave anytime in the game before Sarah arrives.
+
+music ~
+bgload room/01.jpg
+setimg m/mikenormalsad2.png 156 0
+text [Ты] Так и быть, оставлю пока всё на эту ночь.
+text Это тяжело, но мне удаётся подавить свои эмоции и получить контроль над ними.
+text Я знаю, что не сумею чего-либо достичь, не будучи на свежую голову.
+setimg m/mikenormalsad.png 156 0
+setimg m/mikenormalsad2.png ~
+text [Майк] Я разберусь тем временем с Сарой, хорошо?
+setimg m/mikeregret2.png 156 0
+setimg m/mikenormalsad.png ~
+text [Майк] Может, я смогу ввести её в ситуацию.
+text [Майк] С тобой всё будет в порядке. Завтра будет лучше.
+text [Ты] ...
+setimg m/mikeworried.png 156 0
+setimg m/mikeregret2.png ~
+text [Майк] Быстрее!
+text [Майк] Она спускается!
+bgload black.png 20
+
+text Прежде чем я успеваю среагировать, моё другое "я" выставляет меня за дверь и хлопает ею передо мной.
+sound doorslam.ogg
+text Я слышу голос Сары, спрашивающей у меня, чем я занимаюсь.
+text Моё сердце порывается вернуться и рассказать ей всё.
+text Но я...
+text Решаю не делать этого.
+text Быть может, мне слишком страшно предстать перед ней вот так.
+text Почему-то такое чувство, что всё это по моей вине.
+text Я такой трус!
+text ...
+text Ладно, достаточно.
+text Завтра всё исправлю!
+text Мне нужно время подумать.{w} Собраться с мыслями и проанализировать сложившуюся ситуацию.
+text Может, он прав.
+text Те несколько часов, что выпали из моей памяти, могут быть ключом к разгадке.
+text Я иду по городу, раздумывая обо всей этой неразберихе.
+bgload cg/mirror.jpg 20
+text Проходя мимо окна магазина, я замечаю своё отражение.
+text Странно...
+text Мне кажется, или я выгляжу сильно осунувшимся?
+bgload black.png
+delay 10
+bgload red.png
+delay 1
+bgload cg/mirror.jpg 20
+sound heartbeat.ogg
+text [Ты] Агх!
+text Как только эта мысль приходит на ум, моё сердце пронзает острая боль.
+text Я изо всех сил пытаюсь дышать.
+text Моя грудь беспорядочно вздымается.
+text Моё... сердце!
+sound thump2.ogg
+bgload black.png
+delay 10
+bgload red.png
+delay 1
+bgload cg/mirror.jpg 20
+text [Ты] Гха!
+sound heartbeat.ogg
+text Что... происходит со мной?
+text Из носа начинает идти кровь.
+text Тут я понимаю, что у меня осталось не так много времени.
+text Я... умираю.
+text И даже не знаю почему...
+sound heartbeat.ogg
+bgload black.png
+delay 10
+bgload red.png
+delay 1
+bgload cg/mirror.jpg 20
+text [Ты] С-Сара!..
+text Поле моего зрения постепенно сужается, точно падающий занавес.
+sound heartbeat.ogg
+bgload black.png
+delay 10
+bgload red.png 30
+delay 30
+bgload black.png 30
+music ~
+text Концовка 9 - Глупец
+jump main.scr

@@ -1,0 +1,918 @@
+;#You are Mike. Sarah says you're Mike
+
+music ~
+bgload room/01.jpg
+setimg s/sarahnormalcross.png 30 25
+setimg m/mikesideglance.png 156 0
+text Сара поворачивается к другому Майку.
+setimg s/sarahsidenormalcross.png 30 25
+setimg s/sarahnormalcross.png ~
+text [Сара] Итак, Майки. Ничего особенного прошлой ночью не было?
+setimg m/mikesideconfused.png 156 0
+setimg m/mikesideglance.png ~
+text [Майк] А?
+setimg s/sarahsidedubious2.png 30 25
+setimg s/sarahsidenormalcross.png ~
+text [Сара] Гулял по городу? Хорошо провёл время?
+setimg m/mikeshy.png 156 0
+setimg m/mikesideconfused.png ~
+text [Майк] Сара, снова один из твоих случайных вопросов?
+setimg s/sarahsidedubious.png 30 25
+setimg s/sarahsidedubious2.png ~
+text [Сара] Не-а.
+text [Сара] Ну, ходил куда-нибудь?
+setimg m/mikesideglance.png 156 0
+setimg s/sarahsidenormalcross.png 30 25
+setimg m/mikeshy.png ~
+setimg s/sarahsidedubious.png ~
+text [Майк] Эм... Да нет, а что?
+setimg s/sarahsideamused.png 30 25
+setimg s/sarahsidenormalcross.png ~
+text [Сара] Кстати, хорошенькие очки. Новенькие?
+setimg m/mikesideconfused.png 156 0
+setimg s/sarahsidedubious.png 30 25
+setimg m/mikesideglance.png ~
+setimg s/sarahsideamused.png ~
+text [Майк] Э-э...
+setimg s/sarahsideamused.png 30 25
+setimg s/sarahsidedubious.png ~
+text [Сара] Вчера купил?
+setimg m/mikeunsure2.png 156 0
+setimg s/sarahsmug4.png 30 25
+setimg m/mikesideconfused.png ~
+setimg s/sarahsideamused.png ~
+text [Майк] Ох, точно! Да.
+setimg m/mikeshy.png 156 0
+setimg m/mikeunsure2.png ~
+text [Майк] Вчера.
+setimg m/mikesideerr.png 156 0
+setimg m/mikeshy.png ~
+text [Майк] Видимо, забыл упомянуть. Не велико ведь дело?
+text [Майк] Ты знаешь, каким забывчивым я бываю.
+setimg s/sarahsideamused.png 30 25
+setimg s/sarahsmug4.png ~
+text [Сара] Нет, конечно нет.
+text [Майк] ...
+setimg s/sarahsidedubious2.png 30 25
+setimg s/sarahsideamused.png ~
+text [Сара] А где старые очки?
+setimg m/mikesideconfused.png 156 0
+setimg s/sarahsidenormalcross.png 30 25
+setimg m/mikesideerr.png ~
+setimg s/sarahsidedubious2.png ~
+text [Майк] То старьё? Я-я выбросил их. Они разваливались.
+setimg m/mikeshy.png 156 0
+setimg m/mikesideconfused.png ~
+text [Майк] Ты столько твердила мне поменять их, вот я и купил новые.
+setimg s/sarahsmug3.png 30 25
+setimg s/sarahsidenormalcross.png ~
+text [Сара] Вот как!
+text [Майк] ...Ага...
+setimg s/sarahsidenormalcross.png 30 25
+setimg s/sarahsmug3.png ~
+text [Сара] ...
+setimg m/mikesideunimpressed.png 156 0
+setimg m/mikeshy.png ~
+text [Майк] ...
+text [Сара] ...
+text [Майк] Ладно тебе, Сара!
+text [Майк] Я надеюсь, ты не предполагаешь, что я фальшивка, только из-за того, что на мне новые очки!
+setimg s/sarahsidedubious.png 30 25
+setimg s/sarahsidenormalcross.png ~
+text [Сара] Конечно нет. Твои новые очки тут совершенно ни при чём.
+text [Майк] Что ж, хо-
+text [Сара] Но всё же, Майк...
+setimg s/sarahdubious.png 30 25
+setimg s/sarahsidedubious.png ~
+text [Сара] Не потрудишься объяснить, почему у другого Майка твои старые очки?
+setimg m/mikescared.png 156 0
+setimg m/mikesideunimpressed.png ~
+sound doom.ogg
+text Сара указывает на запачканную пару очков с поцарапанными стёклами, что на моём носу.
+text [Майк] Что? Я...
+text [Майк] Я... не знаю!
+setimg m/mikeworried2.png 156 0
+setimg m/mikescared.png ~
+text [Майк] Он, наверное, умудрился присвоить их себе!
+setimg m/mikeworried.png 156 0
+setimg m/mikeworried2.png ~
+text [Сара] ...
+setimg m/mikesidepanic.png 156 0
+setimg m/mikeworried.png ~
+text [Майк] Что?
+setimg m/mikeworried.png 156 0
+setimg s/sarahsidedubious2.png 30 25
+setimg m/mikesidepanic.png ~
+setimg s/sarahdubious.png ~
+text [Сара] Больше похоже на то, что ты достал себе новые, так как старые всё время были при настоящем Майке.
+setimg m/mikesideangry.png 156 0
+setimg s/sarahangrythinking.png 30 25
+setimg m/mikeworried.png ~
+setimg s/sarahsidedubious2.png ~
+text [Майк] Это нелепо!
+setimg m/mikeworried.png 156 0
+setimg s/sarahsidedubious2.png 30 25
+setimg m/mikesideangry.png ~
+setimg s/sarahangrythinking.png ~
+text [Сара] Я разговариваю с двумя версиями своего парня, куда уж нелепее.
+setimg s/sarahnormalcross.png 30 25
+setimg s/sarahsidedubious2.png ~
+delay 20
+setimg s/sarahangrythinking.png 30 25
+setimg s/sarahnormalcross.png ~
+
+;#"You didn't really believe I had that 'memory loss', did you?
+
+text [Ты] Ты ведь не купился на мою "потерю памяти"?
+text [Ты] Я знал, что ты напал на меня. Но мне пришлось пошуметь, чтобы насторожить Сару.
+setimg m/mikescared.png 156 0
+setimg s/sarahangrythinking.png 30 25
+setimg m/mikeworried.png ~
+setimg s/sarahangrythinking.png ~
+text [Майк] Что?
+setimg m/mikecornered.png 156 0
+setimg s/sarahnormalcross.png 30 25
+setimg m/mikescared.png ~
+setimg s/sarahangrythinking.png ~
+text [Ты] Целью симуляции амнезии было выиграть время и по возможности снизить твою бдительность.
+text [Ты] Но главным моим намерением было привлечь внимание Сары, чтобы она спустилась вниз, и припереть тебя к стенке.
+;#"My main goal was to get Sarah downstairs and catch you out.
+text [Ты] Я понимал, что ты не сможешь избавиться от меня, если я подниму шум.
+setimg m/mikesidecornered.png 156 0
+setimg s/sarahthinking.png 30 25
+setimg m/mikecornered.png ~
+setimg s/sarahnormalcross.png ~
+delay 20
+setimg m/mikesideseethe.png 156 0
+setimg s/sarahsidenormalcross.png 30 25
+setimg m/mikesidecornered.png ~
+setimg s/sarahthinking.png ~
+text ...
+setimg s/sarahangry.png 30 25
+setimg s/sarahsidenormalcross.png ~
+text [Сара] Было что-то странное в тебе. Видимо, некое предчувствие.
+setimg s/sarahsideamused.png 30 25
+setimg s/sarahangry.png ~
+delay 20
+setimg s/sarahsmug4.png 30 25
+setimg s/sarahsideamused.png ~
+text [Сара] Пять вопросов, и становится понятно, что ты фальшивишь.
+text [Сара] Хотя попытка хорошая.
+setimg m/mikesideangry.png 156 0
+setimg s/sarahangrythinking.png 30 25
+setimg m/mikesideseethe.png ~
+setimg s/sarahsmug4.png ~
+text [Майк] Н-но всё, что я говорил, было правдой!
+setimg m/mikecornered.png 156 0
+setimg m/mikesideangry.png ~
+text [Сара] "Не так важно, что говорит человек, как язык его тела", милый.
+text [Сара] Или в твоём случае - его недостаток.
+setimg m/mikesideseethe.png 156 0
+setimg s/sarahsidedubious2.png 30 25
+setimg m/mikecornered.png ~
+setimg s/sarahangrythinking.png ~
+text [Сара] У тебя может быть лицо Майка, его голос и воспоминания, но тебе надо поработать над своей игрой.
+setimg s/sarahsideamused.png 30 25
+setimg s/sarahsidedubious2.png ~
+text [Сара] Могу посоветовать использовать в следующий раз "воодушевлённые пальчики".
+music ~
+text [Майк] ...
+setimg s/sarahsidedubious.png 30 25
+setimg m/mikecornered.png 156 0
+setimg s/sarahsideamused.png ~
+setimg m/mikesideseethe.png ~
+delay 20 
+setimg s/sarahnormalcross.png 30 25
+setimg s/sarahsidedubious.png ~
+text [Ты] Слушай.
+text [Ты] Я не знаю, в чём дело, и не уверен, что хочу знать.
+;#"I don't know what your deal is, and I don't think I want to know.
+setimg s/sarahsidedubious.png 30 25
+setimg s/sarahnormalcross.png ~
+text [Ты] Просто убирайся из моей жизни и перестань использовать моё лицо!
+setimg s/sarahsidedubious2.png 30 25
+text [Сара] Сдавайся уже.
+sound double.ogg
+setimg m/mikedefeat.png 156 0 
+setimg s/sarahsidedubious.png 30 25
+setimg m/mikecornered.png ~
+setimg s/sarahsidedubious.png ~
+text [Майк] ...
+setimg m/mikedefeatsmile.png 156 0
+setimg s/sarahangry.png 30 25
+setimg m/mikedefeat.png ~
+setimg s/sarahsidedubious.png ~
+text [Майк] .............
+text [Майк] *бормотание*
+setimg m/mikedefeatsmirk.png 156 0
+setimg s/sarahshock2.png 30 25
+setimg m/mikedefeatsmile.png ~
+setimg s/sarahangry.png ~
+text ...
+text [Майк] Видно, меня поймали.
+setimg ~
+
+;#################################DOPELGANGER APPEAR!#
+
+setimg d/dopetalk.png 88 0
+text Его нечеловеческий смех пронзает мои уши, отчего по спине пробегают мурашки.
+text Мы с Сарой просто наблюдаем, в то время как человек с моим лицом расплывается в улыбке.
+text В темноте его глаза светятся ярко-красным, точно тлеющие угли.
+text [Фальшивый Майк] Но мы ведь так хорошо проводили время вместе, Сара, дорогая.
+text [Фальшивый Майк] Я был с тобой всю ночь.
+text [Фальшивый Майк] Ты даже не знала, что я фальшивка, пока этому отбросу не свезло.
+
+setimg d/dopenormal.png 88 0
+setimg d/dopetalk.png ~
+text [Сара] Да, но я чувствовала, что что-то не так.
+text [Сара] Дам один совет.
+text [Сара] В следующий раз выбирай пару поглупее, дружок.
+text Он всё ещё с моим лицом.
+text И выглядит искренне задетым, когда заговаривает вновь.
+setimg d/dopetalk2.png 88 0
+setimg d/dopenormal.png ~
+text [Фальшивый Майк] Все мои слова были правдой, Сара.
+text [Фальшивый Майк] Я всё ещё Майк. Сердцем и разумом. Я - это он. И он - это я.
+text [Фальшивый Майк] Дай мне неделю, и даже ты не сможешь выявить различий.
+setimg d/dopenormal.png 88 0
+setimg d/dopetalk2.png ~
+text Неделю?..
+text Что он имеет в виду?
+setimg d/dopetalk2.png 88 0
+setimg d/dopenormal.png ~
+text [Фальшивый Майк] В конце концов...
+text [Фальшивый Майк] Если при мне чьи-либо воспоминания, личность и сущность, кто сможет сказать, что я фальшивка?
+
+setimg d/dopenormal.png 88 0
+setimg d/dopetalk2.png ~
+text [Сара] Эм...
+text [Сара] У тебя жуткие глаза, блестящие красным.
+text [Сара] Я бы сказала, что одно только это отпугивает.
+setimg d/dopeangrysmile.png 88 0
+setimg d/dopenormal.png ~
+text Его лицо искажается в гневе.
+music ~
+text [Сара] Майк! Берегись!
+bgload black.png 30
+delay 1
+bgload white.png
+sound woosh.ogg
+delay 1
+bgload black.png
+text В следующий момент его длинные руки протягиваются ко мне, пытаясь схватить за шею.
+text Я чувствую, как его пальцы проходятся по коже, заставляя непроизвольно сглотнуть.
+text П-почти попался!
+text Нет времени на раздумья. Делаю рывок в сторону биты, хватаю её и замахиваюсь.
+sound hit.ogg
+text Но он отражает удар одной рукой.
+sound grip.ogg
+bgload cg/scarydope.jpg 30
+text Не похоже, что подобное задержит его надолго.
+bgload white.png
+delay 1
+bgload cg/scarydope.jpg
+text [Ты] Сара, беги!
+text [Сара] В сторону!
+bgload white.png
+sound gunshot.ogg
+delay 1
+bgload cg/scarydope.jpg
+text [Ты] Че-?
+text [Ты] Ты взяла пистолет с собой?!
+text [Сара] Я услышала звук глухого удара! Лучше перестраховаться, чем потом жалеть!
+sound woosh.ogg
+text [Ты] Ты хотела сказать, лучше быть параноиком, чем помер-
+
+;#sound effects large push and glass shattering and ouchies#
+
+sound bigcrash.ogg
+bgload black.png
+text Чудовищная сила отшвыривает меня, и я ударяюсь о стену гостиной.
+bgload red.png
+sound crack.ogg
+delay 1
+bgload black.png
+text Чувствую, как ломаются мои рёбра.
+bgload cg/blood01.jpg
+delay 1
+bgload red.png
+sound dripcrack.ogg
+delay 1
+bgload cg/blood01.jpg
+text [Ты] Угх...
+bgload black.png
+text [Сара] Майк!!!
+bgload white.png
+sound gunshot.ogg
+delay 1
+bgload black.png
+text [Ты] Сара...
+text [Сара] Ублюдок!
+bgload white.png
+sound gunshot.ogg
+delay 1
+bgload black.png
+delay 10
+bgload red.png
+sound gunshot.ogg
+delay 1
+bgload black.png
+delay 10
+bgload red.png
+sound gunshot.ogg
+delay 1
+bgload black.png
+text Сара несколько раз стреляет в существо.
+text Один из выстрелов задевает его левую руку.
+text Но не травмирует.
+sound gundrop.ogg
+text Фальшивый Майк выбивает оружие из рук Сары, и оно закатывается под стол.
+text [Сара] Агх!
+bgload white.png
+sound grip.ogg
+delay 1
+bgload black.png
+sound doom.ogg
+text Он хватает Сару за шею.
+bgload cg/sarahchoke.jpg 20
+text Во мне разрастается всё больший страх. Он затмевает всю боль.
+text Сара!
+text [Ты] Н-нет! Отпусти её!
+bgload white.png
+sound grip.ogg
+delay 1
+bgload cg/sarahchoke.jpg 20
+text Сара беспомощно пытается освободиться от нечеловеческой руки, что принадлежит мне.
+text Всё тело мгновенно покрывается липкой плёнкой холодного пота.
+text [Фальшивый Майк] Спокойно, парень.
+text [Фальшивый Майк] Я не собираюсь убивать её.
+text [Фальшивый Майк] ...Пока что.
+text Я слышу смешок, срывающийся с уст злоумышленника.
+bgload cg/sarahchokeglance.jpg
+text [Фальшивый Майк] Но погляди на весь этот грёбанный беспорядок.
+text [Фальшивый Майк] Тебе просто надо было оставаться без сознания, когда я ударил тебя той битой, знаешь?
+text [Фальшивый Майк] *вздох* Избавил бы нас от всей драмы.
+text [Ты] Пошёл ты к дьяволу!
+text [Фальшивый Майк] О, мы все отправимся к нему, обещаю.
+text [Фальшивый Майк] В конце концов, хозяин должен быть жив, пока я ем.
+text Я сглатываю.
+text [Ты] Когда ты говоришь "ем"... Ч-что ты имеешь в ви-
+text [Фальшивый Майк] Нет, не твою плоть, парень.
+text [Фальшивый Майк] Жизнь!
+text [Фальшивый Майк] Жизнь намного вкуснее плоти.
+text [Фальшивый Майк] Твои воспоминания, твои мысли, твоё будущее...
+text [Фальшивый Майк] Всё, что делает тебя человеком.
+text [Фальшивый Майк] М-м-м... Я совсем не против забрать у тебя всё!
+text [Фальшивый Майк] И, когда ты останешься без всего этого, ты попросту увянешь.
+text [Фальшивый Майк] Точно струп, некогда бывший кровью и плотью.
+text Одна неделя... жизни.
+text Я-
+text Подумаю об этом позже.
+text Сейчас необходимо обезопасить Сару.
+text Я устремляю взор на неё, и всё внутри переворачивается от её затруднённого дыхания.
+text Самозванец прослеживает мой взгляд с понимающей усмешкой.
+text [Фальшивый Майк] Итак...
+text [Фальшивый Майк] Должны ли мы начать с твоей прекрасной Сары?
+text [Фальшивый Майк] Проложим нашу дорожку понемногу?
+sound grip.ogg
+text Сара изо всех сил пытается вырваться, в то время как давление на горло всё усиливается.
+bgload white.png
+delay 1
+bgload cg/sarahchokeglance.jpg
+text Существо начинает поднимать её над полом, держа за шею.
+text [Ты] О-остановись! Прекрати, прошу! Умоляю тебя!
+text [Ты] Прошу, я-я сделаю что угодно!
+text [Ты] Что угодно...
+sound batdrop.ogg
+text Я сдаюсь; бита выпадает из моих рук.
+sound fall.ogg
+text Вся надежда улетучилась. Мои ноги подкашиваются, и я обрушиваюсь на пол.
+text [Фальшивый Майк] Что угодно?
+text [Фальшивый Майк] Что же ты способен дать мне, чего я не могу забрать, человек?
+
+text ...
+text [Ты] Ты был выведен на чистую воду офицером местной полиции.
+text [Ты] Похоже, тебе нужна помощь в создании более человеческого образа.
+text [Фальшивый Майк] ...
+text [Ты] Я писатель. Я... живу этим.
+text Фальшивый Майк навострил уши. Улыбка расползается по его лицу.
+text [Ты] Просто отпусти её, пожалуйста.
+text [Ты] Пока не знаю как, но я сделаю так, что ты не пожалеешь.
+text Я обдумываю свою участь, как тут фальшивый Майк внезапно испускает вопль боли.
+sound kick.ogg
+bgload black.png
+text Видимо, Сара пнула его ниже пояса.
+text Как только он освобождает её от хватки, Сара заламывает фальшивому Майку пальцы.
+bgload white.png
+sound crack.ogg
+delay 1
+bgload black.png
+text Его яростный крик разносится по всему дому.
+text Сара падает на пол, ловя ртом воздух.
+text [Сара] Кха-кха!
+text [Сара] Майк...Ха-а-а, ты всегда... слишком много болтаешь, напыщенный осёл.
+text Фальшивый Майк издаёт рык, пытаясь схватить Сару за волосы.
+text Но она умудряется ускользнуть от него.
+text [Ты] Сара! Убирайся из дома сейчас же! Убегай, пока можешь!
+text [Сара] Идиот!
+text [Сара] Будто я могу оставить тебя на растерзание!
+sound runningstairs.ogg
+text Она бежит наверх, чтобы найти другое оружие.
+text [Ты] Ты, упрямая...
+text [Ты] Ведь загонишь сама себя в тупик!
+bgload red.png
+sound dripcrack.ogg
+delay 1
+bgload black.png
+text [Ты] Агх...
+text Зловещие мушки танцуют перед моим взором.
+text Боль в боку застилает моё сознание, перед глазами всё плывёт.
+text [Ты] Я... не могу сейчас потерять сознание! Я-
+;#Sound effect Crash, Glass
+music ~
+bgload white.png
+sound bigcrash2.ogg
+delay 1
+bgload black.png
+text Я вскакиваю от сильного грохота.
+text [Ты] Са- Ох!
+text Как долго я был в отключке?
+text Настенные часы информируют, что я пролежал здесь около десяти минут.
+text Я с облегчением вздыхаю. Похоже, я был без сознания не так уж и долго.
+text Пытаюсь подняться.
+bgload red.png
+sound dripcrack.ogg
+delay 1
+bgload black.png
+text [Ты] У-ух!
+text Mои рёбра...
+text Но надо вставать.
+text Я подползаю к пистолету Сары, что под журнальным столиком.
+bgload cg/gun.jpg
+text Не считая шума, что пробудил меня, в доме стоит мёртвая тишина.
+text Даже не знаю, что ненавистно мне больше: тишина или напряжённое ожидание криков Сары.
+text Есть ли кто здесь вообще?
+text Я вытираю капающую с подбородка кровь и беру себя в руки.
+text Я должен верить в себя.
+bgload black.png 20
+text [Ты] Нх-х!
+text Бока горят, словно в огне.
+bgload red.png
+delay 1
+bgload black.png
+text Каждый мой шаг отдаётся волной боли по всему телу.
+text [Ты] О да. Подъём по лестнице обещает быть весёлым.
+
+; #bgload 2 Upstairs#
+
+bgload room/02.jpg 30
+text Подняться удаётся легче, чем я предполагал.
+text Это место больше не кажется мне моим домом.
+text Будто я ступил в другое измерение, где всё выглядело так же, но в некоторой степени отличалось.
+
+text На лбу проступают мелкие капельки пота.
+text Я крепче сжимаю пистолет.
+text [Ты] Без паники.
+text Я должен сконцентрироваться на защите Сары.
+text Не важно, что будет со мной!
+text Я просто хочу, чтобы она была в безопасности!
+text [Ты] Сара!
+text [Ты] Если ты где-то здесь, прошу! Отзовись!
+text [Ты] Дай знать, что ты здесь!
+text Я ожидаю пару секунд, пока мой слух не улавливает приглушённый звук.
+text [Сара] Майк.
+text Голос исходит из гостевой комнаты.
+text Я бросаюсь к двери и пытаюсь её открыть.
+bgload cg/door.jpg 20
+text [Майк] Сара?
+text [Сара] Ах! Майк! *кхм* Я так рада, что ты нашёл меня!
+text Я хмурюсь. Есть что-то странное в том, как звучит её голос.
+text Но я не могу понять, что именно.
+text [Сара] Вытащи меня отсюда, Майк!
+sound doorattle.ogg
+text Я дёргаю ручку, но дверь не открывается.
+text [Сара] Ха-а. Я без сил.
+text [Сара] Нам надо убираться отсюда, пока монстр не вернулся.
+text Я снова морщусь.
+text Это правда Сара?
+text Её голос звучит очень странно.
+text Но я отмахиваюсь от мысли и вновь пытаюсь отпереть дверь.
+text [Ты] Одну секунду.
+bgload white.png
+sound doorattle.ogg
+delay 1
+bgload cg/door.jpg
+text Предпринимаю очередную попытку, но дверь не поддаётся.
+text [Ты] Сара, думаю, замок заело.
+text [Сара] Чёрт возьми!
+text [Ты] Не беспокойся. Я тебя вытащу. Обещаю.
+text Я пробую выбить дверь ногой.
+bgload white.png
+sound kickdoor.ogg
+delay 1
+bgload cg/door.jpg
+text Боль пронзает ногу, точно удар электрическим током. Но сейчас не время размякать.
+text Я наношу ещё несколько ударов. Каждый отдаёт волной боли в конечности.
+bgload white.png
+sound kickdoor.ogg
+delay 1
+bgload cg/door.jpg
+delay 10
+bgload white.png
+sound kickdoor.ogg
+delay 1
+bgload cg/door.jpg
+delay 10
+bgload white.png
+sound kickdoorbreak.ogg
+delay 1
+bgload cg/door.jpg
+text Довольно скоро отмечаю, что дверь начинает поддаваться.
+text [Сара] Майк! Что ты делаешь?!
+sound fakesarah.ogg
+text Это Сара... вот только голос не из-за двери.
+text Я оборачиваюсь.
+bgload cg/bloodysarah.jpg 30
+text Передо мной другая Сара - раненая и в крови, она придерживает правое плечо рукой.
+text Я недоумённо пялюсь на неё.
+text [Ты] С-Сара?
+text [Сара] Не открывай чёртову дверь, Майк! Там этот ублюдок!
+text [Сара] Майк? Что происходит?
+text [Ты] Сара?..
+text [Ты] Здесь ещё одна Сара.
+text [Сара] Проклятье, Майк! Слушай меня! Она не настоящая!
+text [Сара] Чушь собачья! Фальшивка внутри! Мне удалось отбиться и запереть его в комнате!
+text [Сара] Оно всё пыталось выбить дверь, пока дверь не заклинило.
+text [Сара] Это ложь, Майк!
+text [Сара] Я забежала в комнату и закрыла её изнутри! Оно испортило замок, чтобы я не могла выбраться.
+text [Сара] Брехня!
+text [Сара] Вытащи меня отсюда, Майк, прошу! Не слушай её!
+text [Сара] Майк. Посмотри на меня! Я настоящая Сара!
+text Мой сознание отказывается верить в происходящее.
+text Где-то на периферии головы возникает пульсирующая боль.
+text Мои руки сильнее сжимают оружие.
+text [Сара] Если ты откроешь дверь, Майк, уверена, что этот урод сразу же нападёт на меня.
+text [Сара] Ему не нужна моя сущность. Ему нужна твоя. Оно меня точно убьёт!
+text [Сара] Майк, слушай меня. Оно пытается провести тебя!
+text [Сара] Ты должен верить мне, Майк!
+text [Сара] Пожалуйста, Майк!
+text Сара, что передо мной, делает шаг вперёд.
+
+text Я поднимаю пистолет на уровень груди. Но не нахожу сил навести его на неё.
+text Она останавливается.
+text [Ты] Не подходи, Сара.
+text [Ты] Д-дай мне подумать! Просто не подходи...
+bgload black.png 30
+
+sound finaldecision1.ogg
+text Сердце отбивает бешеный ритм.
+text Я должен успокоиться.
+text В таком состоянии я не смогу ясно мыслить.
+text Ох, да кого я обманываю?
+text Даже в обычные дни я не способен выявить правду, как Сара! Я не детектив!
+text [Сара] Майк, пожалуйста. Ты должен пристрелить ту фальшивую Сару. Пристрели проклятого ублюдка!
+text [Сара] Именно это выродок и хочет, не так ли? Не слушай этого монстра!
+text [Сара] Если оставим его там, мы можем сбежать!  Оно просто отчаянно пытается выйти, Майк.
+text [Сара] Майк, умоляю, верь мне! Брось оружие!
+text [Сара] Майк, я понимаю, что это тяжело... Но ты должен быть смелым!
+text Сперва мне нужно подумать! Всё это слишком внезапно!
+text Но что мне делать?
+text От давления сложившейся ситуации мои руки дрожат.
+text Способен ли я... хладнокровно убить?
+text Того, кого люблю?
+text ...
+text Если приму поспешное решение, могу совершить ошибку, которую невозможно будет исправить.
+
+choice Стрелять | Не стрелять | Мешкать
+if selected == 1
+	goto shootbad
+fi
+if selected == 2
+	goto dontshootbad
+fi
+sound kickdoorbreak.ogg
+text Я решаю сделать передышку и расслабиться.
+text С губ срывается судорожный выдох.
+text Тем не менее работающее в быстром темпе сердце благодарно за такую возможность.
+text Но мне всё ещё надо принять решение.
+text [Сара] Майк... Время уходит!
+text [Сара] Прошу, дай мне оружие.
+text К-как мне поступить?!
+text Ничем хорошим дело не закончится, если я сейчас не решу.
+text ...Но я так растерян!
+text Мне нужно больше времени!
+text Думай, Майк!
+text Думай!
+text Должен быть другой выход из всего этого!
+choice Стрелять | Не стрелять | Мешкать
+if selected == 1
+	goto shootbad
+fi
+if selected == 2
+	goto dontshootbad
+fi
+choice Стрелять | Не стрелять | Задать вопрос
+if selected == 1
+	goto shootbad
+fi
+if selected == 2
+	goto dontshootbad
+fi
+if selected == 3
+	goto ask
+fi
+
+label shootbad
+music ~
+bgload white.png
+sound gunshot.ogg
+delay 1
+bgload black.png
+text У меня нет времени, чтобы обдумать всё получше.
+text У меня не было выбора.
+text Ведь так?
+bgload red.png
+delay 1
+bgload black.png
+sound fall.ogg
+text Я наблюдаю, как тело Сары обрушивается на пол.
+sound doom.ogg
+text Моё сердце болит от её взгляда, полного грусти и замешательства.
+text Я...
+text Нет...
+text Нет...
+text Низкий довольный смех слышится за дверью.
+bgload cg/sarahshot.jpg 30
+text [Ты] Сара?..
+text Я подбегаю к её задыхающемуся телу и приподнимаю её голову.
+text [Ты] Пожалуйста! Нет!
+text Надо остановить кровотечение! Я должен-
+bgload red.png
+sound dripcrack.ogg
+delay 1
+bgload cg/sarahshot.jpg
+text Но красное пятно всё разрастается... и разрастается... вокруг тела Сары.
+text Сара!
+text Сара!
+sound doorcreak.ogg
+text Скрип двери раздаётся позади меня.
+bgload black.png
+delay 10
+bgload red.png 30
+delay 30
+bgload black.png 30
+music ~
+text Концовка 2 - Проклятый герой 
+jump main.scr
+
+label dontshootbad
+music ~
+bgload cg/bloodysarah.jpg
+text Я просто...  не могу этого сделать.
+text Я не могу выстрелить в неё. Я не могу даже навести оружие на неё.
+text Я смотрю в её умоляющие глаза и чувствую непреодолимую волну любви и беспомощности.
+text Она должна быть моей Сарой, должна.
+text Прихрамывая, я иду к ней.
+text [Сара] М-Майк!
+text Позади раздаётся крик другой Сары.
+text [Сара] Всё будет хорошо, милый!
+text Она протягивает здоровую руку ко мне, и я слепо тянусь к ней своей.
+bgload cg/bloodysarahsmirk.jpg 20
+delay 20
+bgload black.png 20
+delay 20
+bgload red.png
+sound slash.ogg
+delay 1
+bgload black.png
+text Острая боль пронзает мой желудок.
+sound dripcrack.ogg
+text Я падаю на колени, в то время как вокруг меня образуется лужа крови.
+sound doom.ogg
+text [Фальшивая Сара] Майки, Майки, Майки, Майки.
+text [Фальшивая Сара] На одно мгновение ты заставил меня побеспокоиться!
+text Небольшой перочинный нож сверкнул в руке "Сары".
+text [Фальшивая Сара] Хотя я не так сильно и тревожилась!
+text [Фальшивая Сара] Это видно в твоих грустных очаровательных глазах. Я нутром это чувствую.
+text [Фальшивая Сара] Ты хотел, чтобы я была настоящей Сарой.
+text [Фальшивая Сара] Очень мило, что ты так сильно меня любишь...
+text [Фальшивая Сара] Даже вплоть до самообмана.
+text [Фальшивая Сара] Я тоже люблю тебя, дорогой.
+text Она опускается на колени рядом со мной.
+text Я вздрагиваю от прикосновения её холодных рук, убирающих волосы с моего лица.
+text [Фальшивая Сара] Мне жаль это говорить. Но, думаю, нам надо расстаться!
+text [Фальшивая Сара] Я нашла нового хозяина!
+text Нет.
+text Нет! Значит ли это-
+text [Фальшивая Сара] Это естественно! В смысле, зачем я должна довольствоваться твоей проблематичной задницей,
+text [Фальшивая Сара] когда энергичная маленькая Сара заперта, точно завёрнутый подарок с ленточкой!
+text [Фальшивая Сара] Благодарю, кстати. Она так сильно старалась.
+text Я изо всех сил пытаюсь подняться, но, схватив меня за волосы, она валит меня на пол.
+bgload red.png
+sound fall.ogg
+delay 1
+bgload black.png
+text [Фальшивая Сара] Нет-нет! Никуда ты не пойдёшь, милый!
+text Она облизывает свои губы в наслаждении.
+bgload cg/bloodymike.jpg 20
+text Моё тело начинает цепенеть.
+text Руки и ноги уже окоченели.
+text [Ты] ...С-Сара...
+text [Фальшивая Сара] Пожалуй, повеселюсь сперва с тобой.
+text Я хочу оказать сопротивление...
+text ...закричать.
+text Но всё перед глазами неуклонно утопает в чёрном.
+text И крики Сары становятся для меня бесконечной колыбельной.
+bgload black.png
+delay 10
+bgload red.png 30
+delay 30
+bgload black.png 30
+music ~
+text Концовка 3 - Жертва
+jump main.scr
+
+label ask
+text [Ты] Погоди!
+text [Ты] Я задам вам обеим вопрос, чтобы удостовериться, кто настоящая Сара!
+text [Сара] Чёрт побери, Майк!
+text [Сара] Разве мы не пришли к выводу, что эти тривиальные вопросы - хрень?
+text [Ты] Что ж, других идей у меня нет!
+text [Сара] ...
+text [Сара] Ладно! Продумай тогда всё!
+text Признаться, я просто пытаюсь выиграть время перед неизбежным.
+text Я изо всех сил пытаюсь придумать идеальный вопрос, который приведёт меня к настоящей Саре.
+text Наконец, меня осеняет.
+text Я обращаюсь к Саре, находящейся передо мной.
+text [Ты] Сара, которая в комнате, ранена. Она сказала мне о своих ранах.
+text [Сара] Понятно, и?
+text [Ты] Какое плечо?
+text [Сара] Не плечо. У него огнестрельное ранение правого бедра.
+text [Сара] Мне удалось попасть в него, когда мы были внизу.
+text Я киваю, мои зубы крепко стиснуты.
+text Сара, что в комнате, не говорила мне ничего о своих ранах.
+text Но если эта Сара настоящая, тогда она будет права.
+
+choice Стрелять | Подумать | Мешкать
+if selected == 1
+	goto shootbad
+fi
+if selected == 2
+	goto think
+fi
+if selected == 3
+	goto dontshootbad
+fi
+
+label think
+text [Ты] Мне нужно задать ещё один вопрос.
+text Я обращаюсь к Саре за дверью.
+text [Ты] Сара, что передо мной, ранена. Какие у неё ранения?
+text [Сара] Вывих плеча и сломанные пальцы. Они должны быть травмированы после того эпизода с удушением.
+
+text [Ты] ...!
+text Подождите, вот оно!
+text Всё сразу проясняется после этого вопроса.
+text Как же я рад, что решил не спешить.
+text Я всем корпусом поворачиваюсь к Саре, стоящей со мной в одном помещении.
+text Нет никаких сомнений.
+
+choice Стрелять | Не стрелять | Мешкать
+if selected == 1
+	goto shootgood
+fi
+if selected == 2
+	goto dontshootbad
+fi
+if selected == 3
+	goto dontshootbad
+fi
+
+label shootgood
+music ~
+text <h1>Какой тут фон?</h1>
+text [Фальшивая Сара] Прошу...
+bgload red.png
+sound gunshot.ogg
+delay 1
+bgload black.png
+text Прозвучавший звук выстрела мне запомнится навсегда.
+bgload red.png
+sound fall.ogg
+delay 1
+bgload black.png
+text "Сара" падает на пол.
+text Я опускаю руку с пистолетом и подхожу к ней.
+text Заглядываю в её глаза. Они определённо принадлежат ей.
+text [Фальшивая Сара] Как же неловко вышло...
+text [Фальшивая Сара] Погибнуть от руки человека.
+text [Ты] ...
+text [Фальшивая Сара] Но знаешь что? Сара... Она... не боится умереть. Т-так что...
+text Сара протягивает руку ко мне.
+text [Фальшивая Сара] Возьми меня за руку, Майк... П-пожалуйста.
+text [Фальшивая Сара] М-мне жаль...
+text [Фальшивая Сара] Я просто-
+bgload red.png
+sound dripcrack.ogg
+delay 1
+bgload black.png
+text [Фальшивая Сара] Ургх...
+text Я беру её холодные ладони в свои и согреваю теплом дыхания.
+text Монстр или нет, это моя Сара. И хоть на деле всё не так, это не имеет значения.
+text Не сейчас, когда она беспомощна и гибнет на моих глазах.
+text Незваные слёзы катятся по щекам.
+text [Фальшивая Сара] Я знаю... что Сара хочет на свой день рождения.
+text [Ты] Перестань разговаривать. Ты только сделаешь себе хуже.
+text [Фальшивая Сара] Она никогда не скажет тебе... Но я знаю, что это...
+text [Ты] ...
+text [Фальшивая Сара] Кое-что позаимствованное...
+text [Фальшивая Сара] Синего цвета-*кха-кха*
+bgload red.png
+sound dripcrack.ogg
+delay 1
+bgload black.png
+text Тёмная кровь брызгает изо рта Сары. Она вся дрожит.
+text [Фальшивая Сара] Майк, будьте осторожнее.
+text [Фальшивая Сара] Вы знаете  теперь о нас. И-им это не понравится.
+text [Ты] Что? Кто "они"?
+text [Фальшивая Сара] Они могут-*кха*
+bgload red.png
+delay 1
+bgload black.png
+text [Фальшивая Сара] Мне х-холодно.
+text [Сара] Майк? Что происходит?
+text [Сара] Ты там?
+text [Сара] П-пожалуйста...
+text Из комнаты раздаётся голос настоящей Сары. Я поворачиваюсь к двери, затем снова смотрю на фальшивую Сару.
+text [Фальшивая Сара] Иди.
+sound fakesarahdeath.ogg
+text [Ты] ...
+text [Ты] Сара, я в порядке.
+text [Сара] М-Майк?!
+text [Ты] Я тут.
+text Я подхожу к двери.
+text [Ты] Теперь всё в порядке. Я тебя освобожу.
+text [Сара] Майк. Я...
+text [Сара] Я думала...
+text Сара начинает плакать. Я терпеливо жду перед дверью.
+text Совсем скоро, шмыгнув, она делает несколько вздохов.
+text [Сара] Ладно.
+text [Сара] Я буду толкать, а ты тяни, хорошо?
+text [Ты] На счёт "три".
+sound kickdoor.ogg
+delay 20
+sound kickdoorbreak.ogg
+delay 20
+sound doorbreak.ogg
+;#Sound effect door
+text Дверь наконец уступает, и Сара тут же бросается в мои объятия.
+text Мои рёбра протестуют, я хриплю от боли, и почти в тот же момент Сара вздрагивает от своих ранений.
+text Мы оба смеёмся.
+text [Сара] Как ты узнал, что это я? Я так беспокоилась тогда.
+text [Ты] Я...Мне просто повезло.
+text [Сара] Что ты имеешь в виду? Я думала, у тебя был план.
+text [Ты] Да и нет.
+text [Ты] Это была догадка. Всё же до меня не сразу дошло.
+text [Сара] Тогда в чём был смысл спрашивать о ранениях?
+text [Ты] Поначалу чтобы выиграть время. Но благодаря этому мне удалось утвердиться в своей теории.
+text [Сара] Хм, что за теория?
+text [Ты] ...Твой голос.
+text [Сара] Мой голос?
+text [Ты] Я надеялся, что существо не будет помнить об этой маленькой детали.
+text [Ты] Когда ты впервые тогда заговорила, твой голос звучал очень странно.
+text [Ты] Он был скрипуч и будто принадлежал кому-то другому.
+text [Ты] И затем, когда я задал вопрос, ты вдруг упомянула случай с удушением.
+text [Ты] Тогда всё стало на свои места.
+text [Ты] Тебя душили совсем недавно. Вот почему твой голос звучал иначе.
+text [Ты] Твоим голосовым связкам был нанесён значительный ущерб.
+text [Ты] Голос другой Сары звучал как обычно.
+text [Сара] ...
+text [Сара] Ты прав.
+text [Ты] В чём?
+text [Сара] Тебе просто повезло.
+text [Ты] То была стрессовая ситуация.
+text [Ты] Это лучшее, что мог придумать мой мозг!
+text [Сара] ...
+text Сара усмехается. Она подправляет мои старые, грязные очки на носу.
+text [Сара] Думаю, мы должны быть благодарны за мелочи.
+text [Сара] Всё ведь закончилось, Майк?
+text [Ты] ...Я надеюсь.
+text Но, как только мы поворачиваемся к падшему самозванцу, оказывается, что его и след простыл.
+text Дорожка из красных капель крови тянется к окну.
+text [Сара] Оно сбежало!
+text [Сара] Проклятье!
+text Я ничего не говорю.
+text Я знаю, что должен быть встревожен или обеспокоен, что существо на свободе.
+text Но сейчас меня это просто не заботит.
+bgload cg/mikewins.jpg 30
+text Вид безжизненной Сары в застывающей луже крови всего некоторое время назад...
+text И сейчас эта самая Сара жива и в моих руках...
+text Я не могу избавиться от чувства, что мне дан второй шанс.
+text Я прижимаю Сару ближе к себе и крепче обнимаю.
+text [Сара] Думаешь, оно вернётся?
+text [Ты] М-м?
+text [Ты] . . .
+text [Ты] Ну, если и вернётся, мы будем готовы.
+bgload black.png
+text Концовка 1 - Катализатор
+jump credits.scr
