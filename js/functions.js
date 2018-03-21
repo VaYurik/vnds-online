@@ -1127,7 +1127,7 @@ function show_promo()
 {
 	if (is_promo) return;
 	let $promo = $('#promo');
-	$.post('php/get_promo.php', {promo_file: 'promo/promo.csv'})
+	$.post('php/get_promo.php', {promo_file: 'promo.csv'})
 		.done(function(data)
 		{
 			let promo = JSON.parse(data);

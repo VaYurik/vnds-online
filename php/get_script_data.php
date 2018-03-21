@@ -4,7 +4,9 @@
 	$scriptFile = $_POST['script_file'];
 	if (empty($scriptFile))
 		$errorMessage = 'Error POST data: empty script filename';
-	elseif (!file_exists($scriptFile))
+	else
+		$scriptFile = $_POST['script_dir'] . '/script/' . $scriptFile;
+	if (!file_exists($scriptFile))
 		$errorMessage = 'File ' + $scriptFile + ' not found';
 	else
 	{

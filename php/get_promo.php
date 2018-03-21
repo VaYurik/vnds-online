@@ -4,7 +4,9 @@
 	$promoFile = $_POST['promo_file'];
 	if (empty($promoFile))
 		$errorMessage = 'Error POST data: empty promo filename';
-	elseif (!file_exists($promoFile))
+	else
+		$promoFile = 'promo/' . $promoFile;
+	if (!file_exists($promoFile))
 		$errorMessage = 'File ' + $promoFile + ' not found';
 	try
 	{
