@@ -566,17 +566,12 @@ var vnds_interpreter = function()
 		this.game.script_name = filename;
 		$('#info_script_name').text(this.game.script_name);
 		let _this = this;
-		$.post('php/get_script_data.php', {script_dir: this.game.dir, script_file: this.game.script_name})
+		$.get(this.game.dir + '/script/' + this.game.script_name)
 			.done(function(data)
 			{
-				let script = JSON.parse(data);
-				if (script.error !== null)
 				{
-					df.reject(script.error);
-				}
-				else
-				{
-					_this.game.script_lines = script.lines;
+					let lessRegEx = new RegExp("(<)(?!([^<]+)?>)"); // replace "<" outside of HTML tags
+					_this.game.script_lines = $.map(data.replace(/\t|  +/g, ' ').replace(lessRegEx, "&lt;").split(/\r?\n/), $.trim); 
 					let images_list = _this.get_images_list(); 
 					preload_images(images_list);
 					if (label)
