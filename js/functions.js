@@ -141,7 +141,7 @@ function create_main_menu()
 		.done(function(data)
 		{
 			let games_list;
-			if (typeof(data) === 'object')
+			if (typeof(data) == 'object')
 			{
 				games_list = data;
 			}
@@ -149,6 +149,7 @@ function create_main_menu()
 			{
 				games_list = JSON.parse(data);
 			}
+
 			$.each(games_list, function(key, value)
 			{
 				if (value.error !== null)
