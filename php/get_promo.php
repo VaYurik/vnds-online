@@ -1,9 +1,9 @@
 <?php
 	chdir('..');
 	$errorMessage = null;
-	$promoFile = $_POST['promo_file'];
+	$promoFile = $_GET['promo_file'];
 	if (empty($promoFile))
-		$errorMessage = 'Error POST data: empty promo filename';
+		$errorMessage = 'Error GET data: empty promo filename';
 	else
 		$promoFile = 'promo/' . $promoFile;
 	if (!file_exists($promoFile))

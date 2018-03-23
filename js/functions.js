@@ -137,10 +137,19 @@ function create_main_menu()
 	$('#info_game_name').text('');
 	$('#info_game_resolution').text('');
 
-	$.post('php/get_games_list.php')
+	$.get(G['games-list'])
 		.done(function(data)
 		{
-			let games_list = JSON.parse(data);
+			let games_list;
+			if (typeof(data) == 'object')
+			{
+				games_list = data;
+			}
+			else
+			{
+				games_list = JSON.parse(data);
+			}
+
 			$.each(games_list, function(key, value)
 			{
 				if (value.error !== null)
@@ -931,8 +940,11 @@ function show_error(message, delay)
 			message: message,
 			type: 'Error'
 		}
-		
-	$.post('php/save_log.php', post_array);
+	
+	if (G["post-log"])
+	{
+		$.post(G["log-url"], post_array);
+	}
 	console.error(message);
 	show_notification(message, delay);
 }
@@ -957,7 +969,7 @@ function show_warning(message, callback)
 			type: 'Warning'
 		}
 		
-	$.post('php/save_log.php', post_array);
+	$.post(G["log-url"], post_array);
 	console.warn(message);
 	if (callback !== undefined)
 		show_dialog(message, callback);
@@ -1124,10 +1136,14 @@ function get_file_ext(filename)
 
 // Вывод верхнего баннера
 function show_promo()
-{
+{	
 	if (is_promo) return;
 	let $promo = $('#promo');
-	$.post('php/get_promo.php', {promo_file: 'promo.csv'})
+	if (!G["show-promo"]){
+		$promo.hide();
+		return;
+	}
+	$.get(G['promo-url'], {promo_file: 'promo.csv'})
 		.done(function(data)
 		{
 			let promo = JSON.parse(data);
@@ -1141,7 +1157,7 @@ function show_promo()
 				.attr('href', promo.url)
 				.on('click', function(e)
 				{
-					$.post('php/redirect_promo.php',
+					$.post(G["promo-redirect"],
 						{
 							name: promo.name,
 							url: promo.url,
