@@ -234,7 +234,7 @@ var vnds_interpreter = function()
 						.animate(
 						{
 							'left': x * 100 / 256 + '%',
-							'top': x * 100 / 192 + '%'
+							'top': y * 100 / 192 + '%'
 						}, config.effect_speed, function()
 						{
 							df.resolve();
