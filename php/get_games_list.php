@@ -1,6 +1,4 @@
 <?php
-//	header('Content-type: application/json');
-
 	$gamesList = array();
 	chdir('..');
 	foreach (glob('games/*', GLOB_ONLYDIR) as $gameDir)

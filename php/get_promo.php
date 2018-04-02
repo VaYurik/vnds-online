@@ -1,12 +1,10 @@
 <?php
 	chdir('..');
 	$errorMessage = null;
-	$promoFile = $_GET['promo_file'];
+	$promoFile = $_POST['promo_file'];
 	if (empty($promoFile))
 		$errorMessage = 'Error GET data: empty promo filename';
-	else
-		$promoFile = 'promo/' . $promoFile;
-	if (!file_exists($promoFile))
+	elseif (!file_exists($promoFile))
 		$errorMessage = 'File ' + $promoFile + ' not found';
 	try
 	{
@@ -19,7 +17,7 @@
 	}
 	$promoFile = trim($promoFile);
 	if (empty($promoFile)) exit(1);
-	$promoLines = explode("\n", $promoFile);
+	$promoLines = explode("/n", $promoFile);
 	$promoLine = $promoLines[rand(1, count($promoLines)) - 1];
 	$promoInfo = explode(';', $promoLine);
 	$promoName = trim($promoInfo[0]);
