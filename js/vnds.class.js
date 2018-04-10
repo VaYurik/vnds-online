@@ -18,7 +18,8 @@ var vnds_interpreter = function()
 			resolution:                 // Разрешение игры, взятое из файла img.ini
 			{
 				width: null,              // width
-				height: null              // height
+				height: null,             // height
+				ratio: null               // отношение высоты к ширине (height / width)
 			},
 			icons:                      // Иконки игры, взятые из директории игры
 			{
@@ -43,7 +44,8 @@ var vnds_interpreter = function()
 				sprite: null,             // файл спрайта
 				x: null,                  // координата x
 				y: null                   // координата y
-			}
+			},
+			route: {}                   // массив с просмотренными фрагментами
 		};
 	}
 
@@ -61,6 +63,7 @@ var vnds_interpreter = function()
 		this.game.music = null;
 		this.game.background = null;
 		this.game.sprites = null;
+		this.game.route = {};
 	}
 
 /* Вывод изображения filename в качестве фона
@@ -230,8 +233,8 @@ var vnds_interpreter = function()
 					$sprite_name
 						.animate(
 						{
-							'left': x * _this.game.resolution.width / 256 + 'px',
-							'top': y * _this.game.resolution.height / 192 + 'px'
+							'left': x * 100 / 256 + '%',
+							'top': y * 100 / 192 + '%'
 						}, config.effect_speed, function()
 						{
 							df.resolve();
@@ -252,8 +255,8 @@ var vnds_interpreter = function()
 									'visibility': 'visible',
 									'width': width + '%',
 									'height': height + '%',
-									'left': x * _this.game.resolution.width / 256 + 'px',
-									'top': y * _this.game.resolution.height / 192 + 'px'
+									'left': x * 100 / 256 + '%',
+									'top': y * 100 / 192 + '%'
 								});
 						}).attr('src', filename);
 
@@ -361,9 +364,6 @@ var vnds_interpreter = function()
 				if ((iteration > 1) || (iteration === -1))
 					$sound.prop('loop', true);
 				$sound.attr('src', filename);
-/*				let fileext = get_file_ext(filename); // Попытка заставить воспроизводить aac, но нет, не пашет
-				if (fileext.length > 0)
-					$sound.attr('type', 'audio/' + fileext);*/
 				$sound.trigger('play');
 				_this.game.sound = sound;
 				if ((iteration === 1) || (iteration === -1))
@@ -463,6 +463,7 @@ var vnds_interpreter = function()
 			df.reject('Unknown GOTO variable ' + params);
 			return df.promise();
 		}
+		let script_name = get_file_name(this.game.script_name);
 		this.append_text = false;
 		this.prev_text = '';
 		$('#message_box_next').off('click');
@@ -570,8 +571,11 @@ var vnds_interpreter = function()
 			.done(function(data)
 			{
 				{
-					let lessRegEx = new RegExp("(<)(?!([^<]+)?>)"); // replace "<" outside of HTML tags
-					_this.game.script_lines = $.map(data.replace(/\t|  +/g, ' ').replace(lessRegEx, "&lt;").split(/\r?\n/), $.trim); 
+					function replaceLT(match)
+					{
+						return match.replace(/</g, '&lt;');
+					}
+					_this.game.script_lines = $.map(data.replace(/\t| {2,}/g, ' ').replace(/<{2,}/, replaceLT).split(/\r?\n/), $.trim); 
 					let images_list = _this.get_images_list(); 
 					preload_images(images_list);
 					if (label)
@@ -724,6 +728,22 @@ var vnds_interpreter = function()
 					cur_text = this.prev_text + cur_text;
 				this.append_text = false;
 			}
+			let script_name = get_file_name(this.game.script_name);
+			if (this.game.route[script_name] === undefined)
+				this.game.route[script_name] = [this.game.script_line_num];
+			else
+			{
+				if ($.inArray(this.game.script_line_num, this.game.route[script_name]) != -1) // Если строка с таким номером уже была...
+				{
+					set_skip_enabled(true);
+				}
+				else
+				{
+					this.game.route[script_name].push(this.game.script_line_num);
+					set_skip_enabled(config.is_skip_unread);
+				}
+			}
+
 			cur_text = cur_text.trim();
 			this.prev_text = cur_text + '<br>';
 			if (wait_click)
@@ -1081,7 +1101,7 @@ mod can be one of the following:
 			});
 		}
 		let i = 15;
-		while (($choice_menu.height() > this.game.resolution.height) && (i > 0))
+ 		while (($choice_menu.height() > resolution.height) && (i > 0))
 		{
 			$choice_menu.find('button').css(
 			{
@@ -1104,7 +1124,7 @@ mod can be one of the following:
 			max_width = (max_width + 30);
 			i--;
 		}
-		while ((max_width > this.game.resolution.width) && (i > 0));
+ 		while ((max_width > resolution.width) && (i > 0));
 		$choice_menu.find('button').width(max_width + 'px');
 		set_skip(false);
 		hide_message_box(function()
@@ -1215,6 +1235,7 @@ mod can be one of the following:
 			return false;
 		}
 		this.game.script_line_num++;
+
 		if (config.log_level != LOG_DISABLE) console.log('LINE ' + parseInt(this.game.script_line_num, 10) + ': ' + line);
 		$('#info_script_line_num').text(parseInt(this.game.script_line_num, 10));
 		let delimiter_pos = line.indexOf(' ');
@@ -1399,10 +1420,11 @@ mod can be one of the following:
 			selected: this.game.selected,
 			script_name: this.game.script_name,
 			script_line_num: this.game.script_line_num,
+			route: this.game.route,
 			music: this.game.music,
 			sound: this.game.sound,
 			bg: this.game.background,
-			sprites: this.game.sprites
+			sprites: this.game.sprites,
 		};
 		save_game = JSON.stringify(save_game);
 		try
@@ -1438,6 +1460,7 @@ mod can be one of the following:
 		this.game.local_variables = load_game.local;
 		this.game.selected = load_game.selected;
 		this.game.script_name = load_game.script_name;
+		this.game.route = load_game.route;
 		if (load_game.music)
 			this.music(load_game.music);
 		if (load_game.sound)

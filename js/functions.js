@@ -5,7 +5,7 @@ const LOG_ALL = 2;
 
 const LOAD_MOD = 0;
 const SAVE_MOD = 1;
-	
+
 var config =
 {
 	sound_volume: 0.5,          // громкость звука
@@ -16,9 +16,10 @@ var config =
 	effect_speed: 350,          // скорость эффектов (меньше - быстрее)
 	text_speed: 20,             // скорость вывода текста (меньше - выше)
 
-	is_skip: false,             // включён или выключен скип
-	skip_effect_speed: 100,     // скорость эффектов при скипе (меньше - быстрее)
-	skip_text_speed: 0,         // скорость вывода текста при скипе (меньше - выше)
+	is_skip: false,             // включён или выключен быстрый пропуск
+	is_skip_unread: false,      // пропускать ли непрочитанное
+	skip_effect_speed: 100,     // скорость эффектов при быстром пропуске (меньше - быстрее)
+	skip_text_speed: 0,         // скорость вывода текста при быстром пропуске (меньше - выше)
 	skip_text_pause: 100,       // задержка после вывода текста перед сменой экрана
 
 	is_auto: false,             // включено или выключено авточтение
@@ -26,29 +27,132 @@ var config =
 
 	notification_delay: 1200,   // Задержка вывода оповещения
 	
-	log_level: LOG_DISABLE      // Выводить ли в консоль информацию
+	log_level: LOG_DISABLE,     // Выводить ли в консоль информацию
+
+	is_error_log: true,         // Сохранять ли ошибки в log-файлы (только при is_php_enabled: true)
+
+	is_fullscreen: false,       // включён ли полноэкранный режим
+	min_width: 640,             // минимальное разрешение экрана: ширина
+	min_height: 480             // минимальное разрешение экрана: высота
 };
 
-var title; // Дефолтный заголовок страницы
-var favicon; // Дефолтный фавикон
-var old_effect_speed; // Предыдущая скорость эффектов в окне сообщений
-var old_text_speed; // Предыдущая скорость вывода текста в окне сообщений
-var is_message_box; // Переменная, хранящая состояние блока вывода текста
-var vn;
-var type_interval; // Переменная для хранения ссылки на интервал при печати печатающей машинки
-var is_promo = false;
+var title;                    // Дефолтный заголовок страницы
+var favicon;                  // Дефолтный фавикон
+var old_effect_speed;         // Предыдущая скорость эффектов в окне сообщений
+var old_text_speed;           // Предыдущая скорость вывода текста в окне сообщений
+var is_message_box;           // Переменная, хранящая состояние блока вывода текста
+var type_interval;            // Переменная для хранения ссылки на интервал при печати печатающей машинки
+var is_promo = false;         // Информация о том, был ли произведён клик на баннер или нет
+var vn;                       // Объект класса интерпретатора
+var is_php_enabled;   // Имеется ли поддержка php на сервере
+var is_skip_enabled;  // Активна ли кнопка быстрого пропуска
+var resolution =              // Разрешение окна игры (равное или разрешению игры, или размеру окна экрана браузера)
+		{
+			width: null,            // ширина
+			height: null            // высота
+		}
 
 $(document).ready(function()
 {
 	title = $('title').text();
 	favicon = $('#favicon').attr('href');
 	load_settings();
-	if (config.log_level == LOG_ALL) console.log('Let\'s go!');
 	set_sound(config.is_sound);
 	init_log();
 	init_thanks();
-	create_main_menu();
+	bind_window_resize_events();
+	check_php_enabled(create_main_menu);
 });
+
+// Функция проверки поддержки php на сервере
+function check_php_enabled(callback)
+{
+	let func_name = get_function_name(arguments.callee);
+	$.get('php/check_php.php')
+		.done(function(data)
+		{
+			is_php_enabled = (typeof(data) === 'string') && (data == "1");
+		})
+		.fail(function()
+		{
+			is_php_enabled = false;
+		})
+		.always(function()
+		{
+			if (config.log_level == LOG_ALL) console.log(func_name + ': ' + is_php_enabled);
+			$('#info_php_enabled').text(is_php_enabled);
+			if (callback !== undefined)
+				callback();
+		});
+}
+
+// Функция, отвечающая за присвоение обработчика события изменения размера экрана браузера
+function bind_window_resize_events()
+{
+	exec_window_resize_events();
+	$(window).on('resize', exec_window_resize_events);
+}
+
+// Функция, выполняемая при наступлении события изменения размера экрана браузера и некоторых других
+function exec_window_resize_events()
+{
+	let win_width = (window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth) - 1;
+	let win_height = (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight) - 1;
+	$('#info_screen_resolution').text(win_width + 'x' + win_height);
+	if ((vn !== undefined) && (vn.game.resolution.width !== null) && (vn.game.resolution.height !== null))
+	{
+		if (resolution.width === null)
+			resolution.width = vn.game.resolution.width;
+		if (resolution.height === null)
+			resolution.height = vn.game.resolution.height;
+
+		let height;
+		let width;
+		if (!config.is_fullscreen && (win_width >= vn.game.resolution.width))
+		{
+			if (win_height >= vn.game.resolution.height)
+				height = vn.game.resolution.height;
+			else
+				height = win_height;
+			width = Math.floor(height / vn.game.resolution.ratio);
+		}
+		else
+		{
+			if (!config.is_fullscreen && (win_height >= vn.game.resolution.height))
+			{
+				width = win_width;
+				height = Math.floor(width * vn.game.resolution.ratio);
+			}
+			else
+			{
+				height = win_height;
+				width = Math.floor(height / vn.game.resolution.ratio);
+				if (win_width < width)
+				{
+					width = win_width;
+					height = Math.floor(width * vn.game.resolution.ratio);
+				}
+			}
+		}
+		if ((width >= config.min_width) && (height >= config.min_height))
+		{
+			resolution.width = width;
+			resolution.height = height;
+			if (!$('#save_load_menu').is(':visible'))
+				resize_save_load_menu();
+		}
+		$('#game_screen').css(
+		{
+			'width': resolution.width + 'px',
+			'height': resolution.height + 'px'
+		});
+	}
+	else
+	{
+		resolution.width = null;
+		resolution.height = null;
+	}
+}
 
 // Функция создания окна лога
 function init_log()
@@ -63,7 +167,7 @@ function init_log()
 		{
 			$info.animate(
 			{
-				top: '-130px',
+				top: '-175px',
 				left: '-180px',
 				'padding-bottom': '30px'
 			}, 200);
@@ -136,19 +240,20 @@ function create_main_menu()
 		.appendTo('head');
 	$('#info_game_name').text('');
 	$('#info_game_resolution').text('');
+	let games_list_source;
+	if (is_php_enabled)
+		games_list_source = "php/get_games_list.php";
+	else
+		games_list_source = "games/games_list.json";
 
-	$.get(G['games-list'])
+	$.get(games_list_source)
 		.done(function(data)
 		{
 			let games_list;
-			if (typeof(data) == 'object')
-			{
+			if (typeof(data) === 'object')
 				games_list = data;
-			}
 			else
-			{
 				games_list = JSON.parse(data);
-			}
 
 			$.each(games_list, function(key, value)
 			{
@@ -186,7 +291,8 @@ function create_main_menu()
 						vn.game.resolution =
 						{
 							width: value.width,
-							height: value.height
+							height: value.height,
+							ratio: value.height / value.width
 						};
 						vn.game.icons =
 						{
@@ -199,12 +305,7 @@ function create_main_menu()
 							big: value.thumb_b
 						}
 						vn.game.script_line_num = 0;
-						let $game_screen = $('#game_screen');
-						$game_screen.css(
-						{
-							'width': vn.game.resolution.width + 'px',
-							'height': vn.game.resolution.height + 'px'
-						});
+						exec_window_resize_events();
 						$main_screen.stop().fadeOut(config.effect_speed, function()
 						{
 							$('title').text(title + ' : ' + vn.game.full_name);
@@ -214,7 +315,7 @@ function create_main_menu()
 								.appendTo('head');
 							$('#info_game_name').text(vn.game.full_name);
 							$('#info_game_resolution').text(vn.game.resolution.width + 'x' + vn.game.resolution.height);
-							$game_screen.stop().fadeIn(config.effect_speed);
+							$('#game_screen').stop().fadeIn(config.effect_speed);
 							create_game_menu();
 						});
 					});
@@ -268,6 +369,12 @@ function load_settings()
 			item = localStorage.getItem('auto_text_pause');
 			if (item !== null)
 				config.auto_text_pause = Number(item);
+			item = localStorage.getItem('is_skip_unread');
+			if (item !== null)
+				config.is_skip_unread = Boolean(Number(item));
+			item = localStorage.getItem('is_fullscreen');
+			if (item !== null)
+				config.is_fullscreen = Boolean(Number(item));
 			item = localStorage.getItem('text_size');
 			if (item !== null)
 				config.text_size = Number(item);
@@ -296,7 +403,9 @@ function save_settings()
 			localStorage.setItem('sound_volume', Number(config.sound_volume));
 			localStorage.setItem('text_speed', Number(config.text_speed));
 			localStorage.setItem('auto_text_pause', Number(config.auto_text_pause));
+			localStorage.setItem('is_skip_unread', Number(config.is_skip_unread));
 			localStorage.setItem('text_size', Number(config.text_size));
+			localStorage.setItem('is_fullscreen', Number(config.is_fullscreen));
 			localStorage.setItem('log_level', Number(config.log_level));
 		}
 		catch (e)
@@ -460,7 +569,10 @@ function bind_message_box_events()
 	});
 	$message_box_menu_skip.on('click', function()
 	{
-		set_skip(!config.is_skip);
+		if (is_skip_enabled)
+			set_skip(!config.is_skip);
+		else
+			show_notification('Пропуск непрочитанного отключен', config.notification_delay);
 		return false;
 	});
 	$message_box_menu_auto.on('click', function()
@@ -523,6 +635,21 @@ function bind_message_box_events()
 	});
 }
 
+// Функция переключения состояние кнопки быстрого пропуска
+function set_skip_enabled(state)
+{
+	if (is_skip_enabled === state) return;
+	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee) + ': ' + state);
+	is_skip_enabled = state;
+	if (state)
+		$('#message_box_menu_skip').removeClass('inactive');
+	else
+	{
+		set_skip(false);
+		$('#message_box_menu_skip').addClass('inactive');
+	}
+}
+
 // Функция быстрого пропуска
 function set_skip(state)
 {
@@ -539,8 +666,8 @@ function set_skip(state)
 		config.text_speed = config.skip_text_speed;
 		$message_box_next.hide();
 		$('#message_box_text').css('cursor', 'default');
-		$message_box_next.trigger('click');
 		$('#message_box_menu_skip').addClass('enabled');
+		$message_box_next.trigger('click');
 	}
 	else
 	{
@@ -649,6 +776,7 @@ function create_game_menu()
 
 	$('#game_menu_start').on('click', function()
 	{
+		set_skip_enabled(config.is_skip_unread);
 		$game_menu.find('*').off('click');
 		$overlay.stop().fadeOut(config.effect_speed);
 		$game_menu.stop().fadeOut(config.effect_speed, function()
@@ -763,8 +891,10 @@ function create_game_menu()
 		});
 	}
 	$overlay.stop().fadeIn(config.effect_speed);
-	$game_menu.find('button').fadeIn(config.effect_speed);
-	$game_menu.stop().fadeIn(config.effect_speed);
+	$game_menu.find('button').fadeIn(config.effect_speed, function()
+	{
+		$game_menu.fadeIn(config.effect_speed);
+	});
 }
 
 // Создание списка сохранений
@@ -823,6 +953,7 @@ function create_save_load_menu(mod, callback)
 				else
 					vn.load(selected);
 			});
+
 			return false;
 		});
 	}
@@ -854,17 +985,31 @@ function create_save_load_menu(mod, callback)
 				callback();
 		});
 	});
-	let i = 25;
-	do
-	{
-		$save_load_menu.find('button').css('height', i + 'px');
-		i++;
-	}
-	while ($save_load_menu.height() <= (vn.game.resolution.height - i / 2));
-	$save_load_menu.find('button').find('div').css('height', (i - 6) + 'px');
-	$save_load_menu.find('button').find('img').css('width', (i - 5) * (vn.game.resolution.width / vn.game.resolution.height) + 'px');
+	resize_save_load_menu();
 	$save_load_menu.find('button').fadeIn(config.effect_speed);
 	$save_load_menu.stop().fadeIn(config.effect_speed);
+}
+
+// Изменение размеров кнопок меню загрузки и сохранения
+function resize_save_load_menu()
+{
+	let $save_load_menu = $('#save_load_menu');
+	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	let button_height = Math.floor(resolution.height / 11) + 2;
+	let button_margin = Math.floor(button_height / 3);
+	button_height = button_height - button_margin;
+	let button_width = Math.floor(resolution.width / 3);
+	$save_load_menu.find('button').css({
+		'height': button_height + 'px',
+		'width': button_width + 'px',
+		'margin-top': button_margin / 2 + 'px',
+		'margin-bottom': button_margin / 2 + 'px'
+	});
+	$save_load_menu.find('button').find('div').css({
+		'height': (button_height - 6) + 'px',
+		'width': button_width + 'px'
+	});
+	$save_load_menu.find('button').find('img').css('width', (button_height - 5) * (resolution.width / resolution.height) + 'px');
 }
 
 // Создание меню настроек
@@ -880,8 +1025,10 @@ function create_config_menu(callback)
 	$config_menu_text_size.val(config.text_size);
 	$config_menu_text_speed.val(20 - config.text_speed);
 	$config_menu_auto_text_pause.val(config.auto_text_pause / 200);
+	$('#config_menu_is_skip_unread').prop('checked', config.is_skip_unread);
 	$config_menu_sound_volume.val(config.sound_volume * 10);
-	$('#config_menu_log_' + config.log_level).prop('checked',true);
+	$('#config_menu_is_fullscreen').prop('checked', config.is_fullscreen);
+	$('#config_menu_log_' + config.log_level).prop('checked', true);
 	$overlay.stop().fadeIn(config.effect_speed);
 	$config_menu.stop().fadeIn(config.effect_speed);
 	let $config_menu_exit = $('#config_menu_exit');
@@ -897,8 +1044,11 @@ function create_config_menu(callback)
 		config.text_size = Number($config_menu_text_size.val());
 		config.text_speed = Number(20 - $config_menu_text_speed.val());
 		config.auto_text_pause = Number($config_menu_auto_text_pause.val() * 200);
+		config.is_skip_unread = $('#config_menu_is_skip_unread').prop('checked');
 		config.sound_volume = Number($config_menu_sound_volume.val() / 10);
+		config.is_fullscreen = $('#config_menu_is_fullscreen').prop('checked');
 		config.log_level = $('input[name=log]:checked').val();
+		exec_window_resize_events();
 		save_settings();
 		$overlay.stop().fadeOut(config.effect_speed);
 		$config_menu.stop().fadeOut(config.effect_speed, function()
@@ -941,10 +1091,8 @@ function show_error(message, delay)
 			type: 'Error'
 		}
 	
-	if (G["post-log"])
-	{
-		$.post(G["log-url"], post_array);
-	}
+	if (config.is_error_log && is_php_enabled)
+		$.post('php/save_log.php', post_array);
 	console.error(message);
 	show_notification(message, delay);
 }
@@ -969,7 +1117,8 @@ function show_warning(message, callback)
 			type: 'Warning'
 		}
 		
-	$.post(G["log-url"], post_array);
+	if (config.is_error_log && is_php_enabled)
+		$.post('php/save_log.php', post_array);
 	console.warn(message);
 	if (callback !== undefined)
 		show_dialog(message, callback);
@@ -1013,6 +1162,11 @@ function type_writer(str)
 {
 	var $message_box_name = $('#message_box_name');
 	var $message_box_text = $('#message_box_text');
+	var message_box_font = $message_box_text.css('font-size') + ' ' + $message_box_text.css('font-family');
+	var padding_left = $message_box_text.css('padding-left').replace('px', '');
+	var padding_right = $message_box_text.css('padding-right').replace('px', '');
+	var message_box_width = $message_box_text.width() - padding_left - padding_right;
+	
 	clearInterval(type_interval);
 	var i = 0;
 	let rb_pos = str.indexOf(']');
@@ -1038,6 +1192,8 @@ function type_writer(str)
 	else
 	{
 		var type_str = '';
+		var line_str = '';
+		var sub_str = '';
 		type_interval = setInterval(print_str, config.text_speed);
 	}
 
@@ -1068,7 +1224,21 @@ function type_writer(str)
 			if (i < str.length)
 			{
 				type_str += str[i];
+				line_str += str[i];
 				i++;
+				if (str[i - 1] == ' ')
+				{
+					let next_space = str.indexOf(' ', i) - i;
+					if (next_space < 0)
+						next_space = str.length;
+					sub_str = str.substr(i, next_space);
+					if (get_text_width(line_str + sub_str, message_box_font) > message_box_width)
+					{
+						type_str = type_str.slice(0, -1);
+						type_str += '<br>';
+						line_str = '';
+					}
+				}
 			}
 			$message_box_text.html(type_str);
 		}
@@ -1079,6 +1249,14 @@ function type_writer(str)
 	}
 }
 
+function get_text_width(str, font)
+{
+	let canvas = get_text_width.canvas || (get_text_width.canvas = document.createElement('canvas'));
+	let context = canvas.getContext('2d');
+	context.font = font;
+	let metrics = context.measureText(str);
+	return metrics.width;
+}
 
 // Кеширование картинок
 function preload_images(images_list)
@@ -1136,58 +1314,66 @@ function get_file_ext(filename)
 
 // Вывод верхнего баннера
 function show_promo()
-{	
+{
 	if (is_promo) return;
 	let $promo = $('#promo');
-	if (!G["show-promo"]){
-		$promo.hide();
-		return;
-	}
-	$.get(G['promo-url'], {promo_file: 'promo.csv'})
+	$.get('promo/promo.json')
 		.done(function(data)
 		{
-			let promo = JSON.parse(data);
-			if (promo.error !== null)
+			let promo;
+			if (typeof(data) === 'object')
 			{
-				$promo.hide();
-				return false;
+				let key = Math.floor(Math.random() * data.length);
+				promo = data[key];
+			}
+			else
+			{
+				promo = JSON.parse(data);
+				if (promo.error !== null)
+				{
+					$promo.hide();
+					return false;
+				}
 			}
 			$promo.css('background-image', 'url(promo/' + promo.image);
 			$promo.find('a')
 				.attr('href', promo.url)
 				.on('click', function(e)
 				{
-					$.post(G["promo-redirect"],
-						{
-							name: promo.name,
-							url: promo.url,
-							image: promo.image
-						}, function()
-						{
-							is_promo = true;
-							$(window).off('resize');
-							$promo.hide();
-						});
+					if (is_php_enabled)
+					{
+						$.post('php/redirect_promo.php',
+							{
+								name: promo.name,
+								url: promo.url,
+								image: promo.image
+							});
+					}
+					is_promo = true;
+					$(window).off('resize', set_promo_opacity);
+					$promo.hide();
 				})
 				.show(config.effect_speed);
-			$(window).on('resize', function()
-			{
-				let $game_screen = $('#game_screen');
-				if (($game_screen.is(':visible')) && ($game_screen.position().top < $promo.height()))
-				{
-					if ($promo.css('opacity') == 1)
-						$promo.stop().fadeTo(config.effect_speed, 0.5);
-				}
-				else
-				{
-					if ($promo.css('opacity') == 0.5)
-						$promo.stop().fadeTo(config.effect_speed, 1);
-				}
-			});
-			$(window).resize();
+			$(window).on('resize', set_promo_opacity);
+			set_promo_opacity();
 		})
-		.fail(function(jqXHR, textStatus, errorThrown)
+		.fail(function()
 		{
 			$promo.hide();
 		});
+
+	function set_promo_opacity()
+	{
+		let $game_screen = $('#game_screen');
+		if (($game_screen.is(':visible')) && ($game_screen.position().top < $promo.height()))
+		{
+			if ($promo.css('opacity') == 1)
+				$promo.stop().fadeTo(config.effect_speed, 0.5);
+		}
+		else
+		{
+			if ($promo.css('opacity') == 0.5)
+				$promo.stop().fadeTo(config.effect_speed, 1);
+		}
+	}
 }
