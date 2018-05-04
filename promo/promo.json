@@ -1,12 +1,12 @@
 [
 	{
-		"name":   "Энтузиасты",
-		"url":    "http:\/\/enthusiasts-ts.ru",
-		"image":  "ent.jpg"
+		"name":		"Энтузиасты",
+		"url":		"http:\/\/enthusiasts-ts.ru",
+		"image":	"ent.jpg"
 	},
 	{
-		"name":   "VN-news",
-		"url":    "http:\/\/vn-news.com",
-		"image":  "nvn.jpg"
+		"name":		"VN-news",
+		"url":		"http:\/\/vn-news.com",
+		"image":	"nvn.jpg"
 	}
 ]
