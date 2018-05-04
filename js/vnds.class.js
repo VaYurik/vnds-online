@@ -26,7 +26,7 @@ var vnds_interpreter = function()
 				small: null,              // icon
 				big: null                 // icon-high
 			},
-			thumbs:                     // Привьюшки игры, взятые из директории игры
+			thumbs:                     // Превьюшки игры, взятые из директории игры
 			{
 				small: null,              // thumbnail
 				big: null                 // thumbnail-high
@@ -41,256 +41,874 @@ var vnds_interpreter = function()
 			background: null,           // файл текущего фона
 			sprites:                    // массив отображающихся в текущий момент спрайтов
 			{                           // индекс массива - имя спрайта без расширения
-				sprite: null,             // файл спрайта
+				name: null,               // идентификатор спрайта
+				file: null,               // имя файла спрайта
 				x: null,                  // координата x
 				y: null                   // координата y
-			},
-			route: {}                   // массив с просмотренными фрагментами
+			}
 		};
 	}
 
-/* Сброс значений переменных игры */
-	this.drop = function()
-	{
-		this.append_text = false;
-		this.prev_text = '';
-		this.game.local_variables = {};
-		this.game.selected = null;
-		this.game.script_name = null;
-		this.game.script_lines = [];
-		this.game.script_line_num = null;
-		this.game.sound = null;
-		this.game.music = null;
-		this.game.background = null;
-		this.game.sprites = null;
-		this.game.route = {};
-	}
 
-/* Вывод изображения filename в качестве фона
- * bgload bg [fadeout]
- * 		The parameter bg should be a file in backgrounds
- *		The second parameter, fadeout, should be a length in frames to fade into the new background
- */
-	this.bgload = function(params)
+/*====================================================================================================
+	Вывод изображения в качестве фона, с удалением всех спрайтов
+	bgload [имя файла или код цвета] [эффект] [длительность]
+	[имя файла] - имя графического файла в директории "background"
+	[код цвета] - код цвета в шестнадцатеричной системе счисления, начинается с "#"
+
+	[эффекты] - dissolve (по умолчанию), slide, flip
+
+	[длительность] - без единиц измерения - фреймы, "ms" - миллисекунды, "s" - секунды
+
+	[is_remove_sprites] - удалять или нет имеющиеся спрайты
+  ====================================================================================================*/
+
+	this.bgload = function(params, command_name = 'BGLOAD', is_remove_sprites = true)
 	{
-		if (config.log_level != LOG_DISABLE) console.log('BGLOAD ' + params);
+		if (config.log_level != LOG_DISABLE) console.log(command_name + ' ' + params);
 		let df = $.Deferred();
 		if (params === undefined)
 		{
-			df.resolve('Missing BGLOAD parameters');
+			df.resolve('Missing ' + command_name + ' parameters');
 			return df.promise();
 		}
-		let split_params = params.toString().split(' ');
-		let background = this.getvar(split_params[0]);
-		if (background === false)
+		let params_list = this.get_params_list(params);
+		if (params_list.length > 3)
 		{
-			df.resolve('Unknown BGLOAD variable ' + split_params[0]);
+			df.resolve('Incorrect ' + command_name + ' parameters');
 			return df.promise();
 		}
-		if (this.game.background === background)
+		let _this = this;
+		let params_index = 0;
+		$.each(params_list, function(key, value)
 		{
-			this.setimg('~');
-			df.resolve();
-			return df.promise();
+			params_list[key] = _this.get_var(value);
+			if (params_list[key] === false)
+			{
+				df.resolve('Unknown ' + command_name + ' variable ' + value);
+				return df.promise();
+			}
+		});
+		let background = params_list[params_index];
+
+		let effect_speed;
+		let effect;
+		if (params_list.length > 1) // Если параметров больше одного и не включён режим пропуска
+		{
+			let effect_speed_param;
+			params_index++;
+			let value = params_list[params_index].toLowerCase();
+			if ((value == 'dissolve') || (value == 'slide') || (value == 'flip')) // Если следующий параметр - эффект
+			{
+				if (params_list.length === 2) // Если указан эффект, но не указана длительность - ошибка
+				{
+					df.resolve('Missing ' + command_name + ' effect speed');
+					return df.promise();
+				}
+				effect = value;
+				params_index++;
+				effect_speed_param = params_list[params_index].toLowerCase(); // Получаем длительность
+			}
+			else // Если следующий параметр не эффект, то длительность, а эффект по умолчанию - dissolve
+			{
+				effect = 'dissolve';
+				effect_speed_param = value;
+			}
+			effect_speed = get_duration(effect_speed_param);
+			if (effect_speed === false)
+			{
+				df.resolve('Incorrect ' + command_name + ' effect speed: ' + effect_speed_param);
+				return df.promise();
+			}
+			if (config.is_skip) // Проверка на скип здесь, чтобы выполнились все проверки синтаксиса команды выше
+				effect_speed = 0;
 		}
-		let $background = $('#background');
-		let fadeout = split_params[1];
-		if ((fadeout === undefined) || (config.is_skip))
-			fadeout = 0;
-		if (!$.isNumeric(fadeout))
+		else // Если параметров больше нет, значит эффект dissolve, а длительность - ноль
 		{
-			df.resolve('Incorrect BGLOAD fadeout value: ' + fadeout);
-			return df.promise();
+			effect = 'dissolve';
+			effect_speed = 0;
 		}
 
-		let $game_screen = $('#game_screen');
-		let $handle = $game_screen.prop('onclick'); // Сохраняем функцию по onclick
 		$('#info_background').text(background);
-		let filename = this.game.dir + '/background/' + background;
-		let _this = this;
-		$.get(filename)
-			.fail(function()
+		if (background.indexOf('#') === 0) // Если значение параметра фона начинается с "#", то это цвет
+		{
+			if ((!is_hex(background)) || ((background.length != 4) && (background.length != 7)))
 			{
-				df.resolve('File<br>' + filename + '<br> not found');
-			})
-			.done(function()
+				df.resolve('Incorrect ' + command_name + ' color: ' + background);
+				return df.promise();
+			}
+			this.game.background = background;
+			draw_bg(this, background, effect, effect_speed, is_remove_sprites);
+		}
+		else // Иначе - файл
+		{
+			let filename = this.game.dir + '/background/' + escape(background);
+			let _this = this;
+			$.get(filename)
+				.fail(function()
+				{
+					df.resolve('File<br>' + filename + '<br> not found');
+				})
+				.done(function()
+				{
+					_this.game.background = background;
+					background = 'url(' + filename + ')';
+					draw_bg(_this, background, effect, effect_speed, is_remove_sprites);
+				});
+		}
+		return df.promise();
+
+		function draw_bg(obj, background, effect, effect_speed, is_remove_sprites)
+		{
+			if (is_remove_sprites)
 			{
-				_this.cleartext();
-				_this.game.background = background;
-				if (fadeout === 0)
+				obj.cleartext();
+				obj.setimg('~');
+			}
+			let $game_screen = $('#game_screen');
+			let $background = $('#background');
+			let property_name;
+			if (background.indexOf('#') === 0)
+				property_name = 'background-color';
+			else
+				property_name = 'background-image';
+			if (effect_speed === 0)
+			{
+				$background.css(property_name, background);
+				df.resolve();
+			}
+			else
+			{
+				let handle = $game_screen.prop('onclick');
+				$game_screen.off('click');
+				if (effect == 'dissolve')
 				{
-					_this.setimg('~');
-					$background.css({'background-image': 'url(' + filename + ')'});
-					df.resolve();
-				}
-				else
-				{
-					$game_screen.off('click');
-					let $sprites = $('#sprites');
-					$sprites.find('img').each(function()
+					$background.stop().fadeOut(effect_speed, function()
 					{
-						$(this).stop().fadeOut(fadeout / 0.12).remove();
-					});
-					$background.stop().fadeOut(fadeout / 0.12, function() // приводим к 60 fps
-					{
-						_this.game.sprites = {};
-						$('#info_sprites').text('~');
-						$(this)
-							.css({'background-image': 'url(' + filename + ')'})
-							.fadeIn(fadeout / 0.12, function()
+						$(this).css(property_name, background)
+						$(this).fadeIn(effect_speed, function()
 							{
-								$game_screen.on('click', $handle); // Возвращаем функцию по onclick обратно
+								$game_screen.on('click', handle);
 								df.resolve();
 							});
 					});
 				}
-			});
-		return df.promise();
+				else if (effect == 'slide')
+				{
+					$background.stop().slideUp(effect_speed, function()
+					{
+						$(this).css(property_name, background)
+						$(this).slideDown(effect_speed, function()
+						{
+							$game_screen.on('click', handle);
+							df.resolve();
+						});
+					});
+				}
+				else if (effect == 'flip')
+				{
+					$background.stop().animate({'width': 'toggle'}, effect_speed, function()
+					{
+						$(this).css(property_name, background)
+						$(this).animate({'width': 'toggle'}, effect_speed, function()
+						{
+							$game_screen.on('click', handle);
+							df.resolve();
+						});
+					});
+				}
+			}
+		}
 	}
 
-/* Вывод изображения filename в координаты x и y (в системе координат Nintendo DS)
- * setimage file x y
- * setimage file ~
- */
-	this.setimg = function(params)
+/* bg - синоним функции bgload */
+	this.bg = function(params)
 	{
-		if (config.log_level != LOG_DISABLE) console.log('SETIMG ' + params);
+		let df = this.bgload(params, 'BG', false);
+		return df;
+	}
+
+
+/*====================================================================================================
+	Вывод изображения в качестве спрайта
+	setimg [идентификатор] [имя файла] [координата X] [координата Y] [эффект] [длительность]
+	setimg [идентификатор/имя файла] ~ [длительность] - удаление спрайта
+	setimg * ~ [длительность] или setimg ~ [длительность] - удаление всех спрайтов
+
+	[идентификатор] - начинается с буквы, содержит только буквы и знак "_", имена команд использовать нельзя.
+	[имя файла] - имя графического файла в директории "foreground"
+	
+	[координата X] [координата Y] - координаты спрайта по x и y,
+	без единиц измерения - в системе координат Nintendo DS, "px" - пиксели, "%" - проценты
+
+	[эффект] - на текущий момент один - dissolve, он же по умолчанию.
+
+	[длительность] - без единиц измерения - фреймы, "ms" - миллисекунды, "s" - секунды
+	
+	[is_wait] - ждать ли завершения перемещения спрайта перед переходом к следующей команде или нет
+	В общем случае ждать не нужно, так можно оперировать сразу с несколькими спрайтами одновременно,
+	а если понадобится последовательное выполнение команд, можно воспользоваться командой delay
+  ====================================================================================================*/
+
+	this.setimg = function(params, command_name = 'SETIMG', is_wait = false)
+	{
+		if (config.log_level != LOG_DISABLE) console.log(command_name + ' ' + params);
 		let df = $.Deferred();
 		if (params === undefined)
 		{
-			df.resolve('Missing SETIMG parameters');
+			df.resolve('Missing ' + command_name + ' parameters');
 			return df.promise();
 		}
-		let $sprites = $('#sprites');
-		let _this = this;
 		$('#info_sprites').text(params);
-		if (params === '~')
+		let params_list = this.get_params_list(params);
+		if ((params_list.length < 1) || (params_list.length > 6))
 		{
+			df.resolve('Incorrect ' + command_name + ' parameters');
+			return df.promise();
+		}
+		let _this = this;
+		$.each(params_list, function(key, value)
+		{
+			params_list[key] = _this.get_var(value);
+			if (params_list[key] === false)
+			{
+				df.resolve('Unknown ' + command_name + ' variable ' + value);
+				return df.promise();
+			}
+		});
+
+		let params_index = 0;
+		let effect_speed;
+		if ((params_list[params_index] === '~') || (params_list[params_index] === '*'))  // Удаление всех спрайтов
+		{
+			params_index++;
+			if (params_list[params_index] === '~')
+				params_index++;
+			if (params_list[params_index] !== undefined)
+			{
+				let effects_list = ['dissolve'];
+				if (effects_list.indexOf(params_list[params_index]) !== -1) // Если эффект "dissolve", то просто читаем следующий параметр
+				{
+					if (params_list.length - params_index == 1)
+					{
+						df.resolve('Missing ' + command_name + ' effect speed');
+						return df.promise();
+					}
+					params_index++;
+				}
+				effect_speed = get_duration(params_list[params_index]);
+				if (effect_speed === false)
+				{
+					df.resolve('Incorrect ' + command_name + ' effect speed: ' + params_list[params_index]);
+					return df.promise();
+				}
+			}
+			if (config.is_skip) // Проверка на скип здесь, чтобы выполнились все проверки синтаксиса команды выше
+				effect_speed = 0;
+			let $sprites = $('#sprites');
 			$sprites.find('img').each(function()
 			{
-				$(this).remove();
+				if (effect_speed !== 0)
+				{
+					$(this)
+						.stop(true, true)
+						.fadeOut(effect_speed, function()
+						{
+							$(this).remove();
+						});
+				}
+				else
+					$(this).remove();
 			});
 			this.game.sprites = {};
 			df.resolve();
 			return df.promise();
 		}
-		let split_params = params.toString().split(' ');
-		let sprite = this.getvar(split_params[0]);
-		if (sprite === false)
+
+		let sprite_name;
+		if (params_list[params_index].indexOf('.') === -1) // Если первый параметр не имя файла, значит идентификатор
 		{
-			df.resolve('Unknown SETIMG variable ' + split_params[0]);
-			return df.promise();
-		}
-		if ((split_params.length < 2) || (split_params.length > 3))
-		{
-			df.resolve('Incorrect SETIMG parameters');
-			return df.promise();
-		}
-		let split_spritename = sprite.toString().split('.');
-		let sprite_name = split_spritename[0];
-		sprite_name = sprite_name.replace('/', '_');
-		if (split_params[1] === '~')
-		{
-			$('#' + sprite_name).remove();
-			delete(_this.game.sprites[sprite_name]);
-			df.resolve();
-			return df.promise();
-		}
-		let filename = this.game.dir + '/foreground/' + sprite;
-		let x = _this.getvar(split_params[1]);
-		let y = _this.getvar(split_params[2]);
-		if (x === false)
-		{
-			df.resolve('Unknown SETIMG variable ' + split_params[1]);
-			return df.promise();
-		}
-		else if (y === false)
-		{
-			df.resolve('Unknown SETIMG variable ' + split_params[2]);
-			return df.promise();
-		}
-		else if ((!$.isNumeric(x)) || (!$.isNumeric(y)))
-		{
-			df.resolve('Incorrect SETIMG coordinates: ' + x + ':' + y);
-			return df.promise();
-		}
-		this.game.sprites[sprite_name] =
-		{
-			sprite: sprite,
-			x: x,
-			y: y
-		};
-		$.get(filename)
-			.fail(function()
+/*			if (params_list[params_index].indexOf('@') !== 0)
 			{
-				df.resolve('File<br>' + filename + '<br> not found');
-			})
-			.done(function()
+				df.resolve('Incorrect ' + command_name + ' identificator: ' + params_list[params_index]);
+				return df.promise();
+			}*/
+			sprite_name = params_list[params_index].replace('@', '');
+			params_index++;
+		}
+
+		if (sprite_name === undefined) // Если идентификатора не было
+		{
+			if (params_list[params_index].indexOf('.') === -1) // ...и если первый параметр не имя файла (т.е. идентификатор получить невозможно)
 			{
-				let $sprite_name = $('#' + sprite_name);
-				if ($sprite_name.length)
+				df.resolve('Missing ' + command_name + ' sprite filename');
+				return df.promise();
+			}
+			sprite_name = params_list[params_index].replace(/\/|\.|\-/g, '_');
+		}
+		let regexp = /^([A-Za-z0-9_]+)$/i;
+		if (!regexp.test(sprite_name))
+		{
+			df.resolve('Incorrect ' + command_name + ' identificator: ' + sprite_name);
+			return df.promise();
+		}
+		sprite_name = 'img_' + sprite_name;
+		let sprite_file;
+		if (params_list[params_index].indexOf('.') !== -1) // Если следующий параметр имя файла
+		{
+			sprite_file = params_list[params_index];
+			params_index++;
+		}
+
+		let effects_list = ['dissolve'];
+		if (params_list[params_index] === '~') // Если после идентификатора или имени файла идёт команда удаления спрайта
+		{
+			params_index++;
+			if (params_list[params_index] !== undefined)
+			{
+				if (effects_list.indexOf(params_list[params_index]) !== -1) // Если эффект "dissolve", то просто читаем следующий параметр
 				{
-					$sprite_name
-						.animate(
-						{
-							'left': x * 100 / 256 + '%',
-							'top': y * 100 / 192 + '%'
-						}, config.effect_speed, function()
+					if (params_list.length - params_index == 1)
+					{
+						df.resolve('Missing ' + command_name + ' effect speed');
+						return df.promise();
+					}
+					params_index++;
+				}
+				effect_speed = get_duration(params_list[params_index]);
+				if (effect_speed === false)
+				{
+					df.resolve('Incorrect ' + command_name + ' effect speed: ' + params_list[params_index]);
+					return df.promise();
+				}
+			}
+			if (config.is_skip) // Проверка на скип здесь, чтобы выполнились все проверки синтаксиса команды выше
+				effect_speed = 0;
+
+			let $sprite_name;
+			$sprite_name = $('#temp_' + sprite_name);
+			if ($sprite_name.length > 0)
+			{
+				$sprite_name.remove();
+				effect_speed = 0;
+			}
+			$sprite_name = $('#' + sprite_name);
+			if ($sprite_name.length === 0)
+			{
+				df.resolve('Incorrect ' + command_name + ' identificator: ' + sprite_name);
+				return df.promise();
+			}
+			if (effect_speed !== 0) // Если задержка указана
+			{
+				$sprite_name
+					.stop(true, true)
+					.fadeOut(effect_speed, function()
+					{
+						$sprite_name.remove();
+						delete(_this.game.sprites[sprite_name]);
+						if (is_wait)
 						{
 							df.resolve();
-						});
+							return df.promise();
+						};
+					});
+				if (!is_wait)
+				{
+					df.resolve();
+					return df.promise();
+				};
+			}
+			else // Если задержка не указана
+			{
+				$sprite_name.remove();
+				delete(this.game.sprites[sprite_name]);
+				df.resolve();
+				return df.promise();
+			}
+		}
+
+		let position_x = ['left', 'right', 'left-side', 'right-side', 'left-border', 'right-border', 'left-out', 'right-out', 'center'];
+		let position_y = ['top', 'bottom', 'top-side', 'bottom-side', 'top-border', 'bottom-border', 'top-out', 'bottom-out', 'center'];
+		let x, y;
+		if ((params_list.length - params_index > 1) && (effects_list.indexOf(params_list[params_index]) === -1)) // Если осталось больше одного параметра и следующий параметр не эффект, значит следом идут координаты
+		{
+			x = params_list[params_index].toLowerCase();
+			if (x.indexOf('px') !== -1)
+			{
+				x = x.slice(0, -2); // переводим пиксели в проценты
+				if ($.isNumeric(x))
+					x = x * 100 / this.game.resolution.width;
+			}
+			else if (x.indexOf('%') !== -1)
+				x = x.slice(0, -1); // ничего не переводим - уже проценты
+			else if ($.isNumeric(x))
+				x = x * 100 / 256; // переводим DS в проценты
+			if (!$.isNumeric(x) && (position_x.indexOf(x) === -1))
+			{
+				df.resolve('Incorrect ' + command_name + ' X-coordinate: ' + x);
+				return df.promise();
+			}
+			params_index++;
+			y = params_list[params_index].toLowerCase();
+			if (y.indexOf('px') !== -1)
+			{
+				y = y.slice(0, -2); // переводим пиксели в проценты
+				if ($.isNumeric(y))
+					y = y * 100 / this.game.resolution.width;
+			}
+			else if (y.indexOf('%') !== -1)
+				y = y.slice(0, -1); // ничего не переводим - уже проценты
+			else if ($.isNumeric(y))
+				y = y * 100 / 192; // переводим DS в проценты
+
+			if (!$.isNumeric(y) && (position_y.indexOf(y) === -1))
+			{
+				df.resolve('Incorrect ' + command_name + ' Y-coordinate: ' + y);
+				return df.promise();
+			}
+
+			if ($.isNumeric(x))
+				x += '%';
+			else if (x === 'left-border')
+				x = 0;
+			else if (x === 'right-out')
+				x = '100%';
+
+			if ($.isNumeric(y))
+				y += '%';
+			else if (y === 'top-border')
+				y = 0;
+			else if (y === 'bottom-out')
+				y = '100%';
+			params_index++;
+		}
+		else
+		{
+			if (this.game.sprites[sprite_name] !== undefined)
+			{
+				x = this.game.sprites[sprite_name].x;
+				y = this.game.sprites[sprite_name].y;
+			}
+			else
+			{
+				x = 'center';
+				y = 'center';
+//				df.resolve('Missing ' + command_name + ' coordinates');
+//				return df.promise();
+			}
+		}
+		if (params_list.length - params_index > 0) // Если ещё что-то осталось, это длительность и, возможно, эффект
+		{
+			let effects_list = ['dissolve'];
+			if (effects_list.indexOf(params_list[params_index]) !== -1) // Если эффект "dissolve", то просто читаем следующий параметр
+			{
+				if (params_list.length - params_index == 1)
+				{
+					df.resolve('Missing ' + command_name + ' effect speed');
+					return df.promise();
+				}
+				params_index++;
+			}
+			effect_speed = get_duration(params_list[params_index]);
+			if (effect_speed === false)
+			{
+				df.resolve('Incorrect ' + command_name + ' effect speed: ' + params_list[params_index]);
+				return df.promise();
+			}
+		}
+		if (config.is_skip) // Проверка на скип здесь, чтобы выполнились все проверки синтаксиса команды выше
+			effect_speed = 0;
+		if (sprite_file !== undefined) // Если имя файла спрайта определено, то создаём спрайт
+		{
+			let sprite_path = this.game.dir + '/foreground/' + escape(sprite_file);
+			$.get(sprite_path)
+				.fail(function()
+				{
+					df.resolve('File<br>' + sprite_path + '<br> not found');
+				})
+				.done(function()
+				{
+					draw_sprite(_this, df,
+					{
+						name: sprite_name,
+						path: sprite_path,
+						file: sprite_file,
+						x: x,
+						y: y
+					}, effect_speed, is_wait);
+				});
+		}
+		else // Если имя файла не определено, то просто перемещаем спрайт
+		{
+			if (this.game.sprites[sprite_name] === undefined)
+				df.resolve('Unknown ' + command_name + ' identificator: ' + sprite_name);
+			else
+			{
+				draw_sprite(_this, df,
+				{
+					name: sprite_name,
+					file: this.game.sprites[sprite_name].file,
+					x: x,
+					y: y
+				}, effect_speed, is_wait);
+			}
+		}
+		return df.promise();
+
+		// Функция вывода спрайта
+		function draw_sprite(obj, df, sprite, effect_speed, is_wait)
+		{
+			let $game_screen = $('#game_screen');
+			let handle = $game_screen.prop('onclick');
+			let $sprite_name = $('#' + sprite.name);
+			$game_screen.off('click');
+			if (sprite.path === undefined) // Если ссылка на новый файл спрайта не передана, то такой спрайт уже существует - просто двигаем его
+			{
+				if ((sprite.x === 'right') || (sprite.x === 'right-side'))
+					sprite.x = 75 - (50 * $sprite_name.width() / resolution.width) + '%';
+				else if (sprite.x === 'right-border')
+					sprite.x = 100 - (100 * $sprite_name.width() / resolution.width) + '%';
+				else if ((sprite.x === 'left') || (sprite.x === 'left-side'))
+					sprite.x = 25 - (50 * $sprite_name.width() / resolution.width) + '%';
+				else if (sprite.x === 'left-out')
+					sprite.x = -(100 * $sprite_name.width() / resolution.width) + '%';
+				else if (sprite.x === 'center')
+					sprite.x = 50 - (50 * $sprite_name.width() / resolution.width) + '%';
+
+				if ((sprite.y === 'bottom') || (sprite.y === 'bottom-side'))
+					sprite.y = 75 - (50 * $sprite_name.height() / resolution.height) + '%';
+				else if (sprite.y === 'bottom-border')
+					sprite.y = 100 - (100 * $sprite_name.height() / resolution.height) + '%';
+				else if ((sprite.y === 'top') || (sprite.y === 'top-side'))
+					sprite.y = 25 - (50 * $sprite_name.height() / resolution.height) + '%';
+				else if (sprite.y === 'top-out')
+					sprite.y = -(100 * $sprite_name.height() / resolution.height) + '%';
+				else if (sprite.y === 'center')
+					sprite.y = 50 - (50 * $sprite_name.height() / resolution.height) + '%';
+
+				obj.game.sprites[sprite.name] =
+				{
+					name: sprite.name,
+					file: sprite.file,
+					x: sprite.x,
+					y: sprite.y
+				};
+				$sprite_name
+					.stop(true, true)
+					.animate(
+					{
+						'left': sprite.x,
+						'top': sprite.y
+					}, effect_speed, function()
+					{
+						if (is_wait)
+						{
+							$game_screen.on('click', handle);
+							return df.resolve();
+						}
+					});
+				if (!is_wait)
+				{
+					$game_screen.on('click', handle);
+					return df.resolve();
+				}
+			}
+			else // Если ссылка таки была передана, загружаем спрайт
+			{
+				let $sprite_name = $('#' + sprite.name);
+				if ($sprite_name.length > 0)
+				{
+					$sprite_name.attr('id', 'temp_' + sprite.name);
+				}
+				$('<img />')
+					.attr('id', sprite.name)
+					.appendTo($('#sprites'));
+				$('#' + sprite.name)
+					.attr('src', sprite.path)
+					.one('load', function()
+					{
+						let width = $(this).width() / obj.game.resolution.width * 100;
+						let height = $(this).height() / obj.game.resolution.height * 100;
+
+						if ((sprite.x === 'right') || (sprite.x === 'right-side'))
+							sprite.x = (75 - width / 2) + '%';
+						else if (sprite.x === 'right-border')
+							sprite.x = (100 - width) + '%';
+						else if ((sprite.x === 'left') || (sprite.x === 'left-side'))
+							sprite.x = (25 - width / 2) + '%';
+						else if (sprite.x === 'left-out')
+							sprite.x = -width + '%';
+						else if (sprite.x === 'center')
+							sprite.x = (50 - width / 2) + '%';
+
+						if ((sprite.y === 'bottom') || (sprite.y === 'bottom-side'))
+							sprite.y = (75 - height / 2) + '%';
+						else if (sprite.y === 'bottom-border')
+							sprite.y = (100 - height) + '%';
+						else if ((sprite.y === 'top') || (sprite.y === 'top-side'))
+							sprite.y = (25 - height / 2) + '%';
+						else if (sprite.y === 'top-out')
+							sprite.y = -height + '%';
+						else if (sprite.y === 'center')
+							sprite.y = (50 - height / 2) + '%';
+
+						obj.game.sprites[sprite.name] =
+						{
+							name: sprite.name,
+							file: sprite.file,
+							x: sprite.x,
+							y: sprite.y
+						};
+						$(this)
+							.css({
+								'visibility': 'visible',
+								'width': width + '%',
+								'height': height + '%',
+								'left': sprite.x,
+								'top': sprite.y
+							})
+							.animate({'opacity': 1}, effect_speed, function() // В этом месте fadeIn и fadeTo работают некорректно
+							{
+								$('#temp_' + sprite.name).fadeOut(effect_speed, function()
+								{
+									$(this).remove();
+								});
+								if (is_wait)
+								{
+									$game_screen.on('click', handle);
+									return df.resolve();
+								}
+							});
+						if (!is_wait)
+						{
+							$game_screen.on('click', handle);
+							return df.resolve();
+						}
+					});
+			}
+		}
+	}
+
+/* img - синоним функции setimg */
+	this.img = function(params)
+	{
+		let df = this.setimg(params, 'IMG');
+		return df;
+	}
+
+/* sprite - синоним функции setimg */
+	this.sprite = function(params)
+	{
+		let df = this.setimg(params, 'SPRITE');
+		return df;
+	}
+
+
+
+/*====================================================================================================
+	Применить эффект к изображению спрайта или фона
+	effect [идентификатор/имя файла] [эффект] [сила] [длительность]
+	effect [идентификатор/имя файла/*] ~
+	effect ~
+
+	[идентификатор] - существующий идентификатор изображения или "bg" для фона
+	[имя файла] - имя файла спрайта, если для него не указан идентификатор
+	Вместо идентификатора можно использовать символ "*" - это значит "все спрайты"
+
+	[эффект] - эффекты: h-shake, v-shake; фильтры: blur, grayscale, saturate, sepia, invert, opacity
+
+	[сила] - сила эффекта в процентах (0-100)
+
+	[длительность] - без единиц измерения - фреймы, "ms" - миллисекунды, "s" - секунды
+	Если не указана, то будет действовать либо до команды отмены, либо до команды смены изображения
+  ====================================================================================================*/
+
+	this.effect = function(params, command_name = 'EFFECT')
+	{
+		if (config.log_level != LOG_DISABLE) console.log(command_name + ' ' + params);
+		let df = $.Deferred();
+		if (params === undefined)
+		{
+			df.resolve('Missing ' + command_name + ' parameters');
+			return df.promise();
+		}
+		let params_list = this.get_params_list(params);
+		if ((params_list.length < 1) || (params_list.length > 4))
+		{
+			df.resolve('Incorrect ' + command_name + ' parameters');
+			return df.promise();
+		}
+		let _this = this;
+		$.each(params_list, function(key, value)
+		{
+			params_list[key] = _this.get_var(value);
+			if (params_list[key] === false)
+			{
+				df.resolve('Unknown ' + command_name + ' variable ' + value);
+				return df.promise();
+			}
+		});
+		let params_index = 0;
+		let image_name = params_list[params_index].replace(/\/|\./g, '_'); // Получаем идентификатор
+		image_name = image_name.replace('@', 'img_');
+		if ((image_name !== '~') && (image_name !== '*') && (image_name.toLowerCase() !== 'bg') && (this.game.sprites[image_name] === undefined))
+		{
+			df.resolve('Unknown ' + command_name + ' identificator or filename: ' + params_list[params_index]);
+			return df.promise();
+		}
+		let effect_name;
+		let effect_strength;
+		let effect_speed;
+		if (image_name === '~')
+		{
+			if (params_list.length > 1)
+			{
+				df.resolve('Incorrect ' + command_name + ' parameters');
+				return df.promise();
+			}
+			effect_name = '~';
+		}
+		else
+		{
+			params_index++;
+			effect_name = params_list[params_index].toLowerCase(); // Получаем название эффекта
+			if (effect_name === '~') // Если команда сброса действующих фильтров
+			{
+				if (params_list.length > 2)
+				{
+					df.resolve('Incorrect ' + command_name + ' parameters');
+					return df.promise();
+				}
+			}
+			else
+			{
+				let effects_list = ['h-shake', 'v-shake', 'blur', 'grayscale', 'saturate', 'sepia', 'invert', 'opacity'];
+				if ((effects_list.indexOf(effect_name) === -1) && (effect_name !== '~'))
+				{
+					df.resolve('Unknown ' + command_name + ' effect: ' + effect_name);
+					return df.promise();
+				}
+				params_index++;
+				if (params_list.length > 2) // Если есть ещё параметры, значит следующий - сила эффекта, иначе - 100
+				{
+					effect_strength = params_list[params_index];
+					if (effect_strength.indexOf('%') !== -1) // Если есть символ процента, то выпиливаем его
+						effect_strength = effect_strength.slice(0, -1);
+					if ((!$.isNumeric(effect_strength)) || (effect_strength < 0) || (effect_strength > 100))
+					{
+						df.resolve('Incorrect ' + command_name + ' strength value: ' + effect_strength);
+						return df.promise();
+					}
 				}
 				else
+					effect_strength = 100;
+				params_index++;
+				if (params_list.length > 3) // Если есть ещё параметры, значит следующий - длительность эффекта, иначе - бесконечно
 				{
-					$('<img />')
-						.attr('id', sprite_name)
-						.appendTo($sprites);
-					$('#' + sprite_name)
-						.one('load', function()
-						{
-							let width = $(this).width() / _this.game.resolution.width * 100;
-							let height = $(this).height() / _this.game.resolution.height * 100;
-							$(this)
-								.css({
-									'visibility': 'visible',
-									'width': width + '%',
-									'height': height + '%',
-									'left': x * 100 / 256 + '%',
-									'top': y * 100 / 192 + '%'
-								});
-						}).attr('src', filename);
-
-					df.resolve();
+					effect_speed = get_duration(params_list[params_index]);
+					if (effect_speed === false)
+					{
+						df.resolve('Incorrect ' + command_name + ' effect speed: ' + params_list[params_index]);
+						return df.promise();
+					}
 				}
+			}
+		}
+		let $images = []; // Массив объектов, к которым будет применяться эффект
+		if (image_name === '~')
+		{
+			$images[0] = $('#background');
+			$('#sprites').find('img').each(function()
+			{
+				$images.push($(this));
 			});
+		}
+		else if (image_name.toLowerCase() === 'bg')
+			$images[0] = $('#background');
+		else if (image_name.toLowerCase() === '*')
+		{
+			$('#sprites').find('img').each(function()
+			{
+				$images.push($(this));
+			});
+		}
+		else
+			$images[0] = $('#' + image_name);
+
+		let $game_screen = $('#game_screen');
+		let handle = $game_screen.prop('onclick');
+		$game_screen.off('click');
+		switch (effect_name)
+		{
+			case '~':
+				stop_all_effects($images);
+				stop_all_filters($images);
+				break;
+			case 'h-shake':
+				effect_hshake($images, effect_strength, effect_speed);
+				break;
+			case 'v-shake':
+				effect_vshake($images, effect_strength, effect_speed);
+				break;
+			case 'blur':
+				filter_blur($images, effect_strength, effect_speed);
+				break;
+			case 'grayscale':
+				filter_grayscale($images, effect_strength, effect_speed);
+				break;
+			case 'opacity':
+				filter_opacity($images, effect_strength, effect_speed);
+				break;
+			case 'saturate':
+				filter_saturate($images, effect_strength, effect_speed);
+				break;
+			case 'sepia':
+				filter_sepia($images, effect_strength, effect_speed);
+				break;
+			case 'invert':
+				filter_invert($images, effect_strength, effect_speed);
+				break;
+		}
+		$game_screen.on('click', handle);
+		df.resolve();
 		return df.promise();
 	}
 
-/* Пауза
- * delay frames
- * 		frames is the number of frames to delay. Again, we operate at 60fps
- */
-	this.delay = function(params)
+/* eff - синоним функции effect */
+	this.eff = function(params)
 	{
-		if (config.log_level != LOG_DISABLE) console.log('DELAY ' + params);
+		let df = this.effect(params, 'EFF');
+		return df;
+	}
+
+
+/*====================================================================================================
+	Пауза
+	delay [длительность]
+
+	длительность: без единиц измерения - фреймы, "ms" - миллисекунды, "s" - секунды
+  ====================================================================================================*/
+
+	this.delay = function(params, command_name = 'DELAY')
+	{
+		if (config.log_level != LOG_DISABLE) console.log(command_name + ' ' + params);
 		let df = $.Deferred();
-		let delay = this.getvar(params);
+		let delay = this.get_var(params);
 		if (delay === false)
 		{
-			df.resolve('Unknown DELAY variable ' + params);
+			df.resolve('Unknown ' + command_name + ' variable ' + params);
 			return df.promise();
 		}
+		delay = get_duration(delay);
 		if (!$.isNumeric(delay))
 		{
-			df.resolve('Incorrect DELAY value: ' + delay);
+			df.resolve('Incorrect ' + command_name + ' value: ' + delay);
 			return df.promise();
 		}
 		$('#message_box_next').hide();
 		$('#message_box_text').css('cursor', 'default');
 		if (config.is_skip)
 			delay = config.skip_text_pause;
-		else
-			delay = delay / 0.06; // приводим к 60 fps
 		setTimeout(function()
 		{
 			df.resolve();
@@ -298,40 +916,62 @@ var vnds_interpreter = function()
 		return df.promise();
 	}
 
-/* Проигрывание звука filename количество раз iteration
- * sound file [times]
- * 		sound plays a sound, and optionally a number of times
- *		times is implicitly 1 if not specified. Pass -1 for infinity
- *		sound ~ - to stop all playing sounds
- */
-	this.sound = function(params)
+/* pause - синоним функции delay */
+	this.pause = function(params)
 	{
-		if (config.log_level != LOG_DISABLE) console.log('SOUND ' + params);
+		let df = this.delay(params, 'PAUSE');
+		return df;
+	}
+
+/* wait - синоним функции delay */
+	this.wait = function(params)
+	{
+		let df = this.delay(params, 'WAIT');
+		return df;
+	}
+
+
+/*====================================================================================================
+	Воспроизведение звука
+	sound [имя файла] [количество]
+	sound ~ - остановить воспроизведение
+
+	[имя файла] - имя звукового файла в директории "sound"
+
+	[количество] - число повторов звука, по умолчанию - 1; -1 - беспрерывное воспроизведение до выполнения команды остановки
+  ====================================================================================================*/
+
+	this.sound = function(params, command_name = 'SOUND')
+	{
+		if (config.log_level != LOG_DISABLE) console.log(command_name + ' ' + params);
 		let df = $.Deferred();
 		if (params === undefined)
 		{
-			df.resolve('Missing SOUND parameters');
+			df.resolve('Missing ' + command_name + ' parameters');
 			return df.promise();
 		}
-		let split_params = params.toString().split(' ');
-		let sound = this.getvar(split_params[0]);
-		if (sound === false)
+		let params_list = this.get_params_list(params);
+		if (params_list.length > 2)
 		{
-			df.resolve('Unknown SOUND variable ' + split_params[0]);
+			df.resolve('Incorrect ' + command_name + ' parameters');
 			return df.promise();
 		}
-		let iteration = split_params[1];
-		if (iteration === undefined)
-			iteration = 1;
-		else
+		let _this = this;
+		$.each(params_list, function(key, value)
 		{
-			iteration = this.getvar(iteration);
-			if (iteration === false)
+			params_list[key] = _this.get_var(value);
+			if (params_list[key] === false)
 			{
-				df.resolve('Unknown SOUND variable ' + split_params[1]);
+				df.resolve('Unknown ' + command_name + ' variable ' + value);
 				return df.promise();
 			}
-		}
+		});
+		let sound = params_list[0];
+		let iteration;
+		if (params_list.length > 1)
+			iteration = params_list[1];
+		else
+			iteration = 1;
 		this.game.sound = null;
 		let $sound = $('#sound');
 		$sound.prop('loop', false);
@@ -341,7 +981,7 @@ var vnds_interpreter = function()
 			clearTimeout(this.sound_timeout);
 		if (!$.isNumeric(iteration))
 		{
-			df.resolve('Incorrect SOUND iteration value: ' + iteration);
+			df.resolve('Incorrect ' + command_name + ' iteration value: ' + iteration);
 			return df.promise();
 		}
 		else
@@ -352,8 +992,7 @@ var vnds_interpreter = function()
 			df.resolve();
 			return df.promise();
 		}
-		let filename = this.game.dir + '/sound/' + sound;
-		let _this = this;
+		let filename = this.game.dir + '/sound/' + escape(sound);
 		$.get(filename)
 			.fail(function()
 			{
@@ -385,57 +1024,160 @@ var vnds_interpreter = function()
 		return df.promise();
 	}
 
-/* Проигрывание мелодии filename по кругу
- *		music ~ - to stop all playing sounds
- */
-	this.music = function(params)
+/* snd - синоним функции sound */
+	this.snd = function(params)
 	{
-		if (config.log_level != LOG_DISABLE) console.log('MUSIC ' + params);
+		let df = this.sound(params, 'SND');
+		return df;
+	}
+
+/*====================================================================================================
+	Воспроизведение мелодии по кругу
+	music [имя файла]
+	music ~ - остановить воспроизведение
+
+	[имя файла] - имя звукового файла в директории "sound"
+  ====================================================================================================*/
+
+	this.music = function(params, command_name = 'MUSIC')
+	{
+		if (config.log_level != LOG_DISABLE) console.log(command_name + ' ' + params);
 		let df = $.Deferred();
 		if (params === undefined)
 		{
-			df.resolve('Missing MUSIC parameters');
+			df.resolve('Missing ' + command_name + ' parameters');
 			return df.promise();
 		}
-		let music = this.getvar(params);
-		if (music === false)
+		let params_list = this.get_params_list(params);
+		if (params_list.length > 2)
 		{
-			df.resolve('Unknown MUSIC variable ' + params);
+			df.resolve('Incorrect ' + command_name + ' parameters');
 			return df.promise();
 		}
+		let _this = this;
+		$.each(params_list, function(key, value)
+		{
+			params_list[key] = _this.get_var(value);
+			if (params_list[key] === false)
+			{
+				df.resolve('Unknown ' + command_name + ' variable ' + value);
+				return df.promise();
+			}
+		});
+		let music = params_list[0];
+		let effect_speed;
+		if (params_list.length === 2)
+		{
+			effect_speed = get_duration(params_list[1]);
+			if (effect_speed === false)
+			{
+				df.resolve('Incorrect ' + command_name + ' effect speed: ' + params_list[1]);
+				return df.promise();
+			}
+			if ((this.game.music !== null) && (effect_speed > 0))
+				effect_speed = effect_speed / 2;
+		}
+		if (config.is_skip) // Проверка на скип здесь, чтобы выполнились все проверки синтаксиса команды выше
+			effect_speed = 0;
+
 		this.sound('~');
-		this.game.music = null;
 		let $music = $('#music');
-		$music.prop('loop', false);
-		$music.prop('volume', config.sound_volume);
-		$music.trigger('pause');
-		$('#info_music').text(music);
-		if (music !== '~')
+		if ((this.game.music !== null) && (effect_speed > 0))
 		{
-			let filename = this.game.dir + '/sound/' + music;
-			let _this = this;
-			$.get(filename)
-				.fail(function()
+			music_volume = config.sound_volume;
+			let iteration = music_volume / effect_speed * 100;
+			let music_interval = setInterval(function()
+			{
+				$music.prop('volume', music_volume);
+				music_volume -= iteration;
+				if (music_volume <= 0)
 				{
-					df.resolve('File<br>' + filename + '<br> not found');
-				})
-				.done(function()
-				{
-					$music.attr('src', filename);
-					$music.prop('loop', true);
-					$music.trigger('play');
-					_this.game.music = music;
-					df.resolve();
-				});
+					clearInterval(music_interval);
+					stop_music(_this);
+					start_music(_this, music);
+				}
+			}, 100);
 		}
 		else
-			df.resolve();
+		{
+			stop_music(_this);
+			start_music(_this, music);
+		}
 		return df.promise();
+
+		function start_music(obj, music)
+		{
+			$('#info_music').text(music);
+			if (music !== '~')
+			{
+				let filename = obj.game.dir + '/sound/' + escape(music);
+				$.get(filename)
+					.fail(function()
+					{
+						return df.resolve('File<br>' + filename + '<br> not found');
+					})
+					.done(function()
+					{
+						let $music = $('#music');
+						$music.attr('src', filename);
+						$music.prop('loop', true);
+						obj.game.music = music;
+						if (effect_speed > 0)
+						{
+							music_volume = 0;
+							let iteration = config.sound_volume / effect_speed * 100;
+							let music_interval = setInterval(function()
+							{
+								music_volume += iteration;
+								$music.prop('volume', music_volume);
+								$music.trigger('play');
+
+								if (music_volume >= config.sound_volume)
+								{
+									clearInterval(music_interval);
+									music_volume = config.sound_volume;
+									$music.prop('volume', config.sound_volume);
+								}
+							}, 100);
+						}
+						else
+						{
+							$music.prop('volume', config.sound_volume);
+							$music.trigger('play');
+						}
+						return df.resolve();
+					});
+			}
+			else
+				return df.resolve();
+		}
+
+		function stop_music(obj)
+		{
+			let $music = $('#music');
+			$music.prop('loop', false);
+			$music.trigger('pause');
+			$music.prop('volume', 0);
+			obj.game.music = null;
+			music_volume = 0;
+		}
 	}
-	
-/* Метка для последующего перехода командой JUMP
- *		label label
- */
+
+/* mus - синоним функции music */
+	this.mus = function(params)
+	{
+		let df = this.music(params, 'MUS');
+		return df;
+	}
+
+
+/*====================================================================================================
+	Метка для последующего перехода командой JUMP
+	label [имя метки]
+
+	[имя метки] - имя метки латинскими буквами, первый символ - буква, остальные - буквы, цифры и символ "_"
+  ====================================================================================================*/
+
 	this.label = function(params)
 	{
 		let df = $.Deferred();
@@ -443,9 +1185,17 @@ var vnds_interpreter = function()
 		return df.promise();
 	}
 
-/* Переход к указанной метке или строке в текущем скрипте
- *		goto label
- */
+
+/*====================================================================================================
+	Переход к указанной метке или строке в текущем скрипте
+	goto [имя метки/номер строки]
+
+	[имя метки] - имя существующей метки
+
+	[номер строки] - номер строки в скрипте
+
+  ====================================================================================================*/
+
 	this.goto = function(params)
 	{
 		if (config.log_level != LOG_DISABLE) console.log('GOTO ' + params);
@@ -457,15 +1207,16 @@ var vnds_interpreter = function()
 		}
 
 		params = params.replace('label ', '');
-		let label = this.getvar(params);
+		let label = this.get_var(params);
 		if (label === false)
 		{
-			df.reject('Unknown GOTO variable ' + params);
+			df.reject('Unknown GOTO variable: ' + params);
 			return df.promise();
 		}
 		let script_name = get_file_name(this.game.script_name);
 		this.append_text = false;
 		this.prev_text = '';
+		$('#message_box_text').off('click');
 		$('#message_box_next').off('click');
 		if ($.isNumeric(label))
 		{
@@ -488,7 +1239,7 @@ var vnds_interpreter = function()
 				let line = this.game.script_lines[i].trim();
 				if (line.indexOf('label') === 0)
 				{
-					let split_line = line.split(' ');
+					let split_line = this.get_params_list(line);
 					if (split_line[1] === label)
 					{
 						this.game.script_line_num = i;
@@ -502,9 +1253,19 @@ var vnds_interpreter = function()
 		}
 	}
 
-/* Переход к указанному скрипту и, возможно, к метке в нём
- *		jump script [label]
- */
+
+/*====================================================================================================
+	Переход к указанному скрипту и, возможно, к метке в нём
+	jump [имя скрипта] [имя метки/номер строки]
+
+	[имя скрипта] - имя существующего скрипта
+
+	[имя метки] - имя существующей метки
+
+	[номер строки] - номер строки в скрипте
+
+  ====================================================================================================*/
+
 	this.jump = function(params)
 	{
 		if (config.log_level != LOG_DISABLE) console.log('JUMP ' + params);
@@ -515,15 +1276,15 @@ var vnds_interpreter = function()
 			return df.promise();
 		}
 		params = params.replace('label ', '');
-		let split_params = params.toString().split(' ');
-		let param1 = this.getvar(split_params[0]);
+		let params_list = this.get_params_list(params);
+		let param1 = this.get_var(params_list[0]);
 		if (param1 === false)
 		{
-			df.reject('Unknown JUMP variable ' + split_params[0]);
+			df.reject('Unknown JUMP variable: ' + params_list[0]);
 			return df.promise();
 		}
 		let label, filename;
-		if (split_params.length === 1)
+		if (params_list.length === 1)
 		{
 			if (param1.indexOf('.scr') === -1)
 			{
@@ -532,27 +1293,27 @@ var vnds_interpreter = function()
 			}
 			else
 			{
-				filename = this.getvar(param1);
+				filename = this.get_var(param1);
 				if (filename === false)
 				{
-					df.reject('Unknown JUMP variable ' + param1);
+					df.reject('Unknown JUMP variable: ' + param1);
 					return df.promise();
 				}
 				label = null;
 			}
 		}
-		else if (split_params.length === 2)
+		else if (params_list.length === 2)
 		{
-			filename = this.getvar(param1);
+			filename = this.get_var(param1);
 			if (filename === false)
 			{
-				df.reject('Unknown JUMP variable ' + param1);
+				df.reject('Unknown JUMP variable: ' + param1);
 				return df.promise();
 			}
-			label = this.getvar(split_params[1]);
+			label = this.get_var(params_list[1]);
 			if (label === false)
 			{
-				df.reject('Unknown JUMP variable ' + split_params[1]);
+				df.reject('Unknown JUMP variable: ' + params_list[1]);
 				return df.promise();
 			}
 		}
@@ -563,6 +1324,7 @@ var vnds_interpreter = function()
 		}
 		this.append_text = false;
 		this.prev_text = '';
+		$('#message_box_text').off('click');
 		$('#message_box_next').off('click');
 		this.game.script_name = filename;
 		$('#info_script_name').text(this.game.script_name);
@@ -599,7 +1361,7 @@ var vnds_interpreter = function()
 								let line = _this.game.script_lines[i].trim();
 								if (line.indexOf('label') === 0)
 								{
-									let split_line = line.split(' ');
+									let split_line = _this.get_params_list(line);
 									if (split_line[1] === label)
 									{
 										_this.game.script_line_num = i;
@@ -626,12 +1388,18 @@ var vnds_interpreter = function()
 		return df.promise();
 	}
 
-/* Очистка всего текста, модификатор игнорируется
- * cleartext [mod]
- */
-	this.cleartext = function(params)
+
+/*====================================================================================================
+	Очистка текста
+	cleartext [модификатор]
+	
+	[модификатор] - игнорируется
+
+  ====================================================================================================*/
+
+	this.cleartext = function(params, command_name = 'CLEARTEXT')
 	{
-		if (config.log_level != LOG_DISABLE) console.log('CLEARTEXT');
+		if (config.log_level != LOG_DISABLE) console.log(command_name);
 		let df = $.Deferred();
 		this.append_text = false;
 		this.prev_text = '';
@@ -643,29 +1411,48 @@ var vnds_interpreter = function()
 		return df.promise();
 	}
 
-/* Вывод текста
- * text				- (no params) Clear screen
- * ------------ text !			- Wait for input and clear all.
- * text !			- Clear screen and wait for input.
- * text ~			- Clears all text (like cleartext)
- * text @...	- Don't wait for click after text is output.
- */
-	this.text = function(params)
+/* clt - синоним функции cleartext */
+	this.clt = function(params)
 	{
-		if (config.log_level != LOG_DISABLE) console.log('TEXT ' + params);
+		if (params !== undefined)
+		{
+			let df = $.Deferred();
+			df.reject('Incorrect CLT parameters');
+			return df.promise();
+		}
+		let df = this.cleartext(params, 'CLT');
+		return df;
+	}
+
+/*====================================================================================================
+	Вывод текста
+	text [текст]
+	text (без параметров) - очистить экран
+	text ! - очистить экран и дождаться клика
+	text ~ - очистить текст (аналог cleartext)
+	text @ - не дожидаться клика после вывода текста
+
+	is_note - выводить ли в виде заметки, т.е. на полный экран
+  ====================================================================================================*/
+
+	this.text = function(params, command_name = 'TEXT', is_note = false)
+	{
+		if (config.log_level != LOG_DISABLE) console.log(command_name + ' ' + params);
 		let df = $.Deferred();
 		if ((params === undefined) || (params.length === 0) || (params === '!'))
 		{
 			this.cleartext();
-			hide_message_box(function()
+			hide_message_box(false, function()
 			{
 				let $game_screen = $('#game_screen');
-				if ((config.is_skip) || (config.is_auto))
+				if ((config.is_skip) || (params.length === 0) || (config.is_auto))
 				{
 					let delay;
 					if (config.is_skip)
 						delay = config.skip_text_pause;
-					if (config.is_auto)
+					else if (params.length === 0)
+						delay = 0;
+					else if (config.is_auto)
 						delay = config.auto_text_pause;
 					this.prev_text = '';
 					setTimeout(function()
@@ -688,138 +1475,246 @@ var vnds_interpreter = function()
 			});
 			return df.promise();
 		}
+		let $message_box = $('#message_box');
+		if (is_note)
+		{
+			$message_box
+				.addClass('note')
+				.css('height', '90%');
+		}
+		else
+		{
+			$message_box
+				.removeClass('note')
+				.css('height', (12 + config.text_size * 2.5) * 10 + 'px');
+		}
+		let $message_box_text = $('#message_box_text');
+		$message_box_text.css('height', $message_box.height());
 
 		if (params === '~')
 		{
 			this.cleartext();
 			df.resolve();
+			return df.promise();
+		}
+
+		let is_wait_click = true;
+		let cur_text = '';
+		if (params[0] === '@')
+		{
+			cur_text = this.get_var(params.substring(1)).toString();
+			if (cur_text === false)
+			{
+				df.resolve('Unknown ' + command_name + ' variable ' + params.substring(1));
+				return df.promise();
+			}
+			if (cur_text.length === 0)
+			{
+				df.resolve();
+				return df.promise();
+			}
+			is_wait_click = false;
+			this.append_text = true;
+			cur_text = cur_text.replace(/<br>|\\n/g, '<br> ');
+			cur_text = cur_text.replace('<<', '«');
+			cur_text = cur_text.replace('>>', '»');
+			cur_text = this.prev_text + cur_text;
 		}
 		else
 		{
-			let $message_box_text = $('#message_box_text');
-			let wait_click = true;
-			let cur_text = '';
-			if (params[0] === '@')
+			cur_text = this.get_var(params).toString();
+			if (cur_text === false)
 			{
-				cur_text = this.getvar(params.substring(1));
-				if (cur_text === false)
-				{
-					df.resolve('Unknown TEXT variable ' + params.substring(1));
-					return df.promise();
-				}
-				if (cur_text.length === 0)
-				{
-					df.resolve();
-					return df.promise();
-				}
-				wait_click = false;
-				this.append_text = true;
+				df.resolve('Unknown ' + command_name + ' variable ' + params);
+				return df.promise();
+			}
+			cur_text = cur_text.replace(/<br>|\\n/g, '<br> ');
+			cur_text = cur_text.replace('<<', '«');
+			cur_text = cur_text.replace('>>', '»');
+			if (this.append_text)
 				cur_text = this.prev_text + cur_text;
-			}
+			this.append_text = false;
+		}
+		let script_name = get_file_name(this.game.script_name);
+		try
+		{
+			if (localStorage.getItem(script_name + '_route') === null)
+				localStorage.setItem(script_name + '_route', JSON.stringify([this.game.script_line_num]));
 			else
 			{
-				cur_text = this.getvar(params);
-				if (cur_text === false)
-				{
-					df.resolve('Unknown TEXT variable ' + params);
-					return df.promise();
-				}
-				if (this.append_text)
-					cur_text = this.prev_text + cur_text;
-				this.append_text = false;
-			}
-			let script_name = get_file_name(this.game.script_name);
-			if (this.game.route[script_name] === undefined)
-				this.game.route[script_name] = [this.game.script_line_num];
-			else
-			{
-				if ($.inArray(this.game.script_line_num, this.game.route[script_name]) != -1) // Если строка с таким номером уже была...
+				let route_array = JSON.parse(localStorage.getItem(script_name + '_route'));
+				if ($.inArray(this.game.script_line_num, route_array) !== -1) // Если строка с таким номером уже была...
 				{
 					set_skip_enabled(true);
 				}
 				else
 				{
-					this.game.route[script_name].push(this.game.script_line_num);
+					route_array.push(this.game.script_line_num);
+					localStorage.setItem(script_name + '_route', JSON.stringify(route_array));
 					set_skip_enabled(config.is_skip_unread);
 				}
 			}
-
-			cur_text = cur_text.trim();
-			this.prev_text = cur_text + '<br>';
-			if (wait_click)
+		}
+		catch (e)
+		{
+			df.reject('Error in local storage ' + e.name);
+			return df.promise();
+		}
+		cur_text = cur_text.toString().trim();
+		this.prev_text = cur_text + '<br>';
+		if (is_wait_click)
+		{
+			show_message_box();
+			type_writer(cur_text, config.text_speed);
+			let $message_box_next = $('#message_box_next');
+			let _this = this;
+			if ((config.is_skip) || (config.is_auto))
 			{
-				show_message_box();
-				type_writer(cur_text);
-				let $message_box_next = $('#message_box_next');
-				if ((config.is_skip) || (config.is_auto))
+				let delay;
+				if (config.is_skip)
+					delay = config.skip_text_pause;
+				if (config.is_auto)
+					delay = config.auto_text_pause + cur_text.length * config.text_speed;
+				this.prev_text = '';
+				this.text_timeout = setTimeout(function()
 				{
-					let delay;
-					if (config.is_skip)
-						delay = config.skip_text_pause;
-					if (config.is_auto)
-						delay = config.auto_text_pause + cur_text.length * config.text_speed;
-					this.prev_text = '';
-					this.text_timeout = setTimeout(function()
-					{
-						df.resolve();
-					}, delay);
-					if (config.is_skip)
-						return df.promise();
-				}
+					if (type_interval !== undefined)
+						$message_box_next.trigger('click');
+					$message_box_next.trigger('click');
+				}, delay);
+/*				if (config.is_skip)
+					return df.promise();*/
+			}
+			else
 				$message_box_next.show();
-				$message_box_text.find('a').on('click', function(e)
+			$message_box_text.find('a').on('click', function(e)
+			{
+				e.stopPropagation();
+			});
+			let $sprites = $('#sprites');
+			$sprites
+				.css('cursor', 'pointer')
+				.on('click', function(e)
 				{
-					e.stopPropagation();
+					if ($message_box_next.is(':visible'))
+						$message_box_next.trigger('click');
+					else if (config.is_skip)
+						set_skip(false);
+					else
+						$sprites.off('click');
 				});
-				$message_box_text
-					.css('cursor', 'pointer')
-					.on('click', function(e)
-					{
-						$message_box_text.off('click');
-						if ($message_box_next.is(':visible'))
-						{
-							$message_box_next.trigger('click');
-						}
-					});
-				$message_box_next.on('click', function(e)
+			$message_box_text
+				.css('cursor', 'pointer')
+				.on('click', function(e)
 				{
-					e.preventDefault();
-					e.stopPropagation();
+					if ($message_box_next.is(':visible'))
+						$message_box_next.trigger('click');
+					else if (config.is_skip)
+						set_skip(false);
+					else
+						$message_box_text.off('click');
+				});
+			$message_box_next.on('click', function(e)
+			{
+				e.preventDefault();
+				e.stopPropagation();
+				if (type_interval !== undefined)
+				{
+					clearInterval(type_interval);
+					type_interval = undefined;
+					type_writer(cur_text, 0);
+					return df.promise();
+				}
+				else
+				{
+					clearTimeout(_this.text_timeout);
+					$sprites.off('click');
 					$message_box_text.off('click');
 					$message_box_next.off('click');
-					clearTimeout(this.text_timeout);
+					stop_overall_effects_filters();
 					df.resolve();
 					return df.promise();
-				});
-			}
-			else if (!config.is_auto)
-			{
-				df.resolve();
-			}
+				}
+			});
+		}
+		else if (!config.is_auto)
+		{
+			df.resolve();
 		}
 		return df.promise();
 	}
 
-// Операции с переменными
-
-/*
-setvar var mod value
-
-mod can be one of the following:
-
-=	Set var to value
-+	Add value to var
--	Subtract value from var
-~	Reset to 0
- */
-
-	this.setvar = function(params)
+/* mes - синоним функции text */
+	this.mes = function(params)
 	{
-		if (config.log_level != LOG_DISABLE) console.log('SETVAR ' + params);
+		let df = this.text(params, 'MES', false);
+		return df;
+	}
+
+/* msg - синоним функции text */
+	this.msg = function(params)
+	{
+		let df = this.text(params, 'MSG', false);
+		return df;
+	}
+
+
+/*====================================================================================================
+	Очистка окна сообщений и убирание окна сообщений с экрана (аналог "text")
+	clearscreen
+  ====================================================================================================*/
+
+	this.clearscreen = function(params, command_name = 'CLEARSCREEN')
+	{
+		if (params !== undefined)
+		{
+			let df = $.Deferred();
+			df.reject('Incorrect ' + command_name + ' parameters');
+			return df.promise();
+		}
+		let df = this.text('', command_name);
+		return df;
+	}
+
+/* cls - синоним функции clearscreen */
+	this.cls = function(params)
+	{
+		let df = this.clearscreen(params, 'CLS');
+		return df;
+	}
+
+/*====================================================================================================
+	Вывод заметки на весь экран
+	note [модификатор]
+  ====================================================================================================*/
+
+	this.note = function(params)
+	{
+		let df = this.text(params, 'NOTE', true);
+		return df;
+	}
+
+
+/*====================================================================================================
+	Присвоение локальной переменной
+	setvar [имя переменной] [оператор] [значение]
+	Операции:
+			~ - сбросить переменную в ноль
+			= - операция присвоения
+			+ - операция сложения уже хранящегося в переменной значения с переданным значением
+			- - операция вычитания из уже хранящегося в переменной значения переданного значение
+			. - операция конкатенации (сложения строк) уже хранящегося в переменной значения с переданным значением
+			* - операция умножения уже хранящегося в переменной значения на переданное значение
+			/ - операция деления уже хранящегося в переменной значения на переданное значение
+  ====================================================================================================*/
+
+	this.setvar = function(params, command_name = 'SETVAR')
+	{
+		if (config.log_level != LOG_DISABLE) console.log(command_name + ' ' + params);
 		let df = $.Deferred();
 		if (params === undefined)
 		{
-			df.reject('Missing SETVAR parameters');
+			df.reject('Missing ' + command_name + ' parameters');
 			return df.promise();
 		}
 		if (params === '~ ~')
@@ -828,28 +1723,36 @@ mod can be one of the following:
 			df.resolve();
 			return df.promise();
 		}
-		let split_params = params.toString().split(' ');
-		let variable = split_params[0];
-		if (typeof(variable) !== 'string')
+		let params_list = this.get_params_list(params);
+		if ((params_list.length < 2) || (params_list.length > 3))
 		{
-			df.reject('Incorrect SETVAR variable: ' + variable);
+			df.reject('Incorrect ' + command_name + ' parameters: ' + params);
 			return df.promise();
 		}
-		let mod = split_params[1];
-		if (['~', '=', '+', '-'].indexOf(mod) === -1)
+		let variable = params_list[0];
+		if ($.isNumeric(variable))
 		{
-			df.reject('Incorrect SETVAR operation: ' + mod);
+			df.reject('Incorrect ' + command_name + ' variable: ' + variable);
+			return df.promise();
+		}
+		variable = 'var_' + variable.replace('$', '');
+		let mod = params_list[1];
+		if (['~', '=', '+', '-', '.', '*', '/'].indexOf(mod) === -1)
+		{
+			df.reject('Incorrect ' + command_name + ' operation: ' + mod);
 			return df.promise();
 		}
 		let value;
 		if (mod !== '~')
 		{
-			value = this.getvar(split_params[2]);
+			value = this.get_var(params_list[2]);
 			if (value === false)
 			{
-				df.reject('Unknown SETVAR variable ' + split_params[2]);
+				df.reject('Unknown ' + command_name + ' variable: ' + params_list[2]);
 				return df.promise();
 			}
+			if ($.isNumeric(value))
+				value = Number(value);
 		}
 		switch (mod)
 		{
@@ -860,40 +1763,80 @@ mod can be one of the following:
 				this.game.local_variables[variable] = value;
 				break;
 			case '+':
-				if (this.game.local_variables[variable])
+				if (this.game.local_variables[variable] !== undefined)
 					this.game.local_variables[variable] += value;
 				else
 					this.game.local_variables[variable] = value;
 				break;
 			case '-':
-				if (this.game.local_variables[variable])
+				if (this.game.local_variables[variable] !== undefined)
 					this.game.local_variables[variable] -= value;
 				else
 					this.game.local_variables[variable] = -value;
+				break;
+			case '.':
+				if (this.game.local_variables[variable] !== undefined)
+					this.game.local_variables[variable] += value.toString();
+				else
+					this.game.local_variables[variable] = value.toString();
+				break;
+			case '*':
+				if (this.game.local_variables[variable] !== undefined)
+					this.game.local_variables[variable] *= value;
+				else
+				{
+					df.reject('Incorrect ' + command_name + ' operation: variable ' + variable + ' not defined');
+					return df.promise();
+				}
+				break;
+			case '/':
+				if (this.game.local_variables[variable] !== undefined)
+					if (value != 0)
+						this.game.local_variables[variable] = this.game.local_variables[variable] / value;
+					else
+					{
+						df.reject('Incorrect ' + command_name + ' operation: divide by zero');
+						return df.promise();
+					}
+				else
+				{
+					df.reject('Incorrect ' + command_name + ' operation: variable ' + variable + ' not defined');
+					return df.promise();
+				}
 				break;
 		}
 		df.resolve();
 		return df.promise();
 	}
 
-/*
-gsetvar var mod value
-
-mod can be one of the following:
-
-=	Set var to value
-+	Add value to var
--	Subtract value from var
-~	Reset to 0
-*/
-
-	this.gsetvar = function(params)
+/* var - синоним функции setvar */
+	this.var = function(params)
 	{
-		if (config.log_level != LOG_DISABLE) console.log('GSETVAR ' + params);
+		let df = this.setvar(params, 'VAR');
+		return df;
+	}
+
+
+/*====================================================================================================
+	Присвоение глобальной переменной (не сбрасывается после начала новой игры)
+	gsetvar [имя переменной] [оператор] [значение]
+	Операции:
+			~ - сбросить переменную в ноль
+			= - операция присвоения
+			+ - операция сложения уже хранящегося в переменной значения с переданным значением
+			- - операция вычитания из уже хранящегося в переменной значения переданного значение
+			. - операция конкатенации (сложения строк) уже хранящегося в переменной значения с переданным значением
+			* - операция умножения уже хранящегося в переменной значения на переданное значение
+			/ - операция деления уже хранящегося в переменной значения на переданное значение
+  ====================================================================================================*/
+
+	this.gsetvar = function(params, command_name = 'GSETVAR')
+	{
+		if (config.log_level != LOG_DISABLE) console.log(command_name + ' ' + params);
 		let df = $.Deferred();
 		if (params === undefined)
 		{
-			df.reject('Missing GSETVAR parameters');
+			df.reject('Missing ' + command_name + ' parameters');
 			return df.promise();
 		}
 		if (params === '~ ~')
@@ -910,26 +1853,32 @@ mod can be one of the following:
 			df.resolve();
 			return df.promise();
 		}
-		let split_params = params.toString().split(' ');
-		let variable = split_params[0];
-		if (typeof(variable) !== 'string')
+		let params_list = this.get_params_list(params);
+		if ((params_list.length < 2) || (params_list.length > 3))
 		{
-			df.reject('Incorrect GSETVAR variable: ' + variable);
+			df.reject('Incorrect ' + command_name + ' parameters: ' + params);
 			return df.promise();
 		}
-		let mod = split_params[1];
-		if (['~', '=', '+', '-'].indexOf(mod) === -1)
+		let variable = params_list[0];
+		if ($.isNumeric(variable))
 		{
-			df.reject('Incorrect GSETVAR operation: ' + mod);
+			df.reject('Incorrect ' + command_name + ' variable: ' + variable);
+			return df.promise();
+		}
+		variable = 'var_' + variable.replace('$', '');
+		let mod = params_list[1];
+		if (['~', '=', '+', '-', '.', '*', '/'].indexOf(mod) === -1)
+		{
+			df.reject('Incorrect ' + command_name + ' operation: ' + mod);
 			return df.promise();
 		}
 		let value;
 		if (mod !== '~')
 		{
-			value = this.getvar(split_params[2]);
+			value = this.get_var(params_list[2]);
 			if (value === false)
 			{
-				df.reject('Unknown GSETVAR variable ' + split_params[2]);
+				df.reject('Unknown ' + command_name + ' variable ' + params_list[2]);
 				return df.promise();
 			}
 		}
@@ -948,16 +1897,46 @@ mod can be one of the following:
 					global_variables[variable] = value;
 					break;
 				case '+':
-					if (global_variables[variable])
+					if (global_variables[variable] !== undefined)
 						global_variables[variable] += value;
 					else
 						global_variables[variable] = value;
 					break;
 				case '-':
-					if (global_variables[variable])
+					if (global_variables[variable] !== undefined)
 						global_variables[variable] -= value;
 					else
 						global_variables[variable] = -value;
+					break;
+				case '.':
+					if (global_variables[variable] !== undefined)
+						global_variables[variable] += value.toString();
+					else
+						global_variables[variable] = value.toString();
+					break;
+				case '*':
+					if (global_variables[variable] !== undefined)
+						global_variables[variable] *= value;
+					else
+					{
+						df.reject('Incorrect ' + command_name + ' operation: variable ' + variable + ' not defined');
+						return df.promise();
+					}
+					break;
+				case '/':
+					if (global_variables[variable] !== undefined)
+						if (value != 0)
+							global_variables[variable] = global_variables[variable] / value;
+						else
+						{
+							df.reject('Incorrect ' + command_name + ' operation: divide by zero');
+							return df.promise();
+						}
+					else
+					{
+						df.reject('Incorrect ' + command_name + ' operation: variable ' + variable + ' not defined');
+						return df.promise();
+					}
 					break;
 			}
 			global_variables = JSON.stringify(global_variables);
@@ -971,58 +1950,83 @@ mod can be one of the following:
 		return df.promise();
 	}
 
-/*
-	Присваивание случайного целого числа переменной
-*/
-
-	this.random = function(params)
+/* gvar - синоним функции gsetvar */
+	this.gvar = function(params)
 	{
-		if (config.log_level != LOG_DISABLE) console.log('RANDOM ' + params);
+		let df = this.gsetvar(params, 'GVAR');
+		return df;
+	}
+
+
+/*====================================================================================================
+	Присваивание переменной случайного числа
+	random [имя переменной] [минимальное значение] [максимальное значение]
+  ====================================================================================================*/
+
+	this.random = function(params, command_name = 'RANDOM')
+	{
+		if (config.log_level != LOG_DISABLE) console.log(command_name + ' ' + params);
 		let df = $.Deferred();
 		if (params === undefined)
 		{
-			df.reject('Missing RANDOM parameters');
+			df.reject('Missing ' + command_name + ' parameters');
 			return df.promise();
 		}
-		let split_params = params.toString().split(' ');
-		if (split_params.length !== 3)
+		let params_list = this.get_params_list(params);
+		if (params_list.length > 3)
 		{
-			df.reject('Incorrect RANDOM parameters');
+			df.reject('Incorrect ' + command_name + ' parameters');
 			return df.promise();
 		}
-		let variable = split_params[0];
-		let min_value = this.getvar(split_params[1]);
-		if (min_value === false)
+		let variable = params_list[0];
+		if ($.isNumeric(variable))
 		{
-			df.reject('Unknown RANDOM variable ' + split_params[1]);
+			df.reject('Incorrect ' + command_name + ' variable: ' + variable);
 			return df.promise();
 		}
-		let max_value = this.getvar(split_params[2]);
-		if (max_value === false)
+		variable = 'var_' + variable.replace('$', '');
+		let min_value, max_value;
+		if (params_list.length > 1) // Если параметров больше одного, то у нас есть как минимум максимальное значение
 		{
-			df.reject('Unknown RANDOM variable ' + split_params[2]);
-			return df.promise();
+			max_value = this.get_var(params_list[params_list.length - 1]);
+			if (max_value === false)
+			{
+				df.reject('Unknown ' + command_name + ' variable ' + params_list[2]);
+				return df.promise();
+			}
+			if (!$.isNumeric(max_value))
+			{
+				df.reject('Incorrect ' + command_name + ' high value: ' + max_value);
+				return df.promise();
+			}
+			if (params_list.length === 3) // Если параметров 3, то присваиваем минимальное значение
+			{
+				min_value = this.get_var(params_list[1]);
+				if (min_value === false)
+				{
+					df.reject('Unknown ' + command_name + ' variable ' + params_list[1]);
+					return df.promise();
+				}
+				if (!$.isNumeric(min_value))
+				{
+					df.reject('Incorrect ' + command_name + ' low value: ' + min_value);
+					return df.promise();
+				}
+			}
+			else
+				min_value = 0;
 		}
-		if (typeof(variable) !== 'string')
+		else
 		{
-			df.reject('Incorrect RANDOM variable: ' + variable);
-			return df.promise();
+			min_value = 0;
+			max_value = 1;
 		}
-		if (!$.isNumeric(min_value))
-		{
-			df.reject('Incorrect RANDOM low value: ' + min_value);
-			return df.promise();
-		}
-		if (!$.isNumeric(max_value))
-		{
-			df.reject('Incorrect RANDOM high value: ' + max_value);
-			return df.promise();
-		}
-		let value = Math.floor(Math.random() * (max_value - min_value + 1)) + min_value;
+
+		let value = Math.floor(min_value + Math.random() * (max_value + 1 - min_value));
 		try
 		{
 			let global_variables = JSON.parse(localStorage.getItem(this.game.short_name + '_global'));
-			if (variable === 'selected')
+			if (variable === 'var_selected')
 				this.game.selected = value;
 			else if ((global_variables !== null) && (global_variables[variable] !== undefined))
 			{
@@ -1038,23 +2042,32 @@ mod can be one of the following:
 			df.reject('Error in local storage ' + e.name);
 			return df.promise();
 		}
-		if (config.log_level != LOG_DISABLE) console.log('RANDOM ' + variable + ' = ' + value);
+		if (config.log_level != LOG_DISABLE) console.log(command_name + ' ' + variable + ' = ' + value);
 		df.resolve();
 		return df.promise();
 	}
 
-
-/* Выбор пользователя
- * choice ch1|ch2|ch3...
- * The result of the choice is stored into a variable named selected, which can be queried with if
- */
-	this.choice = function(params)
+/* rand - синоним функции random */
+	this.rand = function(params)
 	{
-		if (config.log_level != LOG_DISABLE) console.log('CHOICE ' + params);
+		let df = this.random(params, 'RAND');
+		return df;
+	}
+
+
+/*====================================================================================================
+	Выбор пользователя
+	choice [выбор 1]|[выбор 2]|[выбор 3]
+	Результат будет храниться в переменной selected.
+  ====================================================================================================*/
+
+	 this.choice = function(params, command_name = 'CHOICE')
+	{
+		if (config.log_level != LOG_DISABLE) console.log(command_name + ' ' + params);
 		let df = $.Deferred();
 		if (params === undefined)
 		{
-			df.reject('Missing CHOICE parameters');
+			df.reject('Missing ' + command_name + ' parameters');
 			return df.promise();
 		}
 		let $choice_menu = $('#choice_menu');
@@ -1062,7 +2075,7 @@ mod can be one of the following:
 		let choices_cnt = choices.length;
 		if (choices_cnt > 22)
 		{
-			df.reject('Too much choices');
+			df.reject('Too much choices: ' + choices_cnt);
 			return df.promise();
 		}
 		this.cleartext();
@@ -1075,10 +2088,10 @@ mod can be one of the following:
 				.attr('id', id)
 				.attr('value', i)
 				.appendTo($choice_menu);
-			let choice = this.getvar(choices[i]);
+			let choice = this.get_var(choices[i]);
 			if (choice === false)
 			{
-				df.reject('Unknown CHOICE variable ' + choices[i]);
+				df.reject('Unknown ' + command_name + ' variable ' + choices[i]);
 				return df.promise();
 			}
 			let $id = $('#' + id);
@@ -1090,7 +2103,7 @@ mod can be one of the following:
 				e.stopPropagation();
 				$id.off('click');
 				_this.game.selected = parseInt($id.attr('value'), 10) + 1;
-				if (config.log_level != LOG_DISABLE) console.log('CHOICE selected = ' + _this.game.selected);
+				if (config.log_level != LOG_DISABLE) console.log(command_name + ' selected = ' + _this.game.selected);
 				$choice_menu.find('button').off('click');
 				$overlay.stop().fadeOut(config.effect_speed);
 				$choice_menu.stop().fadeOut(config.effect_speed, function()
@@ -1127,27 +2140,44 @@ mod can be one of the following:
  		while ((max_width > resolution.width) && (i > 0));
 		$choice_menu.find('button').width(max_width + 'px');
 		set_skip(false);
-		hide_message_box(function()
+		hide_message_box(false, function()
 		{
-			$overlay.stop().stop().fadeIn(config.effect_speed);
-			$choice_menu.find('button').fadeIn(config.effect_speed);
-			$choice_menu.stop().fadeIn(config.effect_speed);
+			$overlay.stop().fadeTo(config.effect_speed, 1);
+			$choice_menu.find('button').fadeTo(config.effect_speed, 1);
+			$choice_menu.stop().fadeTo(config.effect_speed, 1);
 		});
 		return df.promise();
 	}
 
-/* Сравнение
- * if var op val
- * var is a variable name
- * op should be one of the following:
- * 		<   - less than
- * 		<=  - less than or equal
- * 		==  - equal
- * 		!=  - not equal
- * 		>=  - more than or equal
- * 		>   - more than
- */
-	this.if = function(params)
+/* select - синоним функции choice */
+	this.select = function(params)
+	{
+		let df = this.choice(params, 'SELECT');
+		return df;
+	}
+
+/* sel - синоним функции choice */
+	this.sel = function(params)
+	{
+		let df = this.choice(params, 'SEL');
+		return df;
+	}
+
+
+/*====================================================================================================
+	Операция сравнения
+	if [имя переменной] [операция сравнения] [имя переменной или значение]
+	fi
+	Операции сравнения:
+			>  - больше
+			<  - меньше
+			== - равно
+			!= - не равно
+			>= - больше или равно
+			<= - меньше или равно
+  ====================================================================================================*/
+
+	 this.if = function(params)
 	{
 		if (config.log_level != LOG_DISABLE) console.log('IF ' + params);
 		let df = $.Deferred();
@@ -1156,14 +2186,20 @@ mod can be one of the following:
 			df.reject('Missing IF parameters');
 			return df.promise();
 		}
-		let split_params = params.toString().split(' ');
-		if (split_params.length !== 3)
+		let params_list = this.get_params_list(params);
+		if (params_list.length !== 3)
 		{
 			df.reject('Incorrect IF parameters');
 			return df.promise();
 		}
-		let variable = split_params[0];
-		let operation = split_params[1];
+		let variable = params_list[0];
+		if ($.isNumeric(variable))
+		{
+			df.reject('Incorrect IF variable: ' + variable);
+			return df.promise();
+		}
+		variable = 'var_' + variable.replace('$', '');
+		let operation = params_list[1];
 		let global_variables;
 		try
 		{
@@ -1174,7 +2210,7 @@ mod can be one of the following:
 			df.reject('Error in local storage ' + e.name);
 			return df.promise();
 		}
-		if (variable === 'selected')
+		if (variable === 'var_selected')
 			variable = this.game.selected;
 		else if ((global_variables !== null) && (global_variables[variable] !== undefined))
 			variable = global_variables[variable];
@@ -1187,10 +2223,10 @@ mod can be one of the following:
 			df.reject('Incorrect IF operation: ' + operation);
 			return df.promise();
 		}
-		let value = this.getvar(split_params[2]);
+		let value = this.get_var(params_list[2]);
 		if (value === false)
 		{
-			df.reject('Unknown IF variable ' + split_params[2]);
+			df.reject('Unknown IF variable ' + params_list[2]);
 			return df.promise();
 		}
 		if (!perform_code(variable + operation + value))
@@ -1219,175 +2255,90 @@ mod can be one of the following:
 		return df.promise();
 	}
 
-// Получение следующей команды скрипта
-	this.get_next_command = function()
+
+/*====================================================================================================
+	Сброс кеша прохождения
+	reset
+  ====================================================================================================*/
+
+	 this.reset = function(params)
 	{
-		let line = this.game.script_lines[this.game.script_line_num].trim();
-		line = line.replace(/[ \t]{2,}/g, ' ');
-		while (((line.length === 0) || (line.charAt(0) === ';') || (line.indexOf('//') === 0)) && (this.game.script_line_num < this.game.script_lines.length))
+		if (config.log_level != LOG_DISABLE) console.log('RESET');
+		let df = $.Deferred();
+		if (params !== undefined)
 		{
-			this.game.script_line_num++;
-			line = this.game.script_lines[this.game.script_line_num].trim();
+			df.reject('Incorrect RESET parameters');
+			return df.promise();
 		}
-		if ((line.length === 0) || (line.charAt(0) === ';') || (line.indexOf('//') === 0))
+		try
 		{
-			show_error('Cant\'t find any command in script ' + this.game.script_name);
+			localStorage.clear();
+		}
+		catch (e)
+		{
+			show_warning('Error in local storage ' + e.name);
 			return false;
 		}
-		this.game.script_line_num++;
+		this.save('~');
+		show_info('All game data erased succesfully!');
+		df.resolve();
+		return df.promise();
+	}
 
-		if (config.log_level != LOG_DISABLE) console.log('LINE ' + parseInt(this.game.script_line_num, 10) + ': ' + line);
-		$('#info_script_line_num').text(parseInt(this.game.script_line_num, 10));
-		let delimiter_pos = line.indexOf(' ');
-		if (delimiter_pos > 0)
+
+/*====================================================================================================
+	Остановка и отмена скипа
+	stopskip
+  ====================================================================================================*/
+
+	this.stopskip = function(params, command_name = 'STOPSKIP')
+	{
+		if (config.log_level != LOG_DISABLE) console.log(command_name + ' ' + params);
+		let df = $.Deferred();
+		if (params !== undefined)
 		{
-			let command = line.substr(0, delimiter_pos).toLowerCase();
-			let params = line.substr(delimiter_pos + 1);
-			return {command:command, params:params};
+			df.reject('Incorrect ' + command_name + ' parameters');
 		}
 		else
-			return {command:line};
-	}
-
-// Рекурсивное исполнение всех команд скрипта
-	this.execute = function(code)
-	{
-		let df;
-		let _this = this;
-		_this.save(0);
-		if (code.params)
-			df = this[code.command](code.params);
-		else
-			df = this[code.command]();
-		df.done(function(warning)
 		{
-			if (warning)
-			{
-				show_warning(warning, function()
-				{
-					_this.execute(_this.get_next_command());
-				});
-			}
-			else
-				_this.execute(_this.get_next_command());
-		});
-		df.fail(function(error)
-		{
-			show_error(error);
-		});
-	}
-
-// Кеширование всех картинок
-	this.get_images_list = function()
-	{
-		let images_list = [];
-		for (let i = 0; i < this.game.script_lines.length; i++)
-		{
-			let filename = this.game.dir;
-			let line = this.game.script_lines[i].trim();
-			if ((line.indexOf('~') !== -1) || (line.indexOf('$') !== -1))
-				continue;
-			let line_lowercase = line.toLowerCase();
-			if (line_lowercase.indexOf('bgload') !== -1)
-				filename += '/background/';
-			else if (line_lowercase.indexOf('setimg') !== -1)
-				filename += '/foreground/';
-			else
-				continue;
-
-			let delimiter_pos = line.indexOf(' ');
-			if (delimiter_pos > 0)
-			{
-				line = line.substr(delimiter_pos + 1);
-				delimiter_pos = line.indexOf(' ');
-				if (delimiter_pos > 0)
-					filename += line.substr(0, delimiter_pos);
-				else
-					filename += line.trim();
-
-				if (images_list.indexOf(filename) === -1)
-					images_list.push(filename);
-			}
+			set_skip_enabled(false);
+			df.resolve();
 		}
-		return images_list;
+		return df.promise();
 	}
 
-// Получение значения переменной
-	this.getvar = function(variable)
+/* stop - синоним функции stopskip */
+	this.stop = function(params)
 	{
-		if (typeof(variable) !== 'string')
-			return variable;
-		variable = variable.trim();
-		let value = '';
-		let pos = 0;
-		let regexp = /\{([A-Za-z\$_]{1}[A-Za-z_0-9]{0,})\}/g;
-		if (variable.search(regexp) !== -1)
-		{
-			let matches;
-			while ((matches = regexp.exec(variable)) != null)
-			{
-				value += variable.substring(pos, matches.index);
-				pos = regexp.lastIndex;
-				let temp_var = matches[0].replace(/[\$|\{|\}]/g, '');
-				if (temp_var === 'selected')
-					value = this.game.selected;
-				else
-				{
-					try
-					{
-						let global_variables = JSON.parse(localStorage.getItem(this.game.short_name + '_global'));
-						if ((global_variables !== null) && (global_variables[temp_var] !== undefined))
-							value += global_variables[temp_var];
-						else if (this.game.local_variables[temp_var] !== undefined)
-							value += this.game.local_variables[temp_var];
-					}
-					catch (e)
-					{
-						show_error('Error in local storage ' + e.name);
-						return false;
-					}
-				}
-			}
-		}
-		else if (variable.search(/^[A-Za-z\$_]{1}[A-Za-z_0-9]{0,}$/) !== -1)
-		{
-			let temp_var = variable;
-			if (temp_var.charAt(0) == '$')
-				temp_var = temp_var.substr(1);
-
-			if (temp_var === 'selected')
-				return this.game.selected;
-			else
-			{
-				try
-				{
-					let global_variables = JSON.parse(localStorage.getItem(this.game.short_name + '_global'));
-					if ((global_variables !== null) && (global_variables[temp_var] !== undefined))
-						return global_variables[temp_var];
-					else if (this.game.local_variables[temp_var] !== undefined)
-						return this.game.local_variables[temp_var];
-				}
-				catch (e)
-				{
-					show_error('Error in local storage ' + e.name);
-					return false;
-				}
-			}
-		}
-
-		value += variable.substring(pos);
-
-		if ($.isNumeric(value))
-			value = Number(value);
-		return value;
+		let df = this.stopskip(params, 'STOP');
+		return df;
 	}
 
-/*
-	SAVE slot
-		save 0 - запись в слот 0
-		save 1-20 - запись в слот 1-20
-		save ~ - стирание всех записей
-*/
+/* ss - синоним функции stopskip */
+	this.ss = function(params)
+	{
+		let df = this.stopskip(params, 'SS');
+		return df;
+	}
+
+
+
+
+/*----------------------------------------------------------------------------------------------------
+	Далее идут различные сервисные функции
+  ----------------------------------------------------------------------------------------------------*/
+
+
+
+
+/*====================================================================================================
+	Сохранение игры
+	save [номер слота]
+	save ~ - удаление всех записей
+
+	[номер слота] - число от 0 до 20, слот 0 используется для быстрого сохранения
+  ====================================================================================================*/
+
 	this.save = function(slot)
 	{
 		if (config.log_level != LOG_DISABLE) console.log('SAVE ' + slot);
@@ -1420,19 +2371,20 @@ mod can be one of the following:
 			selected: this.game.selected,
 			script_name: this.game.script_name,
 			script_line_num: this.game.script_line_num,
-			route: this.game.route,
 			music: this.game.music,
 			sound: this.game.sound,
 			bg: this.game.background,
-			sprites: this.game.sprites,
+			sprites: this.game.sprites
 		};
 		save_game = JSON.stringify(save_game);
 		try
 		{
 			localStorage.setItem(this.game.short_name + '_save_' + slot, save_game);
-			show_message_box();
 			if (slot !== 0)
+			{
 				show_notification('Сохранение выполнено', config.notification_delay);
+				show_message_box();
+			}
 		}
 		catch (e)
 		{
@@ -1441,12 +2393,14 @@ mod can be one of the following:
 		}
 	}
 
-/*
-	LOAD slot [is_execute]
-		load 0 - загрузка из слота 0
-		load 1-20 - загрузка из слота 1-20
-*/
-	this.load = function(slot, is_execute)
+/*====================================================================================================
+	Загрузка игры
+	load [номер слота]
+
+	[номер слота] - число от 0 до 20, слот 0 используется для быстрого сохранения
+  ====================================================================================================*/
+
+	this.load = function(slot)
 	{
 		if (config.log_level != LOG_DISABLE) console.log('LOAD ' + slot);
 		if (!$.isNumeric(slot))
@@ -1457,23 +2411,219 @@ mod can be one of the following:
 		let load_game = this.get_load(slot);
 		if (!load_game)
 			return false;
+		this.cleartext();
+		this.setimg('~');
+		if (load_game.bg)
+			this.bg(load_game.bg);
 		this.game.local_variables = load_game.local;
 		this.game.selected = load_game.selected;
 		this.game.script_name = load_game.script_name;
-		this.game.route = load_game.route;
 		if (load_game.music)
 			this.music(load_game.music);
 		if (load_game.sound)
 			this.sound(load_game.sound);
-		if (load_game.bg)
-			this.bgload(load_game.bg);
+		this.game.script_line_num = load_game.script_line_num;
+		this.game.sprites = load_game.sprites;
+
 		let _this = this;
 		$.each(load_game.sprites, function(key, value)
 		{
-			_this.setimg(value.sprite + ' ' + value.x + ' ' + value.y);
+			_this.setimg('@' + value.name.replace(/^img_/, '') + ' ' + value.file + ' ' + value.x + ' ' + value.y);
 		});
-		this.game.script_line_num = load_game.script_line_num;
-		vn.execute({command: 'jump', params: this.game.script_name + ' ' + (this.game.script_line_num - 1)});
+		this.execute({command: 'jump', params: this.game.script_name + ' ' + (this.game.script_line_num - 1)});
+	}
+
+/* Сброс значений переменных игры */
+	this.drop = function()
+	{
+		this.append_text = false;
+		this.prev_text = '';
+		this.game.local_variables = {};
+		this.game.selected = null;
+		this.game.script_name = null;
+		this.game.script_lines = [];
+		this.game.script_line_num = null;
+		this.game.sound = null;
+		this.game.music = null;
+		this.game.background = null;
+		this.game.sprites = {};
+	}
+
+// Получение следующей команды скрипта
+	this.get_next_command = function()
+	{
+		let line = this.game.script_lines[this.game.script_line_num].trim();
+		line = line.replace(/[ \t]{2,}/g, ' ');
+		while (((line.length === 0) || (line.charAt(0) === ';') || (line.indexOf('//') === 0) || (line.indexOf('#') === 0)) && (this.game.script_line_num < this.game.script_lines.length))
+		{
+			this.game.script_line_num++;
+			line = this.game.script_lines[this.game.script_line_num].trim();
+		}
+		if ((line.length === 0) || (line.charAt(0) === ';') || (line.indexOf('//') === 0) || (line.indexOf('#') === 0))
+		{
+			show_error('Can\'t find any command in script ' + this.game.script_name);
+			return false;
+		}
+		this.game.script_line_num++;
+
+		if (config.log_level != LOG_DISABLE) console.log('LINE ' + parseInt(this.game.script_line_num, 10) + ': ' + line);
+		$('#info_script_line_num').text(parseInt(this.game.script_line_num, 10));
+		
+		let first_char =  line.charAt(0);
+		if (first_char === '$') // Если первый символ в строке "$", то добавляем команду "var"
+			line = 'var ' + line;
+		else if (((first_char === '"') && (line.substr(-1) === '"')) || ((first_char === "'") && (line.substr(-1) === "'"))) // Если первый символ в строке '"', то добавляем команду "text"
+			line = 'msg ' + line.slice(1, -1);
+		else if ((first_char === '[') && ((line.substr(-1) === '"') || (line.substr(-1) === "'"))) // Если первый символ в строке '[', то добавляем команду "text"
+			line = 'msg ' + line;
+
+		let delimiter_pos = line.indexOf(' ');
+		if (delimiter_pos > 0)
+		{
+			let command = line.substr(0, delimiter_pos).toLowerCase();
+			let params = line.substr(delimiter_pos + 1);
+			return {command:command, params:params};
+		}
+		else
+			return {command:line};
+	}
+
+// Рекурсивное исполнение всех команд скрипта
+	this.execute = function(code)
+	{
+		this.save(0);
+		let df;
+		df = this[code.command](code.params);
+		let _this = this;
+		df.done(function(warning)
+		{
+			if (warning)
+			{
+				show_warning(warning, function()
+				{
+					_this.execute(_this.get_next_command());
+				});
+			}
+			else
+				_this.execute(_this.get_next_command());
+		});
+		df.fail(function(error)
+		{
+			show_error(error);
+		});
+	}
+
+// Кеширование всех картинок
+	this.get_images_list = function()
+	{
+		let images_list = [];
+		for (let i = 0; i < this.game.script_lines.length; i++)
+		{
+			let filename = this.game.dir;
+			let line = this.game.script_lines[i].trim();
+			if ((line.indexOf('~') !== -1) || (line.indexOf('$') !== -1))
+				continue;
+			let line_lowercase = line.toLowerCase().trim();
+			if ((line_lowercase.indexOf('bgload') === 0) || (line_lowercase.indexOf('bg') === 0))
+				filename += '/background/';
+			else if ((line_lowercase.indexOf('setimg') !== -1) || (line_lowercase.indexOf('sprite') !== -1))
+				filename += '/foreground/';
+			else
+				continue;
+			if (line.indexOf('.') !== -1)
+			{
+				let split_line = this.get_params_list(line);
+				for (let i = 1; i < split_line.length; i++)
+				{
+					if (!$.isNumeric(split_line[i]) && (split_line[i].indexOf('.') !== -1))
+					{
+						filename += split_line[i];
+						if (images_list.indexOf(filename) === -1)
+						{
+							filename = filename.replace(/'|"/g, '');
+							images_list.push(filename);
+						}
+						break;
+					}
+				}
+			}
+		}
+		return images_list;
+	}
+
+// Разбиение строки параметров с учётом параметров в кавычках, возвращает массив параметров
+	this.get_params_list = function(params)
+	{
+		let regexp = /([^\s"']+)|"([^"]*)"|'([^']*)'/g;
+		let matches = params.match(regexp);
+		for (let i = 0; i < matches.length; i++)
+			matches[i] = matches[i].replace(/'|"/g, '');
+		return matches;
+	}
+
+// Получение значения переменной
+	this.get_var = function(variable)
+	{
+		if (typeof(variable) !== 'string')
+			return variable;
+		variable = variable.trim();
+		let value = '';
+		let pos = 0;
+		let regexp = /\{([A-Za-z\$_]{1}[A-Za-z_0-9]{0,})\}|(\$[A-Za-z_]{1}[A-Za-z_0-9]{0,})/g;
+		if (variable.search(/^[A-Za-z\$_]{1}[A-Za-z_0-9]{0,}$/) !== -1)
+		{
+			let temp_var = 'var_' + variable.replace('$', '');
+			if (temp_var === 'var_selected')
+				return this.game.selected;
+			else
+			{
+				try
+				{
+					let global_variables = JSON.parse(localStorage.getItem(this.game.short_name + '_global'));
+					if ((global_variables !== null) && (global_variables[temp_var] !== undefined))
+						return global_variables[temp_var];
+					else if (this.game.local_variables[temp_var] !== undefined)
+						return this.game.local_variables[temp_var];
+				}
+				catch (e)
+				{
+					show_error('Error in local storage ' + e.name);
+					return false;
+				}
+			}
+		}
+		else if (variable.search(regexp) !== -1)
+		{
+			let matches;
+			while ((matches = regexp.exec(variable)) != null)
+			{
+				value += variable.substring(pos, matches.index);
+				pos = regexp.lastIndex;
+				let temp_var = 'var_' + matches[0].replace(/[\$|\{|\}]/g, '');
+				if (temp_var === 'var_selected')
+					value = this.game.selected;
+				else
+				{
+					try
+					{
+						let global_variables = JSON.parse(localStorage.getItem(this.game.short_name + '_global'));
+						if ((global_variables !== null) && (global_variables[temp_var] !== undefined))
+							value += global_variables[temp_var];
+						else if (this.game.local_variables[temp_var] !== undefined)
+							value += this.game.local_variables[temp_var];
+					}
+					catch (e)
+					{
+						show_error('Error in local storage ' + e.name);
+						return false;
+					}
+				}
+			}
+		}
+
+		value += variable.substring(pos);
+
+		return value.toString();
 	}
 
 // Получение сохранения
@@ -1496,4 +2646,5 @@ mod can be one of the following:
 	this.is_load = function(slot)
 	{
 		return Boolean(this.get_load(slot));
-	}}
+	}
+}
