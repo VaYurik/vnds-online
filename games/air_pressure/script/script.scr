@@ -1,0 +1,2000 @@
+label splashscreen
+	music ~
+	img ~
+
+	bg #000 dissolve 0.5s
+	delay 0.5s
+
+	img "logo.png" 0 0 dissolve 2s
+	delay 2s
+	img ~ dissolve 1s
+	delay 1s
+
+	img "logogard.png" 0 0 dissolve 2s
+	delay 2s
+	img ~ dissolve 1s
+
+label start
+	bg "intro01.png" dissolve 1s
+	music "airpressure.ogg"
+	"<font color='#dabd34'>Я познакомился с ней, когда был тинейджером.</font>"
+	"<font color='#dabd34'>С первой же секунды нашего знакомства она схватила меня за левую руку, и так с тех пор и не отпускала.</font>"
+	cls
+	bg "bg_house.png" dissolve 1s
+	"<font color='#dabd34'>Прошло уже несколько лет. И она всё ещё со мной.</font>"
+	img @l "chara_playful.png" center bottom-in
+	[$l] "Как дела?"
+	"<font color='#dabd34'>Я больше не уверен, что чувствую, когда она рядом.</font>"
+	"Нормально…"
+	img @l "chara_happy.png" center bottom-in
+	[$l] "Это хорошо."
+	img @l "chara_playful.png" center bottom-in
+	[$l] "Эй, ты знаешь, какой сегодня день? Сегодня годовщина того дня, как мы встретились."
+	"<font color='#dabd34'>Конечно знаю.</font>"
+	img @l "chara_happy.png" center bottom-in
+	[$l] "Так что, хочешь чем-нибудь заняться?"
+	"Хм. Как насчёт…"
+	select "Давай просто останемся здесь" | "Я пойду выйду."
+	if $selected == 1
+		"Давай просто побудем здесь вместе."
+		img @l "chara_sad.png" center bottom-in
+		[$l] "Ты уверен? Это немножко скучно."
+		jump chapter1_1
+	fi
+	if $selected == 2
+		"…Думаю, я просто пойду прогуляться"
+		img @l "chara_sad.png" center bottom-in
+		[$l] "А, хорошо."
+		jump chapter1_3
+	fi
+
+label chapter1_1
+	img @l "chara_happy.png" center bottom-in
+	"<font color='#dabd34'>Ну правда, эта годовщина не значит для меня ничего такого.</font>"
+	"Это всего лишь очередной день…"
+	img @l "chara_surprised.png" center bottom-in
+	[$l] "Прости, что?"
+	"Я..Я имел в виду…"
+	select "Прости, пожалуйста" | "Я всё время с тобой"
+	if $selected == 1
+		"Прости, пожалуйста. Я забыл, что она сегодня."
+		img @l "chara_playful.png" center bottom-in
+		[$l] "Хе, не волнуйся."
+		jump chapter1_1q1
+	fi
+	if $selected == 2
+		"Ну, мы так долго были вместе…"
+		img @l "chara_playful.png" center bottom-in
+		[$l] "Да…"
+		jump chapter1_1q2
+	fi
+
+label chapter1_1q1
+	"<font color='#dabd34'>Память – странная штука. Эта дата, казалось, каждый раз вылетала из моей головы.</font>"
+	"<font color='#dabd34'>Но я помню другие вещи о том дне. Например, песню, которая играла, когда мы встретились.</font>"
+	"<font color='#dabd34'>Знаете, даже немного ностальгия берёт.</font>"
+	img @l "chara_sad.png" center bottom-in
+	[$l] "Ты уверен, что ты в порядке?"
+	"О, да. Я просто подумал…"
+	select "О том дне, когда мы познакомились." | "Хочешь послушать музыку?"
+	if $selected == 1
+		"О том дне, когда мы познакомились."
+		img @l "chara_happy.png" center bottom-in
+		[$l] "Ох, неужели?"
+		jump chapter1_1q3
+	fi
+	if $selected == 2
+		"Хочешь послушать музыку?"
+		img @l "chara_happy.png" center bottom-in
+		[$l] "Конечно. Какую хочешь."
+		jump chapter1_1q4
+	fi
+
+label chapter1_1q2
+	"…И, эм…"
+	select "Каждый день для меня одинаково особенный!" | "Я просто не заметил число"
+	if $selected == 1
+		"Знаешь, каждый день с тобой для меня особенный, как будто он последний."
+		img @l "chara_playful.png" center bottom-in
+		[$l] "Хаха, правда. Но это так сопливо! Хорошо получилось!"
+		jump chapter1_1q5
+	fi
+	if $selected == 2
+		"Думаю, мне просто не казалось это чем-то особенным."
+		img @l "chara_upset.png" center bottom-in
+		[$l] "…"
+		jump chapter1_1q6
+	fi
+
+label chapter1_1q3
+	"Да… Я думаю о том, как много всего изменилось с того момента, как мы встретились."
+	img @l "chara_happy.png" center bottom-in
+	[$l] "Хаха. Надеюсь, к лучшему!"
+	"<font color='#dabd34'>На самом деле, вспоминая, каким я был до нашей встречи…</font>"
+	"<font color='#dabd34'>…Я осознал, что был тогда гораздо счастливее.</font>"
+	"<font color='#dabd34'>Оставаться здесь, с ней, это правда такая хорошая идея?</font>"
+	select "Да" | "Не уверен"
+	if $selected == 1
+		"<font color='#dabd34'>Да, моя жизнь изменилась так, как я мог только мечтать…</font>"
+		"<font color='#dabd34'>…Но теперь мне приятно с ней настолько, что я не могу думать о чём-либо другом.</font>"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Может, жизнь раньше была лучше…</font>"
+		"<font color='#dabd34'>…Но я не могу сказать, что жизнь без неё будет хоть на каплю лучше, чем сейчас.</font>"
+		"<font color='#dabd34'>Наверное, мы сможем сделать нашу жизнь лучше. Если постараемся.</font>"
+		jump chapter2_1
+	fi
+	if $selected == 2
+		"<font color='#dabd34'>Сейчас я просто не знаю.</font>"
+		img @l "chara_surprised.png" center bottom-in
+		[$l] "Эй, ты выглядишь так, будто тебе нужен свежий воздух."
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Она вытащила меня из дома.</font>"
+		"<font color='#dabd34'>Надеюсь, она не сочтёт мою нехватку энтузиазма оскорбительной.</font>"
+		"<font color='#dabd34'>У меня нет сил противостоять ей.</font>"
+		jump chapter2_3
+	fi
+
+label chapter1_1q4
+	"<font color='#dabd34'>Интересно, помнит ли она такие вещи, как я?</font>"
+	img @l "chara_happy.png" center bottom-in
+	[$l] "…"
+	"<font color='#dabd34'>…</font>"
+	img @l "chara_bored.png" center bottom-in
+	[$l] "…"
+	[$l] "Хмм?"
+	"Помнишь эту песню?"
+	img @l "chara_surprised.png" center bottom-in
+	[$l] "Ах…"
+	img @l "chara_playful.png" center bottom-in
+	[$l] "Эмм, кажется, я тогда ещё была в пелёнках."
+	"Эй, ты не младше меня!"
+	"<font color='#dabd34'>И я купил этот CD-диск на той неделе, когда мы познакомились.</font>"
+	img @l "chara_surprised.png" center bottom-in
+	[$l] "Прости."
+	"<font color='#dabd34'>Мне казалось, она может помнить… Как мне поступить?</font>"
+	select "Простить её" | "Немного пристыдить её"
+	if $selected == 1
+		"Не большое это дело."
+		img @l "chara_sad.png" center bottom-in
+		[$l] "Ах, извини меня! Я не думала, что это для тебя так важно."
+		"Эй, это не проблема."
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Мы прослушали весь оставшийся диск.</font>"
+		"<font color='#dabd34'>Я не мог сказать ей, как сильно я хотел, чтобы она вспомнила.</font>"
+		"<font color='#dabd34'>Может, быть вместе значит для меня больше, чем для неё?</font>"
+		jump chapter2_1
+	fi
+	if $selected == 2
+		"Ты серьёзно? Эта песня играла, когда мы впервые встретились!"
+		[$l] "..!"
+		img @l "chara_sad.png" center bottom-in
+		[$l] "М..Мне правда жаль. И это после того, как я отругала тебя за то, что ты забыл о самой дате."
+		"…"
+		img @l "chara_upset.png" center bottom-in
+		[$l] "…"
+		"…Почему бы нам не пойти прогуляться немного?"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Наверное, я был немного нечестен с ней.</font>"
+		"<font color='#dabd34'>Я думаю, что если мы выйдем наружу, то смена обстановки поможет нам немного расслабиться.</font>"
+		"<font color='#dabd34'>Мы провели так времени в том доме, что поход в парк был бы полезен для нас обоих.</font>"
+		jump chapter2_2
+	fi
+
+label chapter1_1q5
+	"Нет! Это правда."
+	img @l "chara_surprised.png" center bottom-in
+	[$l] "Хаха, да неужели?"
+	select "Да" | "Нет"
+	if $selected == 1
+		"Да. Хаха, пусть это немного и чересчур, но я рад каждому дню, когда со мной есть ты."
+		img @l "chara_playful.png" center bottom-in
+		[$l] "Хехе, это так мило."
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Да, я сказал это только для того, чтобы ей стало лучше.</font>"
+		"<font color='#dabd34'>И чтобы мне стало лучше.</font>"
+		"<font color='#dabd34'>Я чувствовал себя плохо из-за забытой годовщины, но надеюсь, она не возражает.</font>"
+		jump chapter2_1
+	fi
+	if $selected == 2
+		"Нет-нет, я просто дразню тебя."
+		img @l "chara_sad.png" center bottom-in
+		[$l] "Это грубо."
+		"..?"
+		img @l "chara_upset.png" center bottom-in
+		[$l] "…"
+		"…Прости."
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>После этого она не разговаривала со мной несколько часов.</font>"
+		"<font color='#dabd34'>После она заявила, что хочет немного прогуляться.</font>"
+		"<font color='#dabd34'>Я чувствовал, что должен помириться с ней, так что я пошёл с ней.</font>"
+		jump chapter2_2
+	fi
+
+label chapter1_1q6
+	img @l "chara_annoyed.png" center bottom-in
+	[$l] "Э..Это довольно грубо."
+	[$l] "Уже плохо, что ты не помнишь, что сегодня тот день, когда мы познакомились, но ещё хуже, что тебе всё равно."
+	"…"
+	select "Прости" | "…"
+	if $selected == 1
+		"Прости"
+		img @l "chara_upset.png" center bottom-in
+		[$l] "…"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Она сказала, что ей нужно немного свежего воздуха, и я последовал за ней, не зная, что же мне ещё делать.</font>"
+		"<font color='#dabd34'>Я не знаю, почему я настолько вышел из себя. Наверное, я был просто рассержен.</font>"
+		"<font color='#dabd34'>Всегда всё заканчивается тем, что я выношу всё на неё.</font>"
+		jump chapter2_2
+	fi
+	if $selected == 2
+		img @l "chara_angry.png" center bottom-in
+		[$l] "И тебе даже больше нечего себе сказать?!"
+		[$l] "…"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Я не знаю почему, но я чувствовал, что у неё нет причин злиться.</font>"
+		"<font color='#dabd34'>Эта годовщина – явно не хороший и не счастливый день для меня.</font>"
+		"<font color='#dabd34'>И всё же я всё ещё шёл за ней, пока она уходила прочь.</font>"
+		jump chapter2_2
+	fi
+
+label chapter1_3
+	cls
+	img ~ dissolve 0.5s
+	bg "bg_town.png" dissolve 1s
+	"<font color='#dabd34'>Я подумал, почему бы мне не выйти в город ненадолго.</font>"
+	"<font color='#dabd34'>Было людно; люди были везде.</font>"
+	"<font color='#dabd34'>Я хотел потеряться в толпе, ненадолго.</font>"
+	"<font color='#dabd34'>Может, даже на мгновение показаться нормальным человеком.</font>"
+	"<font color='#dabd34'>Но затем… Я услышал кого-то.</font>"
+	select "Я должен остановиться" | "Не замечать"
+	if $selected == 1
+		[$l] "Эй."
+		[$l] "Эй, подожди!"
+		img @l "chara_playful.png" center bottom-in
+		"О. Привет."
+		jump chapter1_3q1
+	fi
+	if $selected == 2
+		"<font color='#dabd34'>Я не прекращал идти.</font>"
+		img @l "chara_sad.png" center bottom-in
+		[$l] "Эээй, ты меня игнорируешь?"
+		jump chapter1_3q2
+	fi
+
+label chapter1_3q1
+	"<font color='#dabd34'>Что она здесь делает?</font>"
+	img @l "chara_happy.png" center bottom-in
+	[$l] "И..Извини… Я подумала, что тебе может понадобиться компания."
+	"Хмм…"
+	select "Ну да, я не возражаю" | "Нет, не надо"
+	if $selected == 1
+		"Да, я рад, что ты здесь."
+		[$l] "Интересно, у тебя что-то стряслось?.."
+		jump chapter1_3q3
+	fi
+	if $selected == 2
+		"На самом деле я хотел чем-нибудь заняться один."
+		img @l "chara_playful.png" center bottom-in
+		[$l] "Ох, ясно…"
+		"Хах?"
+		[$l] "Купишь мне что-то, ммм? Всё нормально, всё нормально, я оставлю тебя в покое."
+		jump chapter1_3q4
+	fi
+
+label chapter1_3q2
+	"…"
+	img @l "chara_surprised.png" center bottom-in
+	[$l] "Правда игнорируешь?!"
+	"Эм…"
+	select "Нет, не игнорирую" | "…"
+	if $selected == 1
+		"Нет, прости. Я просто задумался."
+		img @l "chara_sad.png" center bottom-in
+		[$l] "Правда?"
+		[$l] "О чём ты задумался?"
+		jump chapter1_3q5
+	fi
+	if $selected == 2
+		"…"
+		img @l "chara_angry.png" center bottom-in
+		[$l] "Эй!!!"
+		"Извини, я хочу побыть один."
+		img @l "chara_upset.png" center bottom-in
+		[$l] "Ладно. Как хочешь."
+		jump chapter1_3q6
+	fi
+
+label chapter1_3q3
+	"Да нет, ничего."
+	"<font color='#dabd34'>По крайней мере, ничего того, что можно было бы решить, когда ты здесь.</font>"
+	img @l "chara_happy.png" center bottom-in
+	[$l] "Фух, я рада."
+	[$l] "Итак, хочешь куда-нибудь пойти?"
+	"Да…"
+	select "Конечно, давай посидим где-нибудь, где потише" | "Почему бы нам не пойти обратно домой?"
+	if $selected == 1
+		"Конечно, нам поискать местечко потише? Здесь слишком людно."
+		img @l "chara_playful.png" center bottom-in
+		[$l] "Как насчёт того парка?"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>В конце концов я был рад, что она появилась.</font>"
+		"<font color='#dabd34'>Но я не мог не расстроиться немного, глубоко в себе.</font>"
+		"<font color='#dabd34'>Думаю, я не могу справиться без неё…</font>"
+		jump chapter2_3
+	fi
+	if $selected == 2
+		"Я устал, пойдём обратно домой."
+		[$l] "О, конечно."
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Я был рад, что она появилась.</font>"
+		"<font color='#dabd34'>Но также я почувствовал раздражение от того, что не могу быть без неё даже совсем немного времени.</font>"
+		"<font color='#dabd34'>Интересно, я правда застрял с ней..?</font>"
+		jump chapter2_1
+	fi
+
+label chapter1_3q4
+	img ~ dissolve 0.5s
+	"<font color='#dabd34'>Нет, правда, я просто хотел побыть один.</font>"
+	"<font color='#dabd34'>Я гулял вокруг пару часов.</font>"
+	"<font color='#dabd34'>Не знаю, было ли мне одиноко или чувствовал я усталость, но в людской суете моя голова начала кружиться.</font>"
+	"<font color='#dabd34'>…</font>"
+	select "Я хотел бы, чтобы она сейчас была здесь" | "Со мной всё будет в порядке"
+	if $selected == 1
+		"<font color='#dabd34'>Я хотел бы, чтобы она прямо сейчас была здесь.</font>"
+		img @l "chara_surprised.png" center bottom-in
+		[$l] "..?"
+		[$l] "Ты в порядке?"
+		"…"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Не знаю, как она это сделала.</font>"
+		"<font color='#dabd34'>Ей всегда удавалось появляться за долю секунды.</font>"
+		"<font color='#dabd34'>Она всё время шла за мной?</font>"
+		jump chapter2_3
+	fi
+	if $selected == 2
+		"<font color='#dabd34'>Я решил отдохнуть и найти место, где можно посидеть.</font>"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Я решился пойти в близлежащий парк.</font>"
+		"<font color='#dabd34'>Я был рад времени одиночества.</font>"
+		"<font color='#dabd34'>Какому-то времени, когда я не чувствовал её постоянного присутствия.</font>"
+		jump chapter2_4
+	fi
+
+label chapter1_3q5
+	img @l "chara_playful.png" center bottom-in
+	[$l] "Пенни за твои мысли? Кстати, именно столько они все и стоят!"
+	"Хаха!"
+	"<font color='#dabd34'>От толп у меня головная боль. Но из-за того, что она здесь, боль начала утихать.</font>"
+	img @l "chara_happy.png" center bottom-in
+	[$l] "Хехехе."
+	"<font color='#dabd34'>Из-за того, что она здесь, мне стало гораздо лучше!</font>"
+	select "Я так рад" | "Ненавижу это"
+	if $selected == 1
+		"<font color='#dabd34'>Я рад.</font>"
+		img @l "chara_sad.png" center bottom-in
+		[$l] "Эй, ты в порядке? Ты кажешься отстранённым."
+		"Да, я в порядке. Хочешь пойти посидеть в каком-нибудь тихом месте?"
+		img @l "chara_happy.png" center bottom-in
+		[$l] "Да!"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Мы пошли в парк вместе.</font>"
+		"<font color='#dabd34'>По пути я думал о том, насколько сильно её присутствие нужно мне.</font>"
+		"<font color='#dabd34'>Я всё ещё не уверен, что и думать насчёт этого…</font>"
+		jump chapter2_3
+	fi
+	if $selected == 2
+		"<font color='#dabd34'>Я это ненавижу.</font>"
+		"<font color='#dabd34'>Я не хочу быть связан с ней навечно.</font>"
+		img @l "chara_sad.png" center bottom-in
+		[$l] "Эй, ты в порядке? Ты кажешься отстранённым."
+		"Ага… Эй, увидимся попозже дома, хорошо?"
+		img @l "chara_upset.png" center bottom-in
+		[$l] "Оу, ладно."
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Я пошёл куда-нибудь, где я могу остаться один.</font>"
+		"<font color='#dabd34'>Так я смогу подумать в тишине, поэтому я направился в близлежащий парк.</font>"
+		jump chapter2_4
+	fi
+
+label chapter1_3q6
+	"…"
+	[$l] "…"
+	select "Слушай, это не твоя вина…" | "И что ты вообще здесь делаешь?"
+	if $selected == 1
+		"Слушай, это не твоя вина… Я просто хочу немного побыть один."
+		img @l "chara_sad.png" center bottom-in
+		[$l] "…"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Я настолько сильно на неё подсел, что знал, что потом буду пытаться вернуться к ней.</font>"
+		"<font color='#dabd34'>Да, я просто такой идиот.</font>"
+		"<font color='#dabd34'>Я знаю, что не могу жить без неё.</font>"
+		jump chapter2_4
+	fi
+	if $selected == 2
+		"Зачем ты здесь вообще?"
+		img @l "chara_annoyed.png" center bottom-in
+		[$l] "Как глупо. Я думала, что нужна тебе."
+		[$l] "Теперь ясно, что я ошиблась!"
+		"…"
+		[$l] "…!"
+		[$l] "Ургх!"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>…Какой я дурак.</font>"
+		"<font color='#dabd34'>Она ушла прочь в гневе…</font>"
+		"<font color='#dabd34'>…А я дурак, так как пошёл за ней.</font>"
+		jump chapter2_2
+	fi
+
+label chapter2_1
+	cls
+	img ~ dissolve 0.5s
+	bg "bg_house.png" dissolve 1s
+	"<font color='#dabd34'>Прошло несколько часов. Я начал чувствовать это ноющее чувство…</font>"
+	"Эй…"
+	img @l "chara_bored.png" center bottom-in
+	[$l] "Хмм?"
+	"Мне интересно…"
+	select "Почему ты здесь?" | "Я тебе нравлюсь?"
+	if $selected == 1
+		"Почему ты здесь?"
+		[$l] "Потому что ты хотел остаться дома со мной..?"
+		"Я не это имел в виду. Почему ты остаёшься со мной?"
+		img @l "chara_happy.png" center bottom-in
+		[$l] "Ох, всё просто. Я нужна тебе, не так ли?"
+		[$l] "И пока я тебе нужна, я буду рада быть с тобой."
+		jump chapter2_1q1
+	fi
+	if $selected == 2
+		"Я тебе нравлюсь?"
+		img @l "chara_surprised.png" center bottom-in
+		[$l] "Хаха, что за странный вопрос. Конечно нравишься."
+		"Но почему?"
+		img @l "chara_happy.png" center bottom-in
+		[$l] "Почему бы нет?"
+		jump chapter2_1q2
+	fi
+
+label chapter2_1q1
+	"<font color='#dabd34'>Нуждаюсь ли я в ней?</font>"
+	"<font color='#dabd34'>Полагаю, я должен в ней нуждаться, но…</font>"
+	select "Что заставило тебя это сказать?" | "Это правда так очевидно?"
+	if $selected == 1
+		"Что заставило тебя это сказать?"
+		img @l "chara_surprised.png" center bottom-in
+		[$l] "Т..Ты думаешь, что я тебе не нужна?"
+		"Ах! Я не это хотел сказать…"
+		[$l] "…"
+		jump chapter2_1q3
+	fi
+	if $selected == 2
+		"Это правда так очевидно?"
+		img @l "chara_playful.png" center bottom-in
+		[$l] "Хаха, ну…"
+		"…"
+		[$l] "Хахаха, не смотри на меня так. Нуждаться в ком-то – это ведь не что-то плохое, так ведь?"
+		jump chapter2_1q4
+	fi
+
+label chapter2_1q2
+	"<font color='#dabd34'>Мне стыдно признаться, что я чувствую небольшую паранойю по этому поводу…</font>"
+	"Я не знаю… Я думаю…"
+	select "Я не очень приятный человек" | "Может, мне нужно больше друзей"
+	if $selected == 1
+		"Я не очень приятный человек."
+		img @l "chara_happy.png" center bottom-in
+		[$l] "А мне кажешься приятным."
+		"Хмм…"
+		img @l "chara_playful.png" center bottom-in
+		[$l] "Кроме того, можешь положиться на то, что я буду поддерживать твою приятность в форме!"
+		jump chapter2_1q5
+	fi
+	if $selected == 2
+		"Может, мне нужно больше друзей."
+		img @l "chara_sad.png" center bottom-in
+		[$l] "Хмпф."
+		[$l] "Больше друзей, или ты имеешь в виду друзей получше?"
+		jump chapter2_1q6
+	fi
+
+label chapter2_1q3
+	"Эй, ты нужна мне, хорошо?"
+	img @l "chara_upset.png" center bottom-in
+	[$l] "…"
+	img @l "chara_sad.png" center bottom-in
+	[$l] "…Правда?"
+	select "Да" | "Эм…"
+	if $selected == 1
+		"Да. Я не могу представить жизнь без тебя."
+		img @l "chara_happy.png" center bottom-in
+		"<font color='#dabd34'>С чего вдруг я это сказал?</font>"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Я сам немного удивился.</font>"
+		"<font color='#dabd34'>Впрочем, это правда. Я полагаюсь на неё каждый раз, как попадаю в неприятности.</font>"
+		"<font color='#dabd34'>Только интересно, хорошо ли это или нет…</font>"
+		jump chapter3_1
+	fi
+	if $selected == 2
+		"Эм… Да. Конечно."
+		img @l "chara_happy.png" center bottom-in
+		[$l] "Хех."
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Надеюсь, она не поняла, насколько неуверенно я это сказал.</font>"
+		"<font color='#dabd34'>Я нуждаюсь в ней, но я не знаю, правильно ли это признавать.</font>"
+		"<font color='#dabd34'>Может, мне бы понравилось, если бы я больше не нуждался в ней?</font>"
+		jump chapter3_2
+	fi
+
+label chapter2_1q4
+	"Нет, совсем нет."
+	img @l "chara_happy.png" center bottom-in
+	"<font color='#dabd34'>Впрочем, это заставило меня задуматься…</font>"
+	"<font color='#dabd34'>А точно правильно полагаться во всём на неё?</font>"
+	select "В этом нет вреда" | "Я мог бы быть более независимым"
+	if $selected == 1
+		"<font color='#dabd34'>В этом нет вреда.</font>"
+		"<font color='#dabd34'>Это нормально.</font>"
+		"<font color='#dabd34'>Кроме того, я нужен ей тоже.</font>"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Я знаю, что она нужна мне, я абсолютно безнадёжен.</font>"
+		"<font color='#dabd34'>Я знаю, что не могу быть сильным без неё.</font>"
+		"<font color='#dabd34'>Но должен ли я быть счастлив такому повороту событий?</font>"
+		jump chapter3_1
+	fi
+	if $selected == 2
+		"<font color='#dabd34'>Я мог бы быть более независим.</font>"
+		"<font color='#dabd34'>Но это не значит, что я должен забыть о ней.</font>"
+		"<font color='#dabd34'>Наверное, мы могли бы быть более независимыми вместе!</font>"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Да, это бессмысленно.</font>"
+		"<font color='#dabd34'>Я с таким комфортом полагаюсь на неё, что мне теперь стало страшно делать любые решительные действия самому.</font>"
+		"<font color='#dabd34'>Неужели удобство – это так неправильно?</font>"
+		jump chapter3_2
+	fi
+
+label chapter2_1q5
+	"<font color='#dabd34'>Хах? Это так я на самом деле полагаюсь на неё?</font>"
+	"<font color='#dabd34'>Неужели это всё, что я получаю из того, что нахожусь рядом с ней?</font>"
+	select "Да" | "Нет"
+	if $selected == 1
+		"<font color='#dabd34'>Да, и я ненавижу признавать это.</font>"
+		"<font color='#dabd34'>Если подумать, я просто использую её.</font>"
+		"<font color='#dabd34'>Эгоистично. Без неё у меня не было бы ни одного способа излить хоть часть той вины и неприятных ощущений, что у меня набираются.</font>"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Кажется, она думает, что я не плохой человек…</font>"
+		"<font color='#dabd34'>Но действительно ли я хороший?</font>"
+		"<font color='#dabd34'>Пока я сомневаюсь в ней, я не могу сблизиться с ней.</font>"
+		jump chapter3_2
+	fi
+	if $selected == 2
+		"<font color='#dabd34'>Нет, это не единственная причина, по которой я хочу, чтобы она была рядом.</font>"
+		"<font color='#dabd34'>Сейчас она часть моей жизни, почти что часть меня!</font>"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Может, я слишком сильно на неё полагаюсь.</font>"
+		"<font color='#dabd34'>Но так ли это плохо?</font>"
+		"<font color='#dabd34'>Пока она рядом, я чувствую, что могу стать лучше. Как человек.</font>"
+		jump chapter3_1
+	fi
+
+label chapter2_1q6
+	"С..С чего это ты вдруг?"
+	img @l "chara_upset.png" center bottom-in
+	[$l] "…"
+	"<font color='#dabd34'>Угх, лучше что-нибудь сказать…</font>"
+	"Слушай…"
+	select "Я не это имел в виду" | "Разве плохо хотеть больше друзей?"
+	if $selected == 1
+		"Я не это имел в виду."
+		img @l "chara_sad.png" center bottom-in
+		[$l] "…"
+		"Разве ты тоже не хочешь познакомиться с ещё какими-нибудь людьми?"
+		img @l "chara_bored.png" center bottom-in
+		[$l] "…Мне не нужен никто другой."
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Интересно, почему она это сказала.</font>"
+		"<font color='#dabd34'>Я почувствовал себя плохо. Я – единственный, кого она знает.</font>"
+		"<font color='#dabd34'>Мне хотелось бы, чтобы я мог представить её другим людям… но я знаю, что ей это не понравится.</font>"
+		jump chapter3_2
+	fi
+	if $selected == 2
+		"Разве плохо хотеть больше друзей?"
+		[$l] "…"
+		img @l "chara_upset.png" center bottom-in
+		[$l] "Я..Я думаю… что, может, тебе больше не нужно."
+		"…"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Думаю, она волновалась не зря.</font>"
+		"<font color='#dabd34'>Я чувствовал, как сам отдаляюсь от неё.</font>"
+		"<font color='#dabd34'>Мне кажется, моё сознание начинает меняться.</font>"
+		jump chapter3_3
+	fi
+
+label chapter2_2
+	cls
+	img ~ dissolve 0.5s
+	bg "bg_park.png" dissolve 1s
+	img @l "chara_bored.png" center bottom-in
+	"<font color='#dabd34'>Я шёл рядом с ней.</font>"
+	"<font color='#dabd34'>…Ну, и немного позади тоже.</font>"
+	"<font color='#dabd34'>Она молчала. Наверное, она злилась на меня.</font>"
+	select "Извиниться" | "Ничего не говорить"
+	if $selected == 1
+		"Эм, прости меня, пожалуйста."
+		[$l] "…"
+		img @l "chara_upset.png" center bottom-in
+		[$l] "Я знаю."
+		jump chapter2_2q1
+	fi
+	if $selected == 2
+		"…"
+		[$l] "…"
+		img @l "chara_angry.png" center bottom-in
+		[$l] "…"
+		[$l] "Ты собираешься что-нибудь говорить?"
+		jump chapter2_2q2
+	fi
+
+label chapter2_2q1
+	img @l "chara_sad.png" center bottom-in
+	[$l] "…Но почему ты просишь прощения?"
+	"<font color='#dabd34'>Хах?</font>"
+	"<font color='#dabd34'>Разве это не очевидно?</font>"
+	select "Это моя вина" | "…Потому что"
+	if $selected == 1
+		"Это моя вина."
+		"Извини, я иногда такой неблагодарный."
+		[$l] "…"
+		img @l "chara_happy.png" center bottom-in
+		[$l] "…Всё нормально."
+		jump chapter2_2q3
+	fi
+	if $selected == 2
+		"Просто потому что."
+		img @l "chara_upset.png" center bottom-in
+		[$l] "Ох."
+		"Ну, я сам не знаю."
+		jump chapter2_2q4
+	fi
+
+label chapter2_2q2
+	"…"
+	"…Не могу ничего придумать."
+	img @l "chara_cynical.png" center bottom-in
+	[$l] "Хех."
+	[$l] "Мне надоело. Я не хочу больше тебе помогать."
+	img @l "chara_bored.png" center bottom-in
+	[$l] "Ты слишком на меня полагаешься."
+	"…"
+	select "Подожди…" | "…Мне плевать"
+	if $selected == 1
+		"…Подожди"
+		img @l "chara_annoyed.png" center bottom-in
+		[$l] "…"
+		jump chapter2_2q5
+	fi
+	if $selected == 2
+		"Мне плевать."
+		img @l "chara_cynical.png" center bottom-in
+		[$l] "О, да ну?"
+		jump chapter2_2q6
+	fi
+
+label chapter2_2q3
+	"<font color='#dabd34'>Я всегда забываю, как сильно она мне помогает.</font>"
+	"<font color='#dabd34'>Я так легко спотыкаюсь без неё.</font>"
+	"<font color='#dabd34'>Интересно, может, я просто слишком в ней сомневаюсь..?</font>"
+	select "Да" | "Нет"
+	if $selected == 1
+		"<font color='#dabd34'>Да, мне стоит больше доверять ей.</font>"
+		"<font color='#dabd34'>Иногда я могу доверять ей больше, чем самому себе.</font>"
+		"<font color='#dabd34'>И больше, чем кому-либо из тех, кого я когда-либо встречал.</font>"
+		img @l "chara_playful.png" center bottom-in
+		[$l] "..?"
+		"Хех, ничего."
+		"<font color='#dabd34'>Где бы я был без неё?</font>"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Мы пошли домой.</font>"
+		"<font color='#dabd34'>Я решился. Я должен перестать давать всяким глупостям так надоедать мне.</font>"
+		"<font color='#dabd34'>По крайней мере, я могу попытаться.</font>"
+		jump chapter3_1
+	fi
+	if $selected == 2
+		"<font color='#dabd34'>Нет, должно быть, я чувствую это по какой-то причине.</font>"
+		"<font color='#dabd34'>Я должен чуточку больше доверять себе.</font>"
+		"<font color='#dabd34'>Но я не знаю… Страшно представить, что я стану независимым от неё.</font>"
+		img @l "chara_playful.png" center bottom-in
+		[$l] "..?"
+		"Хехе, ничего!"
+		"<font color='#dabd34'>Когда же я стал так сильно на неё полагаться?</font>"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Пока мы шли домой, я думал.</font>"
+		"<font color='#dabd34'>Я бы извинился, но, по правде говоря, это бы ничего не значило.</font>"
+		"<font color='#dabd34'>С другой стороны, я не хочу надоедать ей.</font>"
+		"<font color='#dabd34'>Не знаю… Как мне быть?</font>"
+		jump chapter3_2
+	fi
+
+label chapter2_2q4
+	img @l "chara_sad.png" center bottom-in
+	[$l] "Хах. Хорошо."
+	"Ну…"
+	select "Я не знаю, как ещё всё исправить" | "Тогда не принимай мои извинения!"
+	if $selected == 1
+		"Я не знаю, как ещё мне всё исправить."
+		img @l "chara_happy.png" center bottom-in
+		[$l] "Хмм… ты можешь доверять мне чуть больше."
+		"Наверное."
+		img @l "chara_playful.png" center bottom-in
+		[$l] "И ценить то, как сильно я тебе помогаю."
+		"<font color='#dabd34'>Разумеется, она права.</font>"
+		"<font color='#dabd34'>Я всегда забываю, как сильно она помогала мне в течение стольких лет.</font>"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Мы пошли домой вместе.</font>"
+		"<font color='#dabd34'>Я думал, стоит ли мне больше полагаться на неё.</font>"
+		"<font color='#dabd34'>Может, это всё, что я могу сделать для того, чтобы показать ей, как она нужна.</font>"
+		jump chapter3_1
+	fi
+	if $selected == 2
+		"Тогда не принимай мои извинения!"
+		img @l "chara_surprised.png" center bottom-in
+		[$l] "..!"
+		"Эх, не понимаю, чего я беспокоюсь."
+		"Мне стоило догадаться, что ты меня просто этим дразнишь."
+		img @l "chara_upset.png" center bottom-in
+		[$l] "…"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Кажется, у меня не может быть от неё секретов.</font>"
+		"<font color='#dabd34'>Она всегда анализируют всё, что я делаю и говорю.</font>"
+		"<font color='#dabd34'>Но почему я это ей позволяю?</font>"
+		"<font color='#dabd34'>Мне правда нужно, чтобы она продолжала держать меня под контролем?</font>"
+		jump chapter3_2
+	fi
+
+label chapter2_2q5
+	"Когда это ты начала думать, что я слишком на тебя полагаюсь?"
+	img @l "chara_upset.png" center bottom-in
+	[$l] "…"
+	"Может, так и есть… но нечестно винить меня в этом."
+	img @l "chara_annoyed.png" center bottom-in
+	[$l] "Хмм."
+	"<font color='#dabd34'>Может, я прошу слишком многого.</font>"
+	select "Извиниться" | "Это не нерезонно"
+	if $selected == 1
+		"…Прости."
+		img @l "chara_upset.png" center bottom-in
+		[$l] "Всё нормально."
+		"Я знаю, что это я нечестно к тебе отношусь."
+		"Пожалуйста, не прекращай помогать мне."
+		[$l] "…"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Мы пошли домой вместе.</font>"
+		"<font color='#dabd34'>Надеюсь, я хоть немного её успокоил.</font>"
+		"<font color='#dabd34'>Надеюсь, она сможет в будущем остановить меня от подобных идиотских действий.</font>"
+		jump chapter3_2
+	fi
+	if $selected == 2
+		"Не думаю, что это нерезонно."
+		img @l "chara_surprised.png" center bottom-in
+		[$l] "..!"
+		"В любом случае, единственная причина, по которой ты всё ещё остаёшься здесь – это я!"
+		"Ты не нужна мне, если ты будешь себя так вести."
+		img @l "chara_upset.png" center bottom-in
+		[$l] "…"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Она мне больше не нравится.</font>"
+		"<font color='#dabd34'>Я устал мириться с ней.</font>"
+		"<font color='#dabd34'>Да, я был ужасен, но мне плевать.</font>"
+		"<font color='#dabd34'>Мы шли домой в тишине.</font>"
+		jump chapter3_3
+	fi
+
+label chapter2_2q6
+	img @l "chara_cynical.png" center bottom-in
+	[$l] "Значит, ты не будешь против, если я совсем прекращу тебе помогать?"
+	"…Ты не прекратишь."
+	[$l] "Хех…"
+	img @l "chara_angry.png" center bottom-in
+	[$l] "Думаешь, ты можешь обойтись без моей поддержки?"
+	"Ну…"
+	select "…Нет" | "Да!"
+	if $selected == 1
+		"…Нет, ты права."
+		img @l "chara_annoyed.png" center bottom-in
+		[$l] "…"
+		"Прости."
+		"Пожалуйста, не злись из-за меня!"
+		img @l "chara_upset.png" center bottom-in
+		[$l] "…"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Я не хотел быть один.</font>"
+		"<font color='#dabd34'>Может, я просто использую её, чтобы не чувствовать себя одиноким?</font>"
+		"<font color='#dabd34'>Какой же я жалкий.</font>"
+		jump chapter3_2
+	fi
+	if $selected == 2
+		"Да. Ну, я бы хотел попытаться!"
+		img @l "chara_cynical.png" center bottom-in
+		[$l] "Хех, и прибежать ко мне, когда попытка не удастся!"
+		"Не прибегу, если ты не собираешься мне помогать."
+		img @l "chara_surprised.png" center bottom-in
+		[$l] "…"
+		img @l "chara_upset.png" center bottom-in
+		[$l] "Не будь таким."
+		"…"
+		[$l] "Ты ведь знаешь, что я всегда тебе помогу."
+		[$l] "Неважно насколько всё плохо."
+		"…"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Мы поспорили ещё немного по пути домой.</font>"
+		"<font color='#dabd34'>Кажется, я осознаю, что она мне больше не нужна.</font>"
+		"<font color='#dabd34'>Она может грозить мне своим уходом, но мне кажется, что она сама этого боится больше, чем я.</font>"
+		jump chapter3_3
+	fi
+
+label chapter2_3
+	cls
+	img ~ dissolve 0.5s
+	bg "bg_park.png" dissolve 1s
+	img @l "chara_happy.png" center bottom-in
+	"<font color='#dabd34'>Мы сели вместе на траву в парке.</font>"
+	"<font color='#dabd34'>Она такая радостная.</font>"
+	"<font color='#dabd34'>Это лишь показывает, какой беззаботной она может быть к моим мыслям.</font>"
+	img @l "chara_playful.png" center bottom-in
+	[$l] "Здесь приятно, правда?"
+	"<font color='#dabd34'>Совершенно беззаботной.</font>"
+	"<font color='#dabd34'>Я знаю, я веду себя бесчестно. Но как мне быть…</font>"
+	select "Купить мороженое" | "Признаться"
+	if $selected == 1
+		"<font color='#dabd34'>Да, я должен попытаться быть таким же счастливым, как она.</font>"
+		"Мм. Эй, хочешь немного мороженого?"
+		img @l "chara_happy.png" center bottom-in
+		[$l] "Да, конечно!"
+		"<font color='#dabd34'>…</font>"
+		jump chapter2_3q1
+	fi
+	if $selected == 2
+		"<font color='#dabd34'>Я должен рассказать ей в чём дело.</font>"
+		"Эмм, слушай…"
+		img @l "chara_happy.png" center bottom-in
+		[$l] "Хмм?"
+		"Тебе не кажется… Тебе не кажется, что я слишком сильно на тебя полагаюсь?"
+		img @l "chara_surprised.png" center bottom-in
+		[$l] "Что ты имеешь в виду? Мы же друзья, не так ли?"
+		jump chapter2_3q2
+	fi
+
+label chapter2_3q1
+	"<font color='#dabd34'>И так я купил мороженое.</font>"
+	"<font color='#dabd34'>Когда мы сели поесть, я начал думать, как бы поднять эту тему помягче.</font>"
+	"Эй."
+	"Мм?"
+	"Тебе не кажется…"
+	select "…что нам стоит сесть у реки?" | "…что я слишком сильно на тебя полагаюсь?"
+	if $selected == 1
+		"Там могут плавать милые уточки."
+		img @l "chara_playful.png" center bottom-in
+		[$l] "О да. Хаха, интересно, а уткам нравится мороженое?"
+		"<font color='#dabd34'>Утки едят всё…</font>"
+		jump chapter2_3q3
+	fi
+	if $selected == 2
+		"…что я слишком сильно на тебя полагаюсь?"
+		img @l "chara_sad.png" center bottom-in
+		[$l] "Тебе так кажется?"
+		"Не знаю."
+		[$l] "Разве плохо часто на меня полагаться?"
+		jump chapter2_3q4
+	fi
+
+label chapter2_3q2
+	"<font color='#dabd34'>Она права, мы друзья. Но этого ли я правда хочу?</font>"
+	select "Да" | "Нет"
+	if $selected == 1
+		"Д..Да."
+		img @l "chara_sad.png" center bottom-in
+		[$l] "Звучало неуверенно."
+		"Н..Ну, я всё ещё думаю, что неплохой идеей было бы завести ещё каких-нибудь друзей."
+		"Только лишь для того, чтобы я не полагался на тебя во всём."
+		jump chapter2_3q5
+	fi
+	if $selected == 2
+		"Н..Ну, наверное."
+		img @l "chara_sad.png" center bottom-in
+		[$l] "..?"
+		"Думаю, мне просто нужно ненадолго остаться одному."
+		img @l "chara_annoyed.png" center bottom-in
+		[$l] "Хах. Я пытаюсь подбодрить тебя, а ты во мне не нуждаешься?"
+		jump chapter2_3q6
+	fi
+
+label chapter2_3q3
+	"<font color='#dabd34'>Я такой трус.</font>"
+	"<font color='#dabd34'>Если я не могу сказать ей, тогда я должен…</font>"
+	select "Забыть об этом" | "Научиться жить с этим"
+	if $selected == 1
+		"<font color='#dabd34'>Я должен просто забыть об этом тупом чувстве.</font>"
+		"<font color='#dabd34'>Полагаться на неё – не так плохо.</font>"
+		"<font color='#dabd34'>Может, мне бы наоборот стоило радоваться тому, что у меня есть такая как она, на которую я всегда могу положиться?</font>"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Мы пошли домой.</font>"
+		"<font color='#dabd34'>Не всё ведь должно быть идеальным, верно?</font>"
+		"<font color='#dabd34'>Возможно, полагаться на неё – это лучшее, на что я могу надеяться.</font>"
+		"<font color='#dabd34'>Я должен радоваться тому, что имею.</font>"
+		jump chapter3_1
+	fi
+	if $selected == 2
+		"<font color='#dabd34'>Я просто должен научиться обходиться тем, что есть.</font>"
+		"<font color='#dabd34'>Я уверен, что смогу найти на это силы.</font>"
+		"<font color='#dabd34'>Со мной всё будет в порядке, пока…</font>"
+		img @l "chara_playful.png" center bottom-in
+		[$l] "Давай пойдём домой."
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Мне не нужно ничего менять, говорил я себе.</font>"
+		"<font color='#dabd34'>Мы пошли домой.</font>"
+		"<font color='#dabd34'>Как всегда.</font>"
+		jump chapter3_2
+	fi
+
+label chapter2_3q4
+	"<font color='#dabd34'>Нехорошо, должен признаться…</font>"
+	select "Нет" | "Да"
+	if $selected == 1
+		"Нет, думаю, в этом нет ничего такого."
+		img @l "chara_playful.png" center bottom-in
+		[$l] "Хаха, уже звучит поувереннее."
+		"Хех, ну, мне просто не нравится быть обузой."
+		img @l "chara_happy.png" center bottom-in
+		[$l] "А это не проблема."
+		"Может быть."
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Она уверила меня в том, что всё в порядке.</font>"
+		"<font color='#dabd34'>Может, мне не надо ничего менять, и мне будет достаточно всего того, что есть сейчас?</font>"
+		"<font color='#dabd34'>Интересно, а останется ли всё, как есть? Или же она изменится?</font>"
+		jump chapter3_1
+	fi
+	if $selected == 2
+		"Я просто думаю, что мне стоит стать самодостаточнее."
+		img @l "chara_surprised.png" center bottom-in
+		[$l] "…Правда?"
+		"Да."
+		img @l "chara_upset.png" center bottom-in
+		[$l] "Хах. Иногда мне кажется, что ты пытаешься избавиться от меня."
+		"…"
+		"…Это не так."
+		"Я просто думал, что мы могли бы немного приспустить обороты."
+		img @l "chara_sad.png" center bottom-in
+		[$l] "…"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Она ушла домой без меня.</font>"
+		"<font color='#dabd34'>Я начал чувствовать себя ужасно.</font>"
+		"<font color='#dabd34'>А затем ещё ужаснее, когда осознал, насколько я был к ней привязан.</font>"
+		"<font color='#dabd34'>Я должен сделать какие-то определённые шаги, чтобы разрешить это чувства.</font>"
+		jump chapter3_3
+	fi
+
+label chapter2_3q5
+	[$l] "Хмм."
+	"Что?"
+	img @l "chara_upset.png" center bottom-in
+	[$l] "Ты имеешь в виду больше друзей, или друзей вместо меня?"
+	"<font color='#dabd34'>Эм, я имел в виду…</font>"
+	select "Больше друзей" | "Вместо тебя"
+	if $selected == 1
+		"Только больше друзей, разумеется!"
+		"Я бы никогда тебя не оставил."
+		img @l "chara_happy.png" center bottom-in
+		[$l] "Правда?"
+		"Правда."
+		"<font color='#dabd34'>Но мне стало интересно: если бы я познакомился с новыми людьми, поладили ли бы они с ней так же, как и я?</font>"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Мы некоторое время оставались в парке, а затем пошли домой.</font>"
+		"<font color='#dabd34'>Теперь, когда я уверил её в том, что не собираюсь оставлять её, она была счастлива.</font>"
+		"<font color='#dabd34'>Когда дело доходит до этого, она мне становится нужнее кого- или чего-либо.</font>"
+		jump chapter3_2
+	fi
+	if $selected == 2
+		"Я не знаю. Думаю, для нас обоих хорошо было бы иметь разных друзей."
+		img @l "chara_annoyed.png" center bottom-in
+		[$l] "Мне не нужны другие друзья."
+		"Ну а мне нужны!"
+		"Извини. Мне просто нужно немного времени побыть одному. Я не могу проводить всё своё время с тобой!"
+		img @l "chara_upset.png" center bottom-in
+		[$l] "…Ладно."
+		img ~ dissolve 0.5s
+		"<font color='#dabd34'>Она ушла.</font>"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Я знаю, что я жесток.</font>"
+		"<font color='#dabd34'>Впрочем, если бы я не был жесток, она бы осталась со мной навеки…</font>"
+		"<font color='#dabd34'>…И я никогда не сделал бы шаг вперёд.</font>"
+		"<font color='#dabd34'>А я чувствую, что мне нужно попытаться сделать его.</font>"
+		jump chapter3_3
+	fi
+
+label chapter2_3q6
+	"<font color='#dabd34'>Угх, разозлил её…</font>"
+	select "Извиниться" | "Дать ей уйти"
+	if $selected == 1
+		"…Прости. Всё не так."
+		img @l "chara_upset.png" center bottom-in
+		[$l] "…"
+		"Прости, я просто запутался. Конечно, ты мне нужна."
+		img @l "chara_sad.png" center bottom-in
+		[$l] "…"
+		[$l] "Можем мы пойти домой?"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Я не хочу полагаться на неё, но это ведь так просто!</font>"
+		"<font color='#dabd34'>Я не могу решить, лучше ли или хуже мне с ней или без неё.</font>"
+		"<font color='#dabd34'>Мы пошли домой, и я не сказал об этом ни слова за всю оставшуюся половину дня.</font>"
+		jump chapter3_2
+	fi
+	if $selected == 2
+		"Прости, не сейчас."
+		[$l] "…"
+		"Мне просто не нужны сейчас такие подбадривания. Мне нужно время подумать."
+		img @l "chara_cynical.png" center bottom-in
+		[$l] "Ладно. Тогда увидимся позже."
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Она пошла домой без меня.</font>"
+		"<font color='#dabd34'>Я думал о моих с ней отношениях.</font>"
+		"<font color='#dabd34'>Интересно, готов ли я… или нет, вообще способен ли я познакомиться с кем-то ещё?</font>"
+		jump chapter3_3
+	fi
+
+label chapter2_4
+	cls
+	img ~ dissolve 0.5s
+	bg "bg_park.png" dissolve 1s
+	"<font color='#dabd34'>Я гулял по парку пару минут.</font>"
+	"<font color='#dabd34'>…Это начинает становиться немного бесцельным.</font>"
+	"<font color='#dabd34'>Мне стоит…</font>"
+	select "Присесть" | "Гулять дальше"
+	if $selected == 1
+		"<font color='#dabd34'>Я сел на траву и начал наблюдать за людьми.</font>"
+		"<font color='#dabd34'>Наблюдая, как все вокруг скучковались в пары или группы, я правда начал чувствовать себя отрешённым от других.</font>"
+		jump chapter2_4q1
+	fi
+	if $selected == 2
+		"<font color='#dabd34'>Я продолжал гулять.</font>"
+		"<font color='#dabd34'>Мне легче игнорировать других людей, пока я иду.</font>"
+		"<font color='#dabd34'>Это даёт шанс спокойно подумать.</font>"
+		jump chapter2_4q2
+	fi
+
+label chapter2_4q1
+	"<font color='#dabd34'>Я попробую немного расслабиться.</font>"
+	select "Мне стало лучше" | "Мне стало хуже"
+	if $selected == 1
+		"<font color='#dabd34'>Я начал чувствовать себя немного лучше.</font>"
+		"<font color='#dabd34'>Я думаю, что она мне больше не нужна.</font>"
+		"<font color='#dabd34'>Я могу справиться сам по себе!</font>"
+		jump chapter2_4q3
+	fi
+	if $selected == 2
+		"<font color='#dabd34'>Хаха, знал же, какой \"хорошей\" идеей было придти сюда одному.</font>"
+		"<font color='#dabd34'>Когда я остаюсь сам по себе, я просто кусок бесполезности.</font>"
+		jump chapter2_4q4
+	fi
+
+label chapter2_4q2
+	"<font color='#dabd34'>Проходя по большому парку, я начал грезить на ходу.</font>"
+	select "Мне стало лучше." | "Мне стало хуже"
+	if $selected == 1
+		"<font color='#dabd34'>Я немного расслабился, погрузившись в свои мысли.</font>"
+		"<font color='#dabd34'>Всё какой-то тупой мысленный гул.</font>"
+		jump chapter2_4q5
+	fi
+	if $selected == 2
+		"<font color='#dabd34'>О чём я думал, придя сюда один?!</font>"
+		"<font color='#dabd34'>Хотелось бы мне, чтобы она была здесь со мной.</font>"
+		jump chapter2_4q6
+	fi
+
+label chapter2_4q3
+	"<font color='#dabd34'>П..По крайней мере, я думаю, что могу…</font>"
+	select "Противостоять ей" | "Забыть об этом"
+	if $selected == 1
+		"<font color='#dabd34'>Не узнаю, если не попытаюсь.</font>"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Я направился домой.</font>"
+		"<font color='#dabd34'>Я нервничал по поводу того, что я скажу, когда вернусь.</font>"
+		"<font color='#dabd34'>Это трудно, но я знаю, что должен это сделать.</font>"
+		jump chapter3_3
+	fi
+	if $selected == 2
+		"<font color='#dabd34'>Я..Я думаю, мне нужно ещё немного всё обдумать…</font>"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Я сел на траву, думая про себя.</font>"
+		"<font color='#dabd34'>Вся проблема лишь в том, что в жизни слишком много неопределённости.</font>"
+		"<font color='#dabd34'>Было бы опрометчиво терять единственное, от чего я завишу.</font>"
+		jump chapter3_2
+	fi
+
+label chapter2_4q4
+	"<font color='#dabd34'>Это заставило меня осознать…</font>"
+	select "…нездоровость этого" | "…что мне стоит вернуться"
+	if $selected == 1
+		"<font color='#dabd34'>Это нездорово.</font>"
+		"<font color='#dabd34'>Нравится это мне или нет, это должно прекратиться.</font>"
+		"<font color='#dabd34'>Я не могу оставаться таким всю жизнь.</font>"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Я начал идти домой.</font>"
+		"<font color='#dabd34'>Собираясь рассказать ей, что нам нужно с этим покончить…</font>"
+		"<font color='#dabd34'>…Оставить эту эгоистичность.</font>"
+		jump chapter3_3
+	fi
+	if $selected == 2
+		"<font color='#dabd34'>Я просто не я без неё.</font>"
+		"<font color='#dabd34'>Я не могу чувствовать себя привязанным к кому-либо ещё.</font>"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Я вынужден был уйти.</font>"
+		"<font color='#dabd34'>Я пошёл прямо домой, чтобы извиниться.</font>"
+		"<font color='#dabd34'>Ненавижу, что я такой слабый.</font>"
+		jump chapter3_2
+	fi
+
+label chapter2_4q5
+	"<font color='#dabd34'>У меня на уме сейчас лишь одно…</font>"
+	select "Оставить её" | "Остаться с ней"
+	if $selected == 1
+		"<font color='#dabd34'>Я знаю, что должен её оставить.</font>"
+		"<font color='#dabd34'>Но это меня пугает.</font>"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Я пошёл домой.</font>"
+		"<font color='#dabd34'>Неуверенный в том, что я ей скажу, я начал репетировать разговор в своей голове.</font>"
+		"<font color='#dabd34'>Разговор прошёл не хорошо.</font>"
+		jump chapter3_3
+	fi
+	if $selected == 2
+		"<font color='#dabd34'>Я думаю о том, какую огромную часть моей жизни она занимает.</font>"
+		"<font color='#dabd34'>Я просто не могу это отрицать.</font>"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Я пошёл домой, намереваясь извиниться.</font>"
+		"<font color='#dabd34'>Может, это и не умное решение…</font>"
+		"<font color='#dabd34'>…но единственное, на которое я натыкаюсь снова и снова.</font>"
+		jump chapter3_2
+	fi
+
+label chapter2_4q6
+	img @l "chara_surprised.png" center bottom-in
+	[$l] "..!"
+	img @l "chara_happy.png" center bottom-in
+	[$l] "Привет."
+	"<font color='#dabd34'>Хах, как долго она была здесь?</font>"
+	"Эй."
+	img @l "chara_playful.png" center bottom-in
+	[$l] "У меня было такое чувство, что тебе что-то нужно."
+	"Хмм."
+	select "Мне нужна она" | "Нам нужно поговорить"
+	if $selected == 1
+		"Ничего особенного!"
+		img @l "chara_happy.png" center bottom-in
+		[$l] "Ох."
+		"Я просто рад, что ты здесь."
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Мы пошли домой вместе.</font>"
+		"<font color='#dabd34'>Я чувствовал небольшой стыд из-за того, что всегда сдаюсь ей…</font>"
+		"<font color='#dabd34'>…Но также радость из-за того, что она помогла мне почувствовать себя лучше.</font>"
+		jump chapter3_2
+	fi
+	if $selected == 2
+		"Нам нужно поговорить."
+		img @l "chara_sad.png" center bottom-in
+		[$l] "…"
+		img @l "chara_upset.png" center bottom-in
+		[$l] "Это не к добру."
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Вместо того чтобы столкнуться с ней на публике, мы пошли домой.</font>"
+		"<font color='#dabd34'>Мы соблюдали неловкую тишину всю дорогу.</font>"
+		"<font color='#dabd34'>Интересно, знает ли она уже, что я собираюсь сказать?</font>"
+		jump chapter3_3
+	fi
+
+label chapter3_1
+	cls
+	img ~ dissolve 0.5s
+	bg "bg_house.png" dissolve 1s
+	"<font color='#dabd34'>Это был день после нашей годовщины.</font>"
+	"<font color='#dabd34'>Я чувствовал своего рода нервное возбуждение.</font>"
+	"<font color='#dabd34'>Было сложно остановить дрожь в руках.</font>"
+	img @l "chara_happy.png" center bottom-in
+	[$l] "..?"
+	[$l] "О чём думаешь?"
+	"Эм…"
+	select "О нас" | "…Ни о чём"
+	if $selected == 1
+		"Я просто думал о нас."
+		img @l "chara_playful.png" center bottom-in
+		[$l] "Правда? Хаха."
+		jump chapter3_1q1
+	fi
+	if $selected == 2
+		"Просто… ни о чём."
+		img @l "chara_playful.png" center bottom-in
+		[$l] "Хмм… Я в этом так не уверена."
+		jump chapter3_1q2
+	fi
+
+label chapter3_1q1
+	"Да."
+	img @l "chara_happyf.gif" center bottom-in 0.5s
+	[$l] "Мило."
+	"<font color='#dabd34'>Э?</font>"
+	"<font color='#dabd34'>Мне кажется?!</font>"
+	img @l "chara_happy.png" center bottom-in
+	"<font color='#dabd34'>На секунду показалось, как будто…</font>"
+	select "Думал стать ближе к тебе" | "Подожди-ка"
+	if $selected == 1
+		"<font color='#dabd34'>Просто показалось, я уверен.</font>"
+		jump chapter3_1q3
+	fi
+	if $selected == 2
+		"<font color='#dabd34'>…</font>"
+		img @l "chara_sad.png" center bottom-in
+		[$l] "Что-то не так?"
+		jump chapter3_1q4
+	fi
+
+label chapter3_1q2
+	"<font color='#dabd34'>…!</font>"
+	img @l "chara_happy.png" center bottom-in
+	[$l] "Ну давай, можешь поделиться со мной чем угодно!"
+	"<font color='#dabd34'>Правда?</font>"
+	"Эм, я просто волнуюсь."
+	img @l "chara_sadf.gif" center bottom-in 0.5s
+	[$l] "Из-за чего?"
+	select "О том, что застрял" | "Это что сейчас было?"
+	if $selected == 1
+		"Иногда мне кажется, что я здесь застрял."
+		img @l "chara_upset.png" center bottom-in
+		[$l] "Оу."
+		jump chapter3_1q5
+	fi
+	if $selected == 2
+		"Ты видела?"
+		img @l "chara_surprised.png" center bottom-in
+		[$l] "А?"
+		jump chapter3_1q6
+	fi
+
+label chapter3_1q3
+	img @l "chara_happyf.gif" center bottom-in 0.5s
+	[$l] "Ну и..?"
+	"Я думаю, мы должны…"
+	"<font color='#dabd34'>Вот опять.</font>"
+	img @l "chara_happy.png" center bottom-in
+	"Я думаю, мы должны стать ближе."
+	"Я ещё столько всего хочу о тебе узнать…"
+	img @l "chara_playfulf.gif" center bottom-in 0.5s
+	[$l] "Правда? Ты правда имеешь это в виду?"
+	select "Да" | "Подожди, что это такое?"
+	if $selected == 1
+		"Да, я уверен."
+		"<font color='#dabd34'>Я знал, что не могу без неё.</font>"
+		"<font color='#dabd34'>Без неё кажется, будто что-то важное пропало во мне.</font>"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Той ночью мы были ближе как никогда.</font>"
+		"<font color='#dabd34'>Я почувствовал облегчение, когда наконец это сделал.</font>"
+		jump finale1
+	fi
+	if $selected == 2
+		"П..Постой…"
+		img @l "chara_surprised.png" center bottom-in
+		[$l] "Что?"
+		"Я..Я не знаю. Мне не кажется, что это хорошая идея."
+		img @l "chara_sad.png" center bottom-in
+		[$l] "…"
+		img @l "chara_upset.png" center bottom-in
+		[$l] "Ты передумал?"
+		"Нет… просто…"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Я не смог справиться с этим.</font>"
+		"<font color='#dabd34'>Я правда настолько слабый человек.</font>"
+		"<font color='#dabd34'>Впрочем, я знал, что плохой идеей было бы сближаться с ней.</font>"
+		"<font color='#dabd34'>Потому что тогда уже не будет пути назад…</font>"
+		jump finale2
+	fi
+
+label chapter3_1q4
+	"Н..Нет."
+	img @l "chara_happyf.gif" center bottom-in 0.5s
+	"<font color='#dabd34'>Это чересчур.</font>"
+	"<font color='#dabd34'>Есть лишь один способ остановить это.</font>"
+	select "Стать ближе" | "Отстраниться"
+	if $selected == 1
+		img @l "chara_surprised.png" center bottom-in
+		[$l] "..!"
+		"Я должен узнать…"
+		img @l "chara_happy.png" center bottom-in
+		[$l] "Мм?"
+		"Ты ведь можешь помочь мне, верно?"
+		[$l] "…"
+		img @l "chara_playful.png" center bottom-in
+		[$l] "Верно."
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Я знал.</font>"
+		"<font color='#dabd34'>Я знал, что она может помочь мне почувствовать себя лучше.</font>"
+		"<font color='#dabd34'>С того момента, как мы встретились, это то, до чего я созревал.</font>"
+		jump finale1
+	fi
+	if $selected == 2
+		"Я..Я не могу."
+		img @l "chara_sad.png" center bottom-in
+		[$l] "Что?"
+		"Прости. Я просто всё ещё ни в чём не уверен."
+		img @l "chara_upset.png" center bottom-in
+		[$l] "Хмм."
+		"Давай просто… забудем об этом."
+		img @l "chara_sad.png" center bottom-in
+		[$l] "…"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Я не должен был спрашивать. Я знал, что она меня простит.</font>"
+		"<font color='#dabd34'>И, как и в каждый другой раз, она всегда останется со мной.</font>"
+		"<font color='#dabd34'>Всегда, даже несмотря на то, что я такой трус, что не могу сделать ни одного настоящего решения...</font>"
+		jump finale2
+	fi
+
+label chapter3_1q5
+	img @l "chara_sad.png" center bottom-in
+	[$l] "Ну, это ведь твой выбор, так? Я не заставляю тебя."
+	"Я знаю."
+	"<font color='#dabd34'>Чем больше я рядом с ней, тем более увязшим я себя чувствую.</font>"
+	"<font color='#dabd34'>Чувствую, как будто я себя уже не контролирую.</font>"
+	select "Но мне не нужен контроль…" | "Мне нужно измениться"
+	if $selected == 1
+		img @l "chara_sadf.gif" center bottom-in 0.5s
+		"<font color='#dabd34'>Может, мне и не нужно контролировать всё.</font>"
+		"<font color='#dabd34'>Может, если я сдамся ей, то это поможет.</font>"
+		"<font color='#dabd34'>Может, я не хочу больше с этим сражаться.</font>"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Наконец…</font>"
+		"<font color='#dabd34'>Я сдался ей.</font>"
+		"<font color='#dabd34'>Но это было моим решением. Прекратить сопротивляться ей.</font>"
+		jump finale1
+	fi
+	if $selected == 2
+		"<font color='#dabd34'>Я не могу сдаться.</font>"
+		"<font color='#dabd34'>Но всё закончится лишь тем, что я на неё обижусь.</font>"
+		"<font color='#dabd34'>Может, я изменюсь… однажды.</font>"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Я думал, что могу уйти от неё.</font>"
+		"<font color='#dabd34'>Я говорил себе – уйду, когда-нибудь. Когда я был сильнее…</font>"
+		"<font color='#dabd34'>…Но в итоге…</font>"
+		jump finale2
+	fi
+
+label chapter3_1q6
+	img @l "chara_sad.png" center bottom-in
+	[$l] "Что видела?"
+	"<font color='#dabd34'>О, исчезло.</font>"
+	"На секунду…"
+	select "Там было что-то странное" | "…Забудь"
+	if $selected == 1
+		"Я увидел что-то странное."
+		img @l "chara_happy.png" center bottom-in
+		[$l] "Хех, может, ты устал?"
+		"Нет, не чувствую себя усталым."
+		[$l] "Ну, тогда в любом случае, может, тебе лучше расслабиться."
+		"…"
+		"Ладно-ладно."
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Мы провели весь оставшийся день, разговаривая о всяком.</font>"
+		"<font color='#dabd34'>Я никогда не мог говорить о чём-то важном, особенно когда дело заходило о ней.</font>"
+		"<font color='#dabd34'>Но я думаю, что это просто то, с чем мне придётся жить.</font>"
+		jump finale2
+	fi
+	if $selected == 2
+		"Забудь, можешь меня игнорировать."
+		img @l "chara_happy.png" center bottom-in
+		[$l] "Хехе, ты ведёшь себя странно."
+		"…Прости."
+		[$l] "Тсс, не нужно мне извиняться."
+		"…"
+		[$l] "Но тебе не стоит всё оставлять в себе."
+		"…Спасибо."
+		"<font color='#dabd34'>Я не могу сказать, как сильно я в ней нуждаюсь…</font>"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Неужели она просто жалеет меня?</font>"
+		"<font color='#dabd34'>Может, поэтому я не могу стать ближе с ней.</font>"
+		"<font color='#dabd34'>…Интересно, на что это похоже.</font>"
+		jump finale2
+	fi
+
+label chapter3_2
+	cls
+	img ~ dissolve 0.5s
+	bg "bg_house.png" dissolve 1s
+	img @l "chara_bored.png" center bottom-in
+	"<font color='#dabd34'>Это был день после нашей годовщины.</font>"
+	img @l "chara_boredf.gif" center bottom-in 0.5s
+	"<font color='#dabd34'>Я чувствовал зудящее давление в голове.</font>"
+	"<font color='#dabd34'>Как будто меня окружили со всех сторон.</font>"
+	select "Эй…" | "…"
+	if $selected == 1
+		"Эм, эй."
+		img @l "chara_happy.png" center bottom-in
+		[$l] "Мм?"
+		"Я тут подумал…"
+		jump chapter3_2q1
+	fi
+	if $selected == 2
+		"…"
+		"<font color='#dabd34'>Это неправильно.</font>"
+		jump chapter3_2q2
+	fi
+
+label chapter3_2q1
+	img @l "chara_playful.png" center bottom-in
+	[$l] "…Для разнообразия!"
+	"Хаха…"
+	"Тебе весело?"
+	img @l "chara_happy.png" center bottom-in
+	[$l] "Конечно, у меня всё хорошо."
+	img @l "chara_sadf.gif" center bottom-in 0.5s
+	[$l] "А тебе не весело?"
+	"Нет, весело, просто…"
+	select "Я хочу стать ближе" | "Просто проверял"
+	if $selected == 1
+		"Я думаю, мы можем быть ближе, чем сейчас."
+		img @l "chara_bored.png" center bottom-in
+		[$l] "Хмм. Думаю, да."
+		img @l "chara_happy.png" center bottom-in
+		[$l] "Я всегда оставляла этот выбор тебе."
+		[$l] "Если ты уверен, что хочешь этого…"
+		jump chapter3_2q3
+	fi
+	if $selected == 2
+		"Просто хотел убедиться."
+		img @l "chara_happy.png" center bottom-in
+		[$l] "Хехехе."
+		[$l] "Я знаю."
+		jump chapter3_2q4
+	fi
+
+label chapter3_2q2
+	"<font color='#dabd34'>Я не должен чувствовать себя таким раздражённым.</font>"
+	"<font color='#dabd34'>Мне нужно…</font>"
+	select "Перестать думать" | "Продолжать думать"
+	if $selected == 1
+		"<font color='#dabd34'>Хватит думать об этом.</font>"
+		"<font color='#dabd34'>Я должен что-то сделать.</font>"
+		jump chapter3_2q5
+	fi
+	if $selected == 2
+		"<font color='#dabd34'>Мне нужно сосредоточиться. Я должен сказать ей.</font>"
+		"Эй…"
+		img @l "chara_happy.png" center bottom-in
+		[$l] "Мм?"
+		jump chapter3_2q6
+	fi
+
+label chapter3_2q3
+	img @l "chara_happyf.gif" center bottom-in 0.5s
+	"Я..Я…"
+	select "Я уверен" | "П..Подожди…"
+	if $selected == 1
+		"Да, я уверен в этом."
+		img @l "chara_playfulf.gif" center bottom-in 0.5s
+		[$l] "…"
+		[$l] "Стой спокойно."
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Я больше не мог противостоять этому.</font>"
+		"<font color='#dabd34'>Я больше не хотел вечность оставаться таким.</font>"
+		"<font color='#dabd34'>Я хотел принять решение, пускай и безрассудное.</font>"
+		jump finale1
+	fi
+	if $selected == 2
+		"…"
+		img @l "chara_sadf.gif" center bottom-in 0.5s
+		[$l] "..?"
+		img @l "chara_upset.png" center bottom-in
+		[$l] "Я знала."
+		[$l] "Всё нормально. Забудь об этом."
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Что-то остановило меня.</font>"
+		"<font color='#dabd34'>Кажется, я всё ещё боюсь.</font>"
+		"<font color='#dabd34'>Я не могу доверять ей. По крайней мере, не полностью.</font>"
+		jump finale2
+	fi
+
+label chapter3_2q4
+	img @l "chara_playfulf.gif" center bottom-in 0.5s
+	[$l] "Я не могу помочь тебе с решением."
+	[$l] "Ты должен сделать его сам."
+	img @l "chara_playful.png" center bottom-in
+	"Эмм…"
+	select "Я просто посмотрю, что будет" | "Взять себя под контроль"
+	if $selected == 1
+		"Я не против просто посмотреть, что будет дальше."
+		img @l "chara_sad.png" center bottom-in
+		[$l] "Правда?"
+		"Да. Я так думаю."
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Разумеется, мне было слишком страшно.</font>"
+		"<font color='#dabd34'>Я знал, во что бы я ввязался.</font>"
+		"<font color='#dabd34'>Я слишком боялся идти на любой риск.</font>"
+		jump finale2
+	fi
+	if $selected == 2
+		"Тогда…"
+		"Я хочу быть ближе к тебе."
+	img @l "chara_happyf.gif" center bottom-in 0.5s
+		[$l] "…"
+		[$l] "Тогда…"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Я знаю, что это опрометчивое решение.</font>"
+		"<font color='#dabd34'>Я знаю, что она не полезна для меня.</font>"
+		"<font color='#dabd34'>Но я должен узнать, как оно.</font>"
+		jump finale1
+	fi
+
+label chapter3_2q5
+	"Эй."
+	img @l "chara_happy.png" center bottom-in
+	[$l] "Да?"
+	"Я…"
+	select "Счастлив" | "Должен остаться один"
+	if $selected == 1
+		"…Хочу, чтобы ты пообещала."
+		[$l] "Что?"
+		"Что ты всегда будешь здесь."
+		img @l "chara_playful.png" center bottom-in
+		[$l] "Ты же знаешь, что буду."
+		"…"
+		"…Конечно."
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Какое облегчение, что ничего не изменилось.</font>"
+		"<font color='#dabd34'>Я смогу справиться, если всё будет по-старому.</font>"
+		"<font color='#dabd34'>Мне не надо волноваться ни о том, что я потеряю её, ни о том, что потеряю себя.</font>"
+		jump finale2
+	fi
+	if $selected == 2
+		"Я хочу, чтобы ты ушла."
+		img @l "chara_surprised.png" center bottom-in
+		[$l] "!!!"
+		img @l "chara_sad.png" center bottom-in
+		[$l] "Это…"
+		img @l "chara_upset.png" center bottom-in
+		[$l] "…Неудивительно."
+		"…"
+		[$l] "Хорошо."
+		img @l "chara_sad.png" center bottom-in
+		[$l] "Может, однажды я снова тебе понадоблюсь."
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Надеюсь, она не права.</font>"
+		"<font color='#dabd34'>Но я знаю, что всё ещё думаю о ней.</font>"
+		"<font color='#dabd34'>Когда она уходила, я не мог не вспомнить её комментарий.</font>"
+		jump finale3
+	fi
+
+label chapter3_2q6
+	"Я больше не счастлив… из-за этого."
+	img @l "chara_sad.png" center bottom-in
+	[$l] "Ох."
+	img @l "chara_annoyed.png" center bottom-in
+	[$l] "А что ты хочешь, чтобы я сделала?"
+	"Не знаю."
+	"…"
+	"Я думаю, что предпочёл бы остаться один."
+	[$l] "Хмм."
+	img @l "chara_cynical.png" center bottom-in
+	[$l] "Ты правда думаешь, что сможешь справиться со всем один?"
+	select "Да" | "Нет"
+	if $selected == 1
+		"Да."
+		"Я в любом случае хочу попробовать."
+		img @l "chara_sad.png" center bottom-in
+		[$l] "…"
+		[$l] "Знаешь, я могу вернуться в любое время."
+		"Знаю."
+		img @l "chara_cynical.png" center bottom-in
+		[$l] "Не думаю, что с тобой всё будет хорошо, но…"
+		"Будет."
+		img @l "chara_sad.png" center bottom-in
+		[$l] "…"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Она выражала много недовольства.</font>"
+		"<font color='#dabd34'>Но я не сдавал ей.</font>"
+		"<font color='#dabd34'>Впервые за долгое время моя голова начала прочищаться.</font>"
+		jump finale3
+	fi
+	if $selected == 2
+		"…Нет. Ты права."
+		img @l "chara_happy.png" center bottom-in
+		[$l] "Хех."
+		img @l "chara_playful.png" center bottom-in
+		[$l] "Прости, пожалуйста."
+		"Нет, я знаю, что ты права."
+		"Просто прости, что сомневался в тебе."
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Она всегда беспокоилась обо мне.</font>"
+		"<font color='#dabd34'>Привычно и пугающе в одно и то же время.</font>"
+		"<font color='#dabd34'>Но никогда не пугающе так, как если бы я остался один.</font>"
+		jump finale2
+	fi
+
+label chapter3_3
+	cls
+	img ~ dissolve 0.5s
+	bg "bg_house.png" dissolve 1s
+	img @l "chara_sad.png" center bottom-in
+	[$l] "…"
+	"Нам нужно поговорить."
+	img @l "chara_upset.png" center bottom-in
+	[$l] "Э..Это не к добру."
+	[$l] "Разве мы не можем просто продолжить, как всегда?"
+	img @l "chara_sad.png" center bottom-in
+	[$l] "Всё ведь нормально, не так ли?"
+	select "Нет" | "…Может быть"
+	if $selected == 1
+		"Нет."
+		"Извини, я не могу больше это делать."
+		img @l "chara_cynical.png" center bottom-in
+		[$l] "Хех."
+		jump chapter3_3q1
+	fi
+	if $selected == 2
+		"Может быть."
+		img @l "chara_happy.png" center bottom-in
+		[$l] "Хорошо."
+		img @l "chara_sad.png" center bottom-in
+		[$l] "Но всё равно, что тебя расстраивает?"
+		jump chapter3_3q2
+	fi
+
+label chapter3_3q1
+	img @l "chara_annoyedf.gif" center bottom-in 0.5s
+	[$l] "Я не верю тебе."
+	"…"
+	[$l] "Я знаю тебя."
+	[$l] "Без меня ты бесполезен."
+	img @l "chara_angryf.gif" center bottom-in 0.5s
+	[$l] "Пустой, скучный, прямо как все остальные."
+	"…"
+	select "Я принял решение" | "К..Как ты смеешь!"
+	if $selected == 1
+		"Я принял решение."
+		img @l "chara_cynical.png" center bottom-in
+		[$l] "Хахаха!"
+		jump chapter3_3q3
+	fi
+	if $selected == 2
+		"Ч..Что!"
+		img @l "chara_cynical.png" center bottom-in
+		[$l] "Хех."
+		jump chapter3_3q4
+	fi
+
+label chapter3_3q2
+	"<font color='#dabd34'>Угх, мне правда стоит это ей говорить?</font>"
+	"Ну…"
+	select "Я несчастлив" | "Забудь об этом"
+	if $selected == 1
+		"В последнее время меня не так радует всё."
+		img @l "chara_surprised.png" center bottom-in
+		[$l] "Всё?"
+		"Ну, я имею в виду нас."
+		img @l "chara_sad.png" center bottom-in
+		[$l] "…"
+		jump chapter3_3q5
+	fi
+	if $selected == 2
+		"Забудь."
+		img @l "chara_sad.png" center bottom-in
+		[$l] "…"
+		img @l "chara_annoyed.png" center bottom-in
+		[$l] "Нет."
+		jump chapter3_3q6
+	fi
+
+label chapter3_3q3
+	img @l "chara_cynicalf.gif" center bottom-in 0.5s
+	[$l] "Сомневаюсь в этом."
+	[$l] "Тебе слишком страшно."
+	[$l] "Без меня рядом ты и пальцем не сможешь пошевелить."
+	img @l "chara_annoyed.png" center bottom-in
+	[$l] "А кто ещё будет помогать тебе? Никто."
+	select "Она должна уйти" | "Подождать, пока она прекратит"
+	if $selected == 1
+		"Мне плевать. Уходи."
+		img @l "chara_angry.png" center bottom-in
+		[$l] "…"
+		img @l "chara_upset.png" center bottom-in
+		"…"
+		[$l] "Никто не поможет тебе… так, как могу я."
+		"…"
+		"Уходи."
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Часть меня соглашалась с ней, со всем, что она говорила.</font>"
+		"<font color='#dabd34'>Но, разумеется…</font>"
+		"<font color='#dabd34'>Я знал, что не могу больше позволять себе верить ей.</font>"
+		jump finale3
+	fi
+	if $selected == 2
+		"…"
+		img @l "chara_cynical.png" center bottom-in
+		[$l] "Никто не поможет, потому что ты один."
+		img @l "chara_annoyed.png" center bottom-in
+		[$l] "Никто другой не сможет тебя понять."
+		"…Из-за тебя."
+		[$l] "Да."
+		img @l "chara_cynical.png" center bottom-in
+		[$l] "Но тебе лучше иметь меня, чем кого-либо ещё."
+		"Нет. На самом деле, уже нет."
+		img @l "chara_upset.png" center bottom-in
+		[$l] "…"
+		"Я думал так… но я больше в этом так не уверен."
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Слушая её, моя решимость лишь усиливалась.</font>"
+		"<font color='#dabd34'>Я слышал это так часто, что для меня это теперь пустой звук.</font>"
+		"<font color='#dabd34'>Я наконец собрался с силами, чтобы не согласиться с ней.</font>"
+		jump finale3
+	fi
+
+label chapter3_3q4
+	img @l "chara_cynicalf.gif" center bottom-in 0.5s
+	[$l] "Ты ведь не хочешь быть как все, верно?"
+	[$l] "Они, даже вероятно, не смогут тебя понять."
+	img @l "chara_annoyed.png" center bottom-in
+	[$l] "А если они узнают обо мне, они тебя возненавидят."
+	"…"
+	img @l "chara_cynicalf.gif" center bottom-in 0.5s
+	[$l] "Ты ведь знаешь, что они говорят, верно?" 
+	select "Знаешь, да" | "Заткнись!"
+	if $selected == 1
+		"Знаешь, да. И мне плевать."
+		"Я выше этого, и выше тебя."
+		img @l "chara_annoyed.png" center bottom-in
+		[$l] "…Ты так думаешь?"
+		"…Я надеюсь на это."
+		img @l "chara_cynical.png" center bottom-in
+		[$l] "Хехехе."
+		[$l] "Поживи годик или два. Посмотришь, что не так чудесно быть без меня."
+		"…"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Надеюсь, она не права.</font>"
+		"<font color='#dabd34'>Где-то глубоко внутри я соглашался с ней, так что я тоже считал, что имел ложные надежды.</font>"
+		"<font color='#dabd34'>Но я решил попробовать прожить без неё.</font>"
+		jump finale3
+	fi
+	if $selected == 2
+		"З..Заткнись!"
+		img @l "chara_angry.png" center bottom-in
+		[$l] "Нет!"
+		[$l] "Что ты будешь делать, когда поймёшь, что они тебя ненавидят?"
+		[$l] "Если меня не будет рядом, кто сделает всё это безразличным?"
+		img @l "chara_annoyed.png" center bottom-in
+		[$l] "Ты знаешь, что я то, что делает тебя собой."
+		"…"
+		"Я знаю."
+		"Я… ненавижу это."
+		img @l "chara_upset.png" center bottom-in
+		[$l] "Это не значит, что это плохо."
+		img @l "chara_sad.png" center bottom-in
+		[$l] "Пожалуйста?"
+		"…"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Я сдался.</font>"
+		"<font color='#dabd34'>Она права. Вся моя личность строится на ней.</font>"
+		"<font color='#dabd34'>Если я её потеряю, от меня может ничего не остаться.</font>"
+		jump finale2
+	fi
+
+label chapter3_3q5
+	img @l "chara_upset.png" center bottom-in
+	[$l] "Почему?"
+	"Я… Я просто больше не знаю, правильно это или нет."
+	img @l "chara_sad.png" center bottom-in
+	[$l] "Ох."
+	select "Попросить её уйти" | "Извиниться"
+	if $selected == 1
+		"Прости."
+		"Мне просто нужно увидеть, как это – жить самому по себе."
+		[$l] "Хмм."
+		"…Но я всё равно рад, что познакомился с тобой."
+		img @l "chara_upset.png" center bottom-in
+		[$l] "…"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>В итоге у меня нет сожалений ни о чём, что я сделал.</font>"
+		"<font color='#dabd34'>Я чувствую, всё идёт к своему естественному концу.</font>"
+		"<font color='#dabd34'>Надеюсь, она тоже это понимает.</font>"
+		jump finale3
+	fi
+	if $selected == 2
+		"Прости."
+		[$l] "…"
+		img @l "chara_upset.png" center bottom-in
+		[$l] "Разве всё не хорошо так, как есть?"
+		"Ну…"
+		img @l "chara_sad.png" center bottom-in
+		[$l] "Это просто ухабина на дороге жизни. Тебе не нужно ничего решать сейчас."
+		img @l "chara_happy.png" center bottom-in
+		[$l] "Дай всему немного времени. Я уверена, всё станет лучше."
+		"…"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Я дал ей убедить себя.</font>"
+		"<font color='#dabd34'>И она была права. Некоторое время спустя я передумал.</font>"
+		"<font color='#dabd34'>Она знает меня слишком хорошо…</font>"
+		jump finale2
+	fi
+
+label chapter3_3q6
+	img @l "chara_sad.png" center bottom-in
+	[$l] "Ты не можешь просто говорить мне игнорировать тебя."
+	"…"
+	select "Хорошо" | "…"
+	if $selected == 1
+		"Хорошо. Меня не радует то, как идут дела."
+		"Я хочу, чтобы ты ушла."
+		img @l "chara_upset.png" center bottom-in
+		[$l] "…"
+		img @l "chara_annoyed.png" center bottom-in
+		[$l] "Отказываюсь."
+		[$l] "Ясно, что ты всё ещё нуждаешься в том, чтобы я была рядом."
+		"Что?"
+		[$l] "Мне пришлось вытягивать из тебя, что ты несчастлив."
+		img @l "chara_sad.png" center bottom-in
+		[$l] "И если подумать об этом, ты правда хочешь остаться в одиночестве и несчастным?"
+		"…"
+		img @l "chara_happy.png" center bottom-in
+		[$l] "Я могу помочь тебе не чувствовать себя больше одиноким."
+		img @l "chara_playful.png" center bottom-in
+		[$l] "…Только если позволишь."
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Разумеется, я позволил ей делать всё, что она хочет.</font>"
+		"<font color='#dabd34'>Я бессилен остановить её.</font>"
+		"<font color='#dabd34'>Всего лишь слишком жалок, чтобы жить без неё.</font>"
+		jump finale2
+	fi
+	if $selected == 2
+		"…Серьёзно, ничего особенного."
+		img @l "chara_sad.png" center bottom-in
+		[$l] "Хмм…"
+		img @l "chara_upset.png" center bottom-in
+		[$l] "Я знаю, что это далеко не ничего, но если ты не хочешь говорить об этом…"
+		[$l] "…Ничего сделать с этим я не смогу."
+		"…"
+		img @l "chara_sad.png" center bottom-in
+		[$l] "Я хотела бы, чтобы ты позволил мне помочь тебе."
+		"…"
+		img ~ dissolve 0.5s
+		bg #000 dissolve 0.5s
+		"<font color='#dabd34'>Я хотел бы, чтобы я позволил ей помочь.</font>"
+		"<font color='#dabd34'>И я хотел бы, чтобы я не хотел этой её помощи.</font>"
+		"<font color='#dabd34'>Я хотел бы никогда не знакомиться с ней, потому что теперь я застрял вместе с ней.</font>"
+		jump finale2
+	fi
+
+label finale1
+	"<font color='#dabd34'>Я знаю, что сделал правильное решение.</font>"
+	cls
+	img ~ dissolve 0.5s
+	bg "bg_hosp.png" dissolve 1s
+	img @nurse "nurse.png" right bottom-in
+	[$nurse] "В этот раз вам повезло."
+	"…"
+	[$nurse] "Вы не задели нервы и артерии."
+	"<font color='#dabd34'>Будто бы я настолько глуп!</font>"
+	"Эм, когда я могу пойти домой?"
+	[$nurse] "Вам придётся подождать осмотра у доктора до утра, а затем мы посмотрим."
+	"Верно…"
+	[$nurse] "Вам сейчас лучше?"
+	"…Да."
+	[$nurse] "Тогда зачем вы это сделали?"
+	"…"
+	img ~ dissolve 0.5s
+	bg #000 dissolve 0.5s
+	"<font color='#dabd34'>Разумеется, мне без проблем удалось выйти из больницы.</font>"
+	"<font color='#dabd34'>Это было легко, ведь мне никогда не было так хорошо.</font>"
+	"<font color='#dabd34'>Я чувствовал себя цельным. Мне никогда не стоило сомневаться в том, что она нужна мне.</font>"
+	"<font color='#dabd34'>В конце концов, мои недостатки так же определяют меня, как и мои преимущества.</font>"
+	"<font color='#dabd34'>Она нужна мне, чтобы поддерживать меня в себе. Чтобы поддерживать моё сознание.</font>"
+	"<font color='#dabd34'>Мне нужно, чтобы она была счастлива.</font>"
+	jump end
+
+label finale2
+	"<font color='#dabd34'>Думаю, я сделал правильный выбор…</font>"
+	cls
+	img ~ dissolve 0.5s
+	bg "bg_house.png" dissolve 0.5s
+	img @l "chara_boredf.gif" center bottom-in 0.5s
+	"<font color='#dabd34'>Думаю, мы можем жить так вечно.</font>"
+	"<font color='#dabd34'>Может, мы и не будем счастливы, но я знаю, что нам и не будет грустно.</font>"
+	"<font color='#dabd34'>Когда всё стало на кон, мне стало слишком страшно быть с ней или быть без неё.</font>"
+	"<font color='#dabd34'>Меня может удовлетворить лишь комфортная жизнь. И не нужны мне ни решения, ни ответы.</font>"
+	"<font color='#dabd34'>Думаю, мы можем жить так вечно…</font>"
+	jump end
+
+label finale3
+	"<font color='#dabd34'>Надеюсь, я сделал правильный выбор…</font>"
+	cls
+	img ~ dissolve 0.5s
+	bg "bg_house.png" dissolve 1s
+	"<font color='#dabd34'>Её нет в моей жизни уже месяц. Я больше не полагаюсь на неё.</font>"
+	"<font color='#dabd34'>Я обрёл независимость. Теперь я счастлив!</font>"
+	"<font color='#dabd34'>Будущее кажется неопределённым, но меня так радует свобода!</font>"
+	"<font color='#dabd34'>Надеюсь, никогда не наступит день, когда я захочу увидеть её снова.</font>"
+	jump end
+
+label end
+	cls
+	img ~ 0.5s
+	music ~ 3s
+	delay 1s
+	bg #000 dissolve 0.5s
+	delay 0.5s
+
+	img "end.png" 0 0 dissolve 2s
+	delay 2s
+	img ~ dissolve 2s
+	delay 2s
+	jump main.scr

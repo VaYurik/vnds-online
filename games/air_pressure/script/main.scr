@@ -1,1 +1,121 @@
+label game
+	var $l = "Лея"
+	var $nurse = "Медсестра"
 
+	select Начать игру | Отладка
+	if $selected == 1
+		jump script.scr
+	fi
+	if $selected == 2
+		jump debug
+	fi
+
+label debug
+	select chapter1_1 | chapter1_3 | chapter2_1 | chapter2_2 | chapter2_3 | chapter2_4 | chapter3_1 | chapter3_2 | chapter3_3 | finale | Сбросить | Вернуться
+	if $selected == 1
+		select chapter1_1q1 | chapter1_1q2 | chapter1_1q3 | chapter1_1q4 | chapter1_1q5 | chapter1_1q6 | Вернуться
+		if $selected == 7
+			jump debug
+		fi
+		bg "bg_house.png" dissolve 0.5s
+		var $label_name = "chapter1_1q"
+		var $label_name . $selected
+		jump "script.scr" $label_name
+	fi
+	if $selected == 2
+		select chapter1_3q1 | chapter1_3q2 | chapter1_3q3 | chapter1_3q4 | chapter1_3q5 | chapter1_3q6 | Вернуться
+		if $selected == 7
+			jump debug
+		fi
+		bg "bg_town.png" dissolve 0.5s
+		var $label_name = "chapter1_3q"
+		var $label_name . $selected
+		jump "script.scr" $label_name
+	fi
+	if $selected == 3
+		select chapter2_1q1 | chapter2_1q2 | chapter2_1q3 | chapter2_1q4 | chapter2_1q5 | chapter2_1q6 | Вернуться
+		if $selected == 7
+			jump debug
+		fi
+		bg "bg_house.png" dissolve 0.5s
+		var $label_name = "chapter2_1q"
+		var $label_name . $selected
+		jump "script.scr" $label_name
+	fi
+	if $selected == 4
+		select chapter2_2q1 | chapter2_2q2 | chapter2_2q3 | chapter2_2q4 | chapter2_2q5 | chapter2_2q6 | Вернуться
+		if $selected == 7
+			jump debug
+		fi
+		bg "bg_park.png" dissolve 0.5s
+		var $label_name = "chapter2_2q"
+		var $label_name . $selected
+		jump "script.scr" $label_name
+	fi
+	if $selected == 5
+		select chapter2_3q1 | chapter2_3q2 | chapter2_3q3 | chapter2_3q4 | chapter2_3q5 | chapter2_3q6 | Вернуться
+		if $selected == 7
+			jump debug
+		fi
+		bg "bg_park.png" dissolve 0.5s
+		var $label_name = "chapter2_3q"
+		var $label_name . $selected
+		jump "script.scr" $label_name
+	fi
+	if $selected == 6
+		select chapter2_4q1 | chapter2_4q2 | chapter2_4q3 | chapter2_4q4 | chapter2_4q5 | chapter2_4q6 | Вернуться
+		if $selected == 7
+			jump debug
+		fi
+		bg "bg_park.png" dissolve 0.5s
+		var $label_name = "chapter2_4q"
+		var $label_name . $selected
+		jump "script.scr" $label_name
+	fi
+	if $selected == 7
+		select chapter3_1q1 | chapter3_1q2 | chapter3_1q3 | chapter3_1q4 | chapter3_1q5 | chapter3_1q6 | Вернуться
+		if $selected == 7
+			jump debug
+		fi
+		bg "bg_house.png" dissolve 0.5s
+		var $label_name = "chapter3_1q"
+		var $label_name . $selected
+		jump "script.scr" $label_name
+	fi
+	if $selected == 8
+		select chapter3_2q1 | chapter3_2q2 | chapter3_2q3 | chapter3_2q4 | chapter3_2q5 | chapter3_2q6 | Вернуться
+		if $selected == 7
+			jump debug
+		fi
+		bg "bg_house.png" dissolve 0.5s
+		var $label_name = "chapter3_2q"
+		var $label_name . $selected
+		jump "script.scr" $label_name
+	fi
+	if $selected == 9
+		select chapter3_3q1 | chapter3_3q2 | chapter3_3q3 | chapter3_3q4 | chapter3_3q5 | chapter3_3q6 | Вернуться
+		if $selected == 7
+			jump debug
+		fi
+		bg "bg_house.png" dissolve 0.5s
+		var $label_name = "chapter3_3q"
+		var $label_name . $selected
+		jump "script.scr" $label_name
+	fi
+	if $selected == 10
+		select finale1 | finale2 | finale3 | Вернуться
+		if $selected == 4
+			jump debug
+		fi
+		bg #000 dissolve 0.5s
+		var $label_name = "finale"
+		var $label_name . $selected
+		jump "script.scr" $label_name
+	fi
+	if $selected == 11
+		reset
+		jump game
+	fi
+	if $selected == 12
+		jump game
+	fi
