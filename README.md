@@ -11,3 +11,5 @@ VNDS ports:<br>
 
 VNDS2 ports:<br>
   Essence Hunt (rus): https://yadi.sk/d/Y531BYsO3VM9fv<br>
+  Air Pressure (rus): https://yadi.sk/d/38SwZN0P3YBSg3<br>
+  Шепотки (rus): https://yadi.sk/d/Bk72Bogg3YBShS<br>
