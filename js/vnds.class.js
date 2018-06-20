@@ -7,6 +7,7 @@ var vnds_interpreter = function()
 	this.prev_text = '';
 	this.sound_timeout;
 	this.text_timeout;
+	this.first_check_jump = false;
 
 	this.init = function()
 	{
@@ -17,29 +18,30 @@ var vnds_interpreter = function()
 			short_name: null,           // Короткое наименование игры, взятое из названия директории игры
 			resolution:                 // Разрешение игры, взятое из файла img.ini
 			{
-				width: null,              // width
-				height: null,             // height
+				width: null,              // ширина (width)
+				height: null,             // высота (height)
 				ratio: null               // отношение высоты к ширине (height / width)
 			},
+			font: null,                 // Название шрифта, взятое из файла info.txt
 			icons:                      // Иконки игры, взятые из директории игры
 			{
-				small: null,              // icon
-				big: null                 // icon-high
+				small: null,              // иконка маленькая (icon)
+				big: null                 // иконка большая (icon-high)
 			},
 			thumbs:                     // Превьюшки игры, взятые из директории игры
 			{
-				small: null,              // thumbnail
-				big: null                 // thumbnail-high
+				small: null,              // превьюшка для кнопки выбора игры (thumbnail)
+				big: null                 // превьюшка для фона меню игры (thumbnail-high)
 			},
-			local_variables: {},        // массив локальных переменных
-			selected: null,             // последнее значение переменной selected
-			script_name: null,          // название текущего скрипта
-			script_lines: [],           // список строк текущего скрипта
-			script_line_num: null,      // номер текущей строки скрипта
-			sound: null,                // текущий воспроизводящийся звук
-			music: null,                // текущая воспроизводящаяся музыка
-			background: null,           // файл текущего фона
-			sprites:                    // массив отображающихся в текущий момент спрайтов
+			local_variables: {},        // Массив локальных переменных
+			selected: null,             // Последнее значение переменной selected
+			script_name: null,          // Название текущего скрипта
+			script_lines: [],           // Список строк текущего скрипта
+			script_line_num: null,      // Номер текущей строки скрипта
+			sound: null,                // Текущий воспроизводящийся звук
+			music: null,                // Текущая воспроизводящаяся музыка
+			background: null,           // Файл текущего фона
+			sprites:                    // Массив отображающихся в текущий момент спрайтов
 			{                           // индекс массива - имя спрайта без расширения
 				name: null,               // идентификатор спрайта
 				file: null,               // имя файла спрайта
@@ -78,6 +80,8 @@ var vnds_interpreter = function()
 			df.resolve('Incorrect ' + command_name + ' parameters');
 			return df.promise();
 		}
+		if (config.is_check)
+			config.is_skip = true;
 		let _this = this;
 		let params_index = 0;
 		$.each(params_list, function(key, value)
@@ -91,7 +95,7 @@ var vnds_interpreter = function()
 		});
 		let background = params_list[params_index];
 
-		let effect_speed;
+		let effect_speed = 0;
 		let effect;
 		if (params_list.length > 1) // Если параметров больше одного и не включён режим пропуска
 		{
@@ -167,14 +171,14 @@ var vnds_interpreter = function()
 			}
 			let $game_screen = $('#game_screen');
 			let $background = $('#background');
-			let property_name;
-			if (background.indexOf('#') === 0)
-				property_name = 'background-color';
-			else
-				property_name = 'background-image';
 			if (effect_speed === 0)
 			{
-				$background.css(property_name, background);
+				$background.css(
+				{
+					'background': background,
+					'background-size': 'cover',
+					'background-repeat': 'no-repeat'
+				});
 				df.resolve();
 			}
 			else
@@ -185,7 +189,12 @@ var vnds_interpreter = function()
 				{
 					$background.stop().fadeOut(effect_speed, function()
 					{
-						$(this).css(property_name, background)
+						$(this).css(
+						{
+							'background': background,
+							'background-size': 'cover',
+							'background-repeat': 'no-repeat'
+						});
 						$(this).fadeIn(effect_speed, function()
 							{
 								$game_screen.on('click', handle);
@@ -197,7 +206,7 @@ var vnds_interpreter = function()
 				{
 					$background.stop().slideUp(effect_speed, function()
 					{
-						$(this).css(property_name, background)
+						$(this).css('background', background)
 						$(this).slideDown(effect_speed, function()
 						{
 							$game_screen.on('click', handle);
@@ -209,7 +218,7 @@ var vnds_interpreter = function()
 				{
 					$background.stop().animate({'width': 'toggle'}, effect_speed, function()
 					{
-						$(this).css(property_name, background)
+						$(this).css('background', background)
 						$(this).animate({'width': 'toggle'}, effect_speed, function()
 						{
 							$game_screen.on('click', handle);
@@ -259,6 +268,8 @@ var vnds_interpreter = function()
 			df.resolve('Missing ' + command_name + ' parameters');
 			return df.promise();
 		}
+		if (config.is_check)
+			config.is_skip = true;
 		$('#info_sprites').text(params);
 		let params_list = this.get_params_list(params);
 		if ((params_list.length < 1) || (params_list.length > 6))
@@ -278,7 +289,7 @@ var vnds_interpreter = function()
 		});
 
 		let params_index = 0;
-		let effect_speed;
+		let effect_speed = 0;
 		if ((params_list[params_index] === '~') || (params_list[params_index] === '*'))  // Удаление всех спрайтов
 		{
 			params_index++;
@@ -427,8 +438,8 @@ var vnds_interpreter = function()
 			}
 		}
 
-		let position_x = ['left', 'right', 'left-side', 'right-side', 'left-border', 'right-border', 'left-out', 'right-out', 'center'];
-		let position_y = ['top', 'bottom', 'top-side', 'bottom-side', 'top-border', 'bottom-border', 'top-out', 'bottom-out', 'center'];
+		let position_x = ['left', 'right', 'left-side', 'right-side', 'left-in', 'right-in', 'left-out', 'right-out', 'center'];
+		let position_y = ['top', 'bottom', 'top-side', 'bottom-side', 'top-in', 'bottom-in', 'top-out', 'bottom-out', 'center'];
 		let x, y;
 		if ((params_list.length - params_index > 1) && (effects_list.indexOf(params_list[params_index]) === -1)) // Если осталось больше одного параметра и следующий параметр не эффект, значит следом идут координаты
 		{
@@ -469,14 +480,14 @@ var vnds_interpreter = function()
 
 			if ($.isNumeric(x))
 				x += '%';
-			else if (x === 'left-border')
+			else if (x === 'left-in')
 				x = 0;
 			else if (x === 'right-out')
 				x = '100%';
 
 			if ($.isNumeric(y))
 				y += '%';
-			else if (y === 'top-border')
+			else if (y === 'top-in')
 				y = 0;
 			else if (y === 'bottom-out')
 				y = '100%';
@@ -493,8 +504,6 @@ var vnds_interpreter = function()
 			{
 				x = 'center';
 				y = 'center';
-//				df.resolve('Missing ' + command_name + ' coordinates');
-//				return df.promise();
 			}
 		}
 		if (params_list.length - params_index > 0) // Если ещё что-то осталось, это длительность и, возможно, эффект
@@ -566,7 +575,7 @@ var vnds_interpreter = function()
 			{
 				if ((sprite.x === 'right') || (sprite.x === 'right-side'))
 					sprite.x = 75 - (50 * $sprite_name.width() / resolution.width) + '%';
-				else if (sprite.x === 'right-border')
+				else if (sprite.x === 'right-in')
 					sprite.x = 100 - (100 * $sprite_name.width() / resolution.width) + '%';
 				else if ((sprite.x === 'left') || (sprite.x === 'left-side'))
 					sprite.x = 25 - (50 * $sprite_name.width() / resolution.width) + '%';
@@ -577,7 +586,7 @@ var vnds_interpreter = function()
 
 				if ((sprite.y === 'bottom') || (sprite.y === 'bottom-side'))
 					sprite.y = 75 - (50 * $sprite_name.height() / resolution.height) + '%';
-				else if (sprite.y === 'bottom-border')
+				else if (sprite.y === 'bottom-in')
 					sprite.y = 100 - (100 * $sprite_name.height() / resolution.height) + '%';
 				else if ((sprite.y === 'top') || (sprite.y === 'top-side'))
 					sprite.y = 25 - (50 * $sprite_name.height() / resolution.height) + '%';
@@ -632,7 +641,7 @@ var vnds_interpreter = function()
 
 						if ((sprite.x === 'right') || (sprite.x === 'right-side'))
 							sprite.x = (75 - width / 2) + '%';
-						else if (sprite.x === 'right-border')
+						else if (sprite.x === 'right-in')
 							sprite.x = (100 - width) + '%';
 						else if ((sprite.x === 'left') || (sprite.x === 'left-side'))
 							sprite.x = (25 - width / 2) + '%';
@@ -643,7 +652,7 @@ var vnds_interpreter = function()
 
 						if ((sprite.y === 'bottom') || (sprite.y === 'bottom-side'))
 							sprite.y = (75 - height / 2) + '%';
-						else if (sprite.y === 'bottom-border')
+						else if (sprite.y === 'bottom-in')
 							sprite.y = (100 - height) + '%';
 						else if ((sprite.y === 'top') || (sprite.y === 'top-side'))
 							sprite.y = (25 - height / 2) + '%';
@@ -838,36 +847,39 @@ var vnds_interpreter = function()
 		let $game_screen = $('#game_screen');
 		let handle = $game_screen.prop('onclick');
 		$game_screen.off('click');
-		switch (effect_name)
+		if (!config.is_check)
 		{
-			case '~':
-				stop_all_effects($images);
-				stop_all_filters($images);
-				break;
-			case 'h-shake':
-				effect_hshake($images, effect_strength, effect_speed);
-				break;
-			case 'v-shake':
-				effect_vshake($images, effect_strength, effect_speed);
-				break;
-			case 'blur':
-				filter_blur($images, effect_strength, effect_speed);
-				break;
-			case 'grayscale':
-				filter_grayscale($images, effect_strength, effect_speed);
-				break;
-			case 'opacity':
-				filter_opacity($images, effect_strength, effect_speed);
-				break;
-			case 'saturate':
-				filter_saturate($images, effect_strength, effect_speed);
-				break;
-			case 'sepia':
-				filter_sepia($images, effect_strength, effect_speed);
-				break;
-			case 'invert':
-				filter_invert($images, effect_strength, effect_speed);
-				break;
+			switch (effect_name)
+			{
+				case '~':
+					stop_all_effects($images);
+					stop_all_filters($images);
+					break;
+				case 'h-shake':
+					effect_hshake($images, effect_strength, effect_speed);
+					break;
+				case 'v-shake':
+					effect_vshake($images, effect_strength, effect_speed);
+					break;
+				case 'blur':
+					filter_blur($images, effect_strength, effect_speed);
+					break;
+				case 'grayscale':
+					filter_grayscale($images, effect_strength, effect_speed);
+					break;
+				case 'opacity':
+					filter_opacity($images, effect_strength, effect_speed);
+					break;
+				case 'saturate':
+					filter_saturate($images, effect_strength, effect_speed);
+					break;
+				case 'sepia':
+					filter_sepia($images, effect_strength, effect_speed);
+					break;
+				case 'invert':
+					filter_invert($images, effect_strength, effect_speed);
+					break;
+			}
 		}
 		$game_screen.on('click', handle);
 		df.resolve();
@@ -909,6 +921,8 @@ var vnds_interpreter = function()
 		$('#message_box_text').css('cursor', 'default');
 		if (config.is_skip)
 			delay = config.skip_text_pause;
+		else if (config.is_check)
+			delay = 0;
 		setTimeout(function()
 		{
 			df.resolve();
@@ -1000,6 +1014,11 @@ var vnds_interpreter = function()
 			})
 			.done(function()
 			{
+				if (config.is_check)
+				{
+					df.resolve();
+					return df.promise();
+				}
 				if ((iteration > 1) || (iteration === -1))
 					$sound.prop('loop', true);
 				$sound.attr('src', filename);
@@ -1065,7 +1084,7 @@ var vnds_interpreter = function()
 			}
 		});
 		let music = params_list[0];
-		let effect_speed;
+		let effect_speed = 0;
 		if (params_list.length === 2)
 		{
 			effect_speed = get_duration(params_list[1]);
@@ -1079,7 +1098,6 @@ var vnds_interpreter = function()
 		}
 		if (config.is_skip) // Проверка на скип здесь, чтобы выполнились все проверки синтаксиса команды выше
 			effect_speed = 0;
-
 		this.sound('~');
 		let $music = $('#music');
 		if ((this.game.music !== null) && (effect_speed > 0))
@@ -1122,6 +1140,8 @@ var vnds_interpreter = function()
 						$music.attr('src', filename);
 						$music.prop('loop', true);
 						obj.game.music = music;
+						if (config.is_check)
+							return df.resolve();
 						if (effect_speed > 0)
 						{
 							music_volume = 0;
@@ -1222,7 +1242,8 @@ var vnds_interpreter = function()
 		{
 			if (label < this.game.script_lines.length)
 			{
-				this.game.script_line_num = label;
+				if (!config.is_check)
+					this.game.script_line_num = label;
 				df.resolve();
 				return df.promise();
 			}
@@ -1242,7 +1263,8 @@ var vnds_interpreter = function()
 					let split_line = this.get_params_list(line);
 					if (split_line[1] === label)
 					{
-						this.game.script_line_num = i;
+						if (!config.is_check)
+							this.game.script_line_num = i;
 						df.resolve();
 						return df.promise();
 					}
@@ -1329,56 +1351,65 @@ var vnds_interpreter = function()
 		this.game.script_name = filename;
 		$('#info_script_name').text(this.game.script_name);
 		let _this = this;
+		let script_lines;
 		$.get(this.game.dir + '/script/' + this.game.script_name)
 			.done(function(data)
 			{
+				function replaceLT(match)
 				{
-					function replaceLT(match)
-					{
-						return match.replace(/</g, '&lt;');
-					}
-					_this.game.script_lines = $.map(data.replace(/\t| {2,}/g, ' ').replace(/<{2,}/, replaceLT).split(/\r?\n/), $.trim); 
+					return match.replace(/</g, '&lt;');
+				}
+				script_lines = $.map(data.replace(/\t| {2,}/g, ' ').replace(/<{2,}/, replaceLT).split(/\r?\n/), $.trim);
+				if (!config.is_check)
+				{
+					_this.game.script_lines = script_lines;
 					let images_list = _this.get_images_list(); 
 					preload_images(images_list);
-					if (label)
+				}
+				if (_this.first_check_jump)
+				{
+					_this.first_check_jump = false;
+					config.is_check = true;
+				}
+				if (label)
+				{
+					if ($.isNumeric(label))
 					{
-						if ($.isNumeric(label))
+						label = parseInt(label, 10);
+						if (label < script_lines.length)
 						{
-							label = parseInt(label, 10);
-							if (label < _this.game.script_lines.length)
-							{
+							if (!config.is_check)
 								_this.game.script_line_num = label;
-								df.resolve();
-							}
-							else
-								df.reject('Can\'t find line number ' + label + ' in script ' + _this.game.script_name);
+							df.resolve();
 						}
 						else
-						{
-							_this.game.script_line_num = -1;
-							for (let i = 0; i < _this.game.script_lines.length; i++)
-							{
-								let line = _this.game.script_lines[i].trim();
-								if (line.indexOf('label') === 0)
-								{
-									let split_line = _this.get_params_list(line);
-									if (split_line[1] === label)
-									{
-										_this.game.script_line_num = i;
-										df.resolve();
-										break;
-									}
-								}
-							}
-							if (_this.game.script_line_num === -1)
-								df.reject('Can\'t find label ' + label + ' in script ' + _this.game.script_name);
-						}
+							df.reject('Can\'t find line number ' + label + ' in script ' + _this.game.script_name);
 					}
 					else
 					{
-						_this.game.script_line_num = 0;
-						df.resolve();
+						for (let i = 0; i < script_lines.length; i++)
+						{
+							let line = script_lines[i].trim();
+							if (line.indexOf('label') === 0)
+							{
+								let split_line = _this.get_params_list(line);
+								if (split_line[1] === label)
+								{
+									if (!config.is_check)
+										_this.game.script_line_num = i;
+									df.resolve();
+									return df.promise();
+								}
+							}
+						}
+						df.reject('Can\'t find label ' + label + ' in script ' + _this.game.script_name);
 					}
+				}
+				else
+				{
+					if (!config.is_check)
+						_this.game.script_line_num = 0;
+					df.resolve();
 				}
 			})
 			.fail(function(jqXHR, textStatus, errorThrown)
@@ -1445,12 +1476,12 @@ var vnds_interpreter = function()
 			hide_message_box(false, function()
 			{
 				let $game_screen = $('#game_screen');
-				if ((config.is_skip) || (params.length === 0) || (config.is_auto))
+				if ((config.is_skip) || (config.is_check) || (params.length === 0) || (config.is_auto))
 				{
 					let delay;
 					if (config.is_skip)
 						delay = config.skip_text_pause;
-					else if (params.length === 0)
+					else if ((params.length === 0) || (config.is_check))
 						delay = 0;
 					else if (config.is_auto)
 						delay = config.auto_text_pause;
@@ -1461,7 +1492,7 @@ var vnds_interpreter = function()
 						df.resolve();
 					}, delay);
 				}
-				if (!config.is_skip)
+				if ((!config.is_skip) && ((!config.is_check)))
 				{
 					$game_screen.css({'cursor': 'pointer'});
 					$game_screen.on('click', function(e)
@@ -1515,7 +1546,14 @@ var vnds_interpreter = function()
 			}
 			is_wait_click = false;
 			this.append_text = true;
-			cur_text = cur_text.replace(/<br>|\\n/g, '<br> ');
+
+			if (is_note)
+			{
+				let first_char = cur_text.charAt(0);
+				if (((first_char === '"') && (cur_text.substr(-1) === '"')) || ((first_char === "'") && (cur_text.substr(-1) === "'")))
+					cur_text = cur_text.slice(1, -1);
+			}
+			cur_text = cur_text.replace(/<br \/>|<br>|\\n/g, '<br> ');
 			cur_text = cur_text.replace('<<', '«');
 			cur_text = cur_text.replace('>>', '»');
 			cur_text = this.prev_text + cur_text;
@@ -1528,7 +1566,13 @@ var vnds_interpreter = function()
 				df.resolve('Unknown ' + command_name + ' variable ' + params);
 				return df.promise();
 			}
-			cur_text = cur_text.replace(/<br>|\\n/g, '<br> ');
+			if (is_note)
+			{
+				let first_char = cur_text.charAt(0);
+				if (((first_char === '"') && (cur_text.substr(-1) === '"')) || ((first_char === "'") && (cur_text.substr(-1) === "'")))
+					cur_text = cur_text.slice(1, -1);
+			}
+			cur_text = cur_text.replace(/<br \/>|<br>|\\n/g, '<br> ');
 			cur_text = cur_text.replace('<<', '«');
 			cur_text = cur_text.replace('>>', '»');
 			if (this.append_text)
@@ -1562,7 +1606,7 @@ var vnds_interpreter = function()
 		}
 		cur_text = cur_text.toString().trim();
 		this.prev_text = cur_text + '<br>';
-		if (is_wait_click)
+		if ((!config.is_check) && (is_wait_click))
 		{
 			show_message_box();
 			type_writer(cur_text, config.text_speed);
@@ -1573,7 +1617,7 @@ var vnds_interpreter = function()
 				let delay;
 				if (config.is_skip)
 					delay = config.skip_text_pause;
-				if (config.is_auto)
+				else if (config.is_auto)
 					delay = config.auto_text_pause + cur_text.length * config.text_speed;
 				this.prev_text = '';
 				this.text_timeout = setTimeout(function()
@@ -1582,8 +1626,6 @@ var vnds_interpreter = function()
 						$message_box_next.trigger('click');
 					$message_box_next.trigger('click');
 				}, delay);
-/*				if (config.is_skip)
-					return df.promise();*/
 			}
 			else
 				$message_box_next.show();
@@ -2097,21 +2139,24 @@ var vnds_interpreter = function()
 			let $id = $('#' + id);
 			$id.append('<div>' + choice + '</div>');
 			let _this = this;
-			$id.on('click', function(e)
+			if (!config.is_check)
 			{
-				e.preventDefault();
-				e.stopPropagation();
-				$id.off('click');
-				_this.game.selected = parseInt($id.attr('value'), 10) + 1;
-				if (config.log_level != LOG_DISABLE) console.log(command_name + ' selected = ' + _this.game.selected);
-				$choice_menu.find('button').off('click');
-				$overlay.stop().fadeOut(config.effect_speed);
-				$choice_menu.stop().fadeOut(config.effect_speed, function()
+				$id.on('click', function(e)
 				{
-					$choice_menu.find('button').remove();
-					df.resolve();
+					e.preventDefault();
+					e.stopPropagation();
+					$id.off('click');
+					_this.game.selected = parseInt($id.attr('value'), 10) + 1;
+					if (config.log_level != LOG_DISABLE) console.log(command_name + ' selected = ' + _this.game.selected);
+					$choice_menu.find('button').off('click');
+					$overlay.stop().fadeOut(config.effect_speed);
+					$choice_menu.stop().fadeOut(config.effect_speed, function()
+					{
+						$choice_menu.find('button').remove();
+						df.resolve();
+					});
 				});
-			});
+			}
 		}
 		let i = 15;
  		while (($choice_menu.height() > resolution.height) && (i > 0))
@@ -2146,6 +2191,15 @@ var vnds_interpreter = function()
 			$choice_menu.find('button').fadeTo(config.effect_speed, 1);
 			$choice_menu.stop().fadeTo(config.effect_speed, 1);
 		});
+		if (config.is_check)
+		{
+			$choice_menu.stop().fadeOut(config.effect_speed, function()
+			{
+				$choice_menu.find('button').remove();
+				df.resolve();
+			});
+			df.resolve();
+		}
 		return df.promise();
 	}
 
@@ -2229,7 +2283,7 @@ var vnds_interpreter = function()
 			df.reject('Unknown IF variable ' + params_list[2]);
 			return df.promise();
 		}
-		if (!perform_code(variable + operation + value))
+		if ((!config.is_check) && (!perform_code(variable + operation + value)))
 		{
 			let if_cnt = 1;
 			do
@@ -2320,6 +2374,42 @@ var vnds_interpreter = function()
 		let df = this.stopskip(params, 'SS');
 		return df;
 	}
+
+
+/*====================================================================================================
+	Запуск проверки скрипта
+	check [имя скрипта]
+
+	[имя скрипта] - имя существующего скрипта
+	
+  ====================================================================================================*/
+
+	 this.check = function(params)
+	{
+		if (config.log_level != LOG_DISABLE) console.log('CHECK ' + params);
+		let df = $.Deferred();
+		if (params === undefined)
+		{
+			df.reject('Missing CHECK parameters');
+			return df.promise();
+		}
+
+		let filename = this.get_var(params);
+		if (filename === false)
+		{
+			df.reject('Unknown CHECK variable: ' + params);
+			return df.promise();
+		}
+
+		config.is_check = false;
+		this.first_check_jump = true;
+//		show_info('Script checks started: ' + filename);
+		this.execute({command: 'jump', params: filename});
+//		config.is_check = false;
+//		df.resolve();
+//		return df.promise();
+	}
+
 
 
 
@@ -2454,14 +2544,14 @@ var vnds_interpreter = function()
 	{
 		let line = this.game.script_lines[this.game.script_line_num].trim();
 		line = line.replace(/[ \t]{2,}/g, ' ');
-		while (((line.length === 0) || (line.charAt(0) === ';') || (line.indexOf('//') === 0) || (line.indexOf('#') === 0)) && (this.game.script_line_num < this.game.script_lines.length))
+		while (((line.length === 0) || (line.charAt(0) === ';') || (line.indexOf('//') === 0)) && (this.game.script_line_num < this.game.script_lines.length))
 		{
 			this.game.script_line_num++;
 			line = this.game.script_lines[this.game.script_line_num].trim();
 		}
-		if ((line.length === 0) || (line.charAt(0) === ';') || (line.indexOf('//') === 0) || (line.indexOf('#') === 0))
+		if ((line.length === 0) || (line.charAt(0) === ';') || (line.indexOf('//') === 0))
 		{
-			show_error('Can\'t find any command in script ' + this.game.script_name);
+			show_error('Cant\'t find any command in script ' + this.game.script_name);
 			return false;
 		}
 		this.game.script_line_num++;
@@ -2469,7 +2559,7 @@ var vnds_interpreter = function()
 		if (config.log_level != LOG_DISABLE) console.log('LINE ' + parseInt(this.game.script_line_num, 10) + ': ' + line);
 		$('#info_script_line_num').text(parseInt(this.game.script_line_num, 10));
 		
-		let first_char =  line.charAt(0);
+		let first_char = line.charAt(0);
 		if (first_char === '$') // Если первый символ в строке "$", то добавляем команду "var"
 			line = 'var ' + line;
 		else if (((first_char === '"') && (line.substr(-1) === '"')) || ((first_char === "'") && (line.substr(-1) === "'"))) // Если первый символ в строке '"', то добавляем команду "text"
@@ -2535,6 +2625,7 @@ var vnds_interpreter = function()
 				let split_line = this.get_params_list(line);
 				for (let i = 1; i < split_line.length; i++)
 				{
+					split_line[i] = split_line[i].replace(/s$|%$/g, '');
 					if (!$.isNumeric(split_line[i]) && (split_line[i].indexOf('.') !== -1))
 					{
 						filename += split_line[i];

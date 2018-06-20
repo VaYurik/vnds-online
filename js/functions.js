@@ -8,32 +8,33 @@ const SAVE_MOD = 1;
 
 var config =
 {
-	sound_volume: 0.5,            // громкость звука
-	is_sound: true,               // включён или выключен звук
+	sound_volume: 0.5,            // Громкость звука
+	is_sound: true,               // Включён или выключен звук
 
-	text_size: 0,                 // размер шрифта и некоторых других элементов интерфейса
+	text_size: 0,                 // Размер шрифта и некоторых других элементов интерфейса
 
-	effect_speed: 350,            // скорость эффектов (меньше - быстрее)
-	text_speed: 20,               // скорость вывода текста (меньше - выше)
+	effect_speed: 250,            // Скорость эффектов (меньше - быстрее)
+	text_speed: 20,               // Скорость вывода текста (меньше - выше)
 
-	is_skip: false,               // включён или выключен быстрый пропуск
-	is_skip_unread: false,        // пропускать ли непрочитанное
-	skip_effect_speed: 100,       // скорость эффектов при быстром пропуске (меньше - быстрее)
-	skip_text_speed: 0,           // скорость вывода текста при быстром пропуске (меньше - выше)
-	skip_text_pause: 100,         // задержка после вывода текста перед сменой экрана
+	is_skip: false,               // Включён или выключен быстрый пропуск
+	is_skip_unread: false,        // Пропускать ли непрочитанное
+	skip_effect_speed: 100,       // Скорость эффектов при быстром пропуске (меньше - быстрее)
+	skip_text_speed: 0,           // Скорость вывода текста при быстром пропуске (меньше - выше)
+	skip_text_pause: 100,         // Задержка после вывода текста перед сменой экрана
 
-	is_auto: false,               // включено или выключено авточтение
-	auto_text_pause: 2000,        // задержка после вывода текста перед сменой экрана
+	is_auto: false,               // Включено или выключено авточтение
+	auto_text_pause: 2000,        // Задержка после вывода текста перед сменой экрана
 
 	notification_delay: 1200,     // Задержка вывода оповещения
 	
 	log_level: LOG_DISABLE,       // Выводить ли в консоль информацию
 
 	is_error_log: true,           // Сохранять ли ошибки в log-файлы (только при is_php_enabled: true)
+	is_check: false,              // Режим проверки скрипта
 
-	is_fullscreen: false,         // включён ли полноэкранный режим
-	min_width: 640,               // минимальное разрешение экрана: ширина
-	min_height: 480               // минимальное разрешение экрана: высота
+	is_fullscreen: false,         // Включён ли полноэкранный режим
+	min_width: 640,               // Минимальное разрешение экрана: ширина
+	min_height: 480               // Минимальное разрешение экрана: высота
 };
 
 var title;                      // Дефолтный заголовок страницы
@@ -43,8 +44,8 @@ var old_text_speed;             // Предыдущая скорость выв�
 var music_volume;               // Текущая громкость музыки для эффекта затухания
 var is_message_box;             // Переменная, хранящая состояние блока вывода текста
 var type_interval;              // Переменная для хранения идентификатора интервала при печати печатающей машинки
-var filters_timeouts = [];       // Переменная для хранения массива идентификаторов интервалов, использующихся для фильтров
-var effects_timeouts = [];       // Переменная для хранения массива идентификаторов интервалов, использующихся для эффектов
+var filters_timeouts = [];      // Переменная для хранения массива идентификаторов интервалов, использующихся для фильтров
+var effects_timeouts = [];      // Переменная для хранения массива идентификаторов интервалов, использующихся для эффектов
 var is_promo = false;           // Информация о том, был ли произведён клик на баннер или нет
 var vn;                         // Объект класса интерпретатора
 var is_php_enabled;             // Имеется ли поддержка php на сервере
@@ -111,8 +112,7 @@ function exec_window_resize_events()
 		if (resolution.height === null)
 			resolution.height = vn.game.resolution.height;
 
-		let height;
-		let width;
+		let width, height;
 		if (!config.is_fullscreen && (win_width >= vn.game.resolution.width))
 		{
 			if (win_height >= vn.game.resolution.height)
@@ -156,9 +156,9 @@ function exec_window_resize_events()
 			font_size_ratio = 1;
 		else
 			font_size_ratio = resolution.ratio;
-		
-		$('#message_box_text').css('font-size', font_size_ratio * (10 + config.text_size) / 10 + 'em');
+
 		$('#message_box_name').css('font-size', font_size_ratio * (11 + config.text_size) / 10 + 'em');
+		$('#message_box_text').css('font-size', font_size_ratio * (10 + config.text_size) / 10 + 'em');
 }
 	else
 	{
@@ -292,6 +292,16 @@ function create_main_menu()
 								.appendTo($id);
 						}
 						$id.append('<div>' + value.full_name + '</div>');
+						if (value.font !== null)
+						{
+							$('head').append('<style type="text/css">\n' + 
+								'@font-face\n' +
+								'{\n' +
+									'\tfont-family: "' + value.short_name + '_font";\n' + 
+									'\tsrc: url(' + value.font + ');\n' + 
+								'}\n' +
+								'</style>');
+						}
 					}
 					$id.on('click', function()
 					{
@@ -307,6 +317,7 @@ function create_main_menu()
 							height: value.height,
 							ratio: value.height / value.width
 						};
+						vn.game.font = value.font;
 						vn.game.icons =
 						{
 							small: value.icon_s,
@@ -329,6 +340,16 @@ function create_main_menu()
 							$('#info_game_name').text(vn.game.full_name);
 							$('#info_game_resolution').text(vn.game.resolution.width + 'x' + vn.game.resolution.height);
 							$('#game_screen').stop().fadeIn(config.effect_speed);
+							if (vn.game.font !== null)
+							{
+								$('#message_box_text').css('font-family', vn.game.short_name + '_font');
+								$('#message_box_name').css('font-family', vn.game.short_name + '_font');
+							}
+							else
+							{
+								$('#message_box_text').css('font-family', '');
+								$('#message_box_name').css('font-family', '');
+							}
 							create_game_menu();
 						});
 					});
@@ -810,11 +831,19 @@ function create_game_menu()
 	let $game_menu = $('#game_menu');
 	let $overlay = $('#overlay');
 	show_promo();
+	config.is_check = false;
 	if (config.is_skip) set_skip(false);
 	if (config.is_auto) set_auto(false);
 
 	$('#game_menu_start').on('click', function()
 	{
+		let post_array = 
+		{
+			type: 'Start',
+			game_name: vn.game.full_name
+		}
+		if (is_php_enabled)
+			$.post('php/save_games_log.php', post_array);
 		set_skip_enabled(config.is_skip_unread);
 		$game_menu.find('*').off('click');
 		$('#sprites').find('img').remove();
@@ -823,9 +852,11 @@ function create_game_menu()
 		$overlay.stop().fadeOut(config.effect_speed);
 		$game_menu.stop().fadeOut(config.effect_speed, function()
 		{
-			hide_message_box(true);
-			vn.drop();
-			vn.execute({command: 'jump', params: 'main.scr'});
+			hide_message_box(true, function()
+			{
+				vn.drop();
+				vn.execute({command: 'jump', params: 'main.scr'});
+			});
 		});
 		return false;
 	});
@@ -836,6 +867,13 @@ function create_game_menu()
 		$game_menu_cont.removeClass('disabled');
 		$game_menu_cont.on('click', function()
 		{
+			let post_array = 
+			{
+				type: 'Cont',
+				game_name: vn.game.full_name
+			}
+			if (is_php_enabled)
+				$.post('php/save_games_log.php', post_array);
 			set_skip_enabled(config.is_skip_unread);
 			$game_menu.find('*').off('click');
 			$overlay.stop().fadeOut(config.effect_speed);
@@ -882,6 +920,13 @@ function create_game_menu()
 			$game_menu_load.removeClass('disabled');
 			$game_menu_load.on('click', function()
 			{
+				let post_array = 
+				{
+					type: 'Load',
+					game_name: vn.game.full_name
+				}
+				if (is_php_enabled)
+					$.post('php/save_games_log.php', post_array);
 				set_skip_enabled(config.is_skip_unread);
 				$game_menu.find('*').off('click');
 				$overlay.stop().fadeOut(config.effect_speed);
@@ -908,6 +953,13 @@ function create_game_menu()
 
 	$('#game_menu_exit').on('click', function()
 	{
+		let post_array = 
+		{
+			type: 'Exit',
+			game_name: vn.game.full_name
+		}
+		if (is_php_enabled)
+			$.post('php/save_games_log.php', post_array);
 		$game_menu.find('*').off('click');
 		hide_message_box(true, function()
 		{
@@ -951,6 +1003,9 @@ function create_save_load_menu(mod, callback)
 	let $overlay = $('#overlay');
 	$overlay.stop().fadeTo(config.effect_speed, 1);
 	show_promo();
+	config.is_check = false;
+	if (config.is_skip) set_skip(false);
+	if (config.is_auto) set_auto(false);
 	if (mod)
 		$save_load_menu.prepend('<h2>Сохранение</h2>');
 	else
@@ -1151,7 +1206,7 @@ function show_error(message, delay = 0)
 		}
 	
 	if (config.is_error_log && is_php_enabled)
-		$.post('php/save_log.php', post_array);
+		$.post('php/save_error_log.php', post_array);
 	console.error(message.replace(/<br>/g, ' '));
 	show_notification(message, delay);
 }
@@ -1180,7 +1235,7 @@ function show_warning(message, callback)
 		}
 		
 	if (config.is_error_log && is_php_enabled)
-		$.post('php/save_log.php', post_array);
+		$.post('php/save_error_log.php', post_array);
 	console.warn(message.replace(/<br>/g, ' '));
 	if (callback !== undefined)
 		show_dialog(message, callback);
@@ -1224,10 +1279,9 @@ function type_writer(str, text_speed)
 {
 	let $message_box_name = $('#message_box_name');
 	var $message_box_text = $('#message_box_text');
-	var message_box_font = $message_box_text.css('font-size') + ' ' + $message_box_text.css('font-family');
-	var padding_left = $message_box_text.css('padding-left').replace('px', '');
-	var padding_right = $message_box_text.css('padding-right').replace('px', '');
-	var message_box_width = $message_box_text.width() - padding_left - padding_right;
+	var message_box_font;
+	var padding_left, padding_right;
+	var message_box_width;
 	
 	clearInterval(type_interval);
 	type_interval = undefined;
@@ -1261,6 +1315,10 @@ function type_writer(str, text_speed)
 	var i = 0;
 	type_interval = setInterval(function()
 	{
+		message_box_font = $message_box_text.css('font-size') + ' ' + $message_box_text.css('font-family');
+		padding_left = $message_box_text.css('padding-left').replace('px', '');
+		padding_right = $message_box_text.css('padding-right').replace('px', '');
+		message_box_width = $message_box_text.width() - padding_left - padding_right;
 		if (i < str.length)
 		{
 			while (str[i] === '&') // Обработка сущностей
@@ -1269,7 +1327,8 @@ function type_writer(str, text_speed)
 				let gt_pos = str.indexOf(';', lt_pos) + 1;
 				if (gt_pos > 0)
 				{
-					type_str = str.substr(0, gt_pos);
+					type_str += str.substring(lt_pos, gt_pos);
+					line_str += '_';
 					i = gt_pos;
 				}
 			}
@@ -1283,29 +1342,37 @@ function type_writer(str, text_speed)
 					gt_pos = str.indexOf('>', lt_pos) + 1;
 					if (gt_pos > 1)
 					{
-						type_str = str.substr(0, gt_pos);
+						sub_str = str.substring(lt_pos, gt_pos);
+						type_str += sub_str;
 						i = gt_pos;
 					}
 				}
-				if (str.substring(lt_pos, gt_pos).toLowerCase() === '<br>')
-					line_str = '';
 			}
 			if (i < str.length)
 			{
 				type_str += str[i];
-				line_str += str[i];
 				i++;
-				if (str[i - 1] == ' ')
+				if (sub_str.toLowerCase() === '<br>')
 				{
-					let next_space = str.indexOf(' ', i) - i;
-					if (next_space < 0)
-						next_space = str.length;
-					sub_str = str.substr(i, next_space);
-					if (get_text_width(line_str + sub_str, message_box_font) > message_box_width)
+					sub_str = '';
+					line_str = '';
+				}
+				else
+				{
+					line_str += str[i - 1];
+					if (str[i - 1] == ' ')
 					{
-						type_str = type_str.slice(0, -1);
-						type_str += '<br>';
-						line_str = '';
+						let next_space = str.reIndexOf(/[\s<]/, i) - i;
+						if (next_space < 0)
+							next_space = str.length;
+						sub_str = str.substr(i, next_space);
+						if (get_text_width(line_str + sub_str, message_box_font) > message_box_width)
+						{
+							type_str = type_str.replace('<br />', ' '); // Заменяем сделанный ранее принудительный перенос на пробел, чтобы резиновость работала нормально
+							type_str = type_str.slice(0, -1);
+							type_str += '<br />'; // Делаем принудительный перенос, если следующее слово не влезает
+							line_str = '';
+						}
 					}
 				}
 			}
@@ -1313,6 +1380,8 @@ function type_writer(str, text_speed)
 		}
 		else
 		{
+			type_str = type_str.replace('<br />', ' '); // Тут тоже нужно добавленные переносы поменять
+			$message_box_text.html(type_str);
 			clearInterval(type_interval);
 			type_interval = undefined;
 		}
@@ -1701,4 +1770,11 @@ function reset_all_intervals()
 	var max_interval_id = setInterval(';');
 	for (let i = 0 ; i < max_interval_id ; i++)
 		clearInterval(i);
+}
+
+// Метод для поиска вхождения регулярки в строку
+String.prototype.reIndexOf = function(regexp, start_pos)
+{
+	var found_pos = this.substring(start_pos || 0).search(regexp);
+	return (found_pos >= 0) ? (found_pos + (start_pos || 0)) : found_pos;
 }
