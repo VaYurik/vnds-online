@@ -14,12 +14,12 @@ var config =
 	text_size: 0,                 // Размер шрифта и некоторых других элементов интерфейса
 
 	effect_speed: 250,            // Скорость эффектов (меньше - быстрее)
-	text_speed: 20,               // Скорость вывода текста (меньше - выше)
+	text_speed: 20,               // Скорость вывода текста (меньше - быстрее)
 
 	is_skip: false,               // Включён или выключен быстрый пропуск
 	is_skip_unread: false,        // Пропускать ли непрочитанное
 	skip_effect_speed: 100,       // Скорость эффектов при быстром пропуске (меньше - быстрее)
-	skip_text_speed: 0,           // Скорость вывода текста при быстром пропуске (меньше - выше)
+	skip_text_speed: 0,           // Скорость вывода текста при быстром пропуске (меньше - быстрее)
 	skip_text_pause: 100,         // Задержка после вывода текста перед сменой экрана
 
 	is_auto: false,               // Включено или выключено авточтение
@@ -237,7 +237,6 @@ function init_thanks()
 	});
 }
 
-
 // Функция, получающая список игр и их настройки
 function create_main_menu()
 {
@@ -282,6 +281,7 @@ function create_main_menu()
 					{
 						$('<button>')
 							.attr('id', id)
+							.attr('name', value.short_name)
 							.attr('value', key)
 							.appendTo('#main_menu');
 						$id = $('#' + id);
@@ -355,10 +355,16 @@ function create_main_menu()
 					});
 				}
 			});
+			let hash = window.location.hash.slice(1);
+			if (hash)
+			{
+				let button_name = 'button[name="' + hash + '"]';
+				$(button_name).trigger('click');
+			}
 		})
 		.fail(function(jqXHR, textStatus, errorThrown)
 		{
-			show_error('Incorrect AJAX-request: ' + errorThrown);
+			show_error('Неверный запрос: ' + errorThrown);
 		});
 }
 
@@ -371,13 +377,13 @@ function supports_local_storage()
 			return true;
 		else
 		{
-			show_error('Browser not support local storage');
+			show_error('Браузер не поддерживает локальное хранилище');
 			return false;
 		}
 	}
 	catch (e)
 	{
-		show_error('Browser not support local storage');
+		show_error('Браузер не поддерживает локальное хранилище');
 		return false;
 	}
 }
@@ -418,7 +424,7 @@ function load_settings()
 		}
 		catch (e)
 		{
-			show_warning('Error in local storage ' + e.name);
+			show_warning('Ошибка в локальном хранилище: ' + e.name);
 			return false;
 		}
 	}
@@ -444,7 +450,7 @@ function save_settings()
 		}
 		catch (e)
 		{
-			show_warning('Error in local storage ' + e.name);
+			show_warning('Ошибка в локальном хранилище: ' + e.name);
 			return false;
 		}
 	}
@@ -827,6 +833,7 @@ function show_dialog(str, callback)
 function create_game_menu()
 {
 	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	window.location.hash = vn.game.short_name;
 	let $background = $('#background');
 	let $game_menu = $('#game_menu');
 	let $overlay = $('#overlay');
@@ -953,6 +960,7 @@ function create_game_menu()
 
 	$('#game_menu_exit').on('click', function()
 	{
+		history.pushState('', document.title, window.location.pathname);
 		let post_array = 
 		{
 			type: 'Exit',

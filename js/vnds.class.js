@@ -71,13 +71,13 @@ var vnds_interpreter = function()
 		let df = $.Deferred();
 		if (params === undefined)
 		{
-			df.resolve('Missing ' + command_name + ' parameters');
+			df.resolve('Отсутствуют параметры функции ' + command_name);
 			return df.promise();
 		}
 		let params_list = this.get_params_list(params);
 		if (params_list.length > 3)
 		{
-			df.resolve('Incorrect ' + command_name + ' parameters');
+			df.resolve('Неверные параметры функции ' + command_name);
 			return df.promise();
 		}
 		if (config.is_check)
@@ -89,7 +89,7 @@ var vnds_interpreter = function()
 			params_list[key] = _this.get_var(value);
 			if (params_list[key] === false)
 			{
-				df.resolve('Unknown ' + command_name + ' variable ' + value);
+				df.resolve('Неизвестная переменная функции ' + command_name + ': ' + value);
 				return df.promise();
 			}
 		});
@@ -106,7 +106,7 @@ var vnds_interpreter = function()
 			{
 				if (params_list.length === 2) // Если указан эффект, но не указана длительность - ошибка
 				{
-					df.resolve('Missing ' + command_name + ' effect speed');
+					df.resolve('Отсутствует параметр длительности эффекта в функции ' + command_name);
 					return df.promise();
 				}
 				effect = value;
@@ -121,7 +121,7 @@ var vnds_interpreter = function()
 			effect_speed = get_duration(effect_speed_param);
 			if (effect_speed === false)
 			{
-				df.resolve('Incorrect ' + command_name + ' effect speed: ' + effect_speed_param);
+				df.resolve('Неверное значение длительности эффекта в функции ' + command_name + ': ' + effect_speed_param);
 				return df.promise();
 			}
 			if (config.is_skip) // Проверка на скип здесь, чтобы выполнились все проверки синтаксиса команды выше
@@ -138,7 +138,7 @@ var vnds_interpreter = function()
 		{
 			if ((!is_hex(background)) || ((background.length != 4) && (background.length != 7)))
 			{
-				df.resolve('Incorrect ' + command_name + ' color: ' + background);
+				df.resolve('Неверное значение цвета в функции ' + command_name + ': ' + background);
 				return df.promise();
 			}
 			this.game.background = background;
@@ -151,7 +151,7 @@ var vnds_interpreter = function()
 			$.get(filename)
 				.fail(function()
 				{
-					df.resolve('File<br>' + filename + '<br> not found');
+					df.resolve('Файл<br>' + filename + '<br> не найден');
 				})
 				.done(function()
 				{
@@ -265,7 +265,7 @@ var vnds_interpreter = function()
 		let df = $.Deferred();
 		if (params === undefined)
 		{
-			df.resolve('Missing ' + command_name + ' parameters');
+			df.resolve('Отсутствуют параметры функции ' + command_name);
 			return df.promise();
 		}
 		if (config.is_check)
@@ -274,7 +274,7 @@ var vnds_interpreter = function()
 		let params_list = this.get_params_list(params);
 		if ((params_list.length < 1) || (params_list.length > 6))
 		{
-			df.resolve('Incorrect ' + command_name + ' parameters');
+			df.resolve('Неверные параметры функции ' + command_name);
 			return df.promise();
 		}
 		let _this = this;
@@ -283,7 +283,7 @@ var vnds_interpreter = function()
 			params_list[key] = _this.get_var(value);
 			if (params_list[key] === false)
 			{
-				df.resolve('Unknown ' + command_name + ' variable ' + value);
+				df.resolve('Неизвестная переменная функции ' + command_name + ': ' + value);
 				return df.promise();
 			}
 		});
@@ -302,7 +302,7 @@ var vnds_interpreter = function()
 				{
 					if (params_list.length - params_index == 1)
 					{
-						df.resolve('Missing ' + command_name + ' effect speed');
+						df.resolve('Отсутствует параметр длительности эффекта в функции ' + command_name);
 						return df.promise();
 					}
 					params_index++;
@@ -310,7 +310,7 @@ var vnds_interpreter = function()
 				effect_speed = get_duration(params_list[params_index]);
 				if (effect_speed === false)
 				{
-					df.resolve('Incorrect ' + command_name + ' effect speed: ' + params_list[params_index]);
+					df.resolve('Неверное значение длительности эффекта в функции ' + command_name + ': ' + params_list[params_index]);
 					return df.promise();
 				}
 			}
@@ -341,7 +341,7 @@ var vnds_interpreter = function()
 		{
 /*			if (params_list[params_index].indexOf('@') !== 0)
 			{
-				df.resolve('Incorrect ' + command_name + ' identificator: ' + params_list[params_index]);
+				df.resolve('Неверный идентификатор спрайта в функции ' + command_name + ': ' + params_list[params_index]);
 				return df.promise();
 			}*/
 			sprite_name = params_list[params_index].replace('@', '');
@@ -352,7 +352,7 @@ var vnds_interpreter = function()
 		{
 			if (params_list[params_index].indexOf('.') === -1) // ...и если первый параметр не имя файла (т.е. идентификатор получить невозможно)
 			{
-				df.resolve('Missing ' + command_name + ' sprite filename');
+				df.resolve('Отсутствует имя файла спрайта в функции ' + command_name);
 				return df.promise();
 			}
 			sprite_name = params_list[params_index].replace(/\/|\.|\-/g, '_');
@@ -360,7 +360,7 @@ var vnds_interpreter = function()
 		let regexp = /^([A-Za-z0-9_]+)$/i;
 		if (!regexp.test(sprite_name))
 		{
-			df.resolve('Incorrect ' + command_name + ' identificator: ' + sprite_name);
+			df.resolve('Неверный идентификатор спрайта в функции ' + command_name + ': ' + sprite_name);
 			return df.promise();
 		}
 		sprite_name = 'img_' + sprite_name;
@@ -381,7 +381,7 @@ var vnds_interpreter = function()
 				{
 					if (params_list.length - params_index == 1)
 					{
-						df.resolve('Missing ' + command_name + ' effect speed');
+						df.resolve('Отсутствует параметр длительности эффекта в функции ' + command_name);
 						return df.promise();
 					}
 					params_index++;
@@ -389,7 +389,7 @@ var vnds_interpreter = function()
 				effect_speed = get_duration(params_list[params_index]);
 				if (effect_speed === false)
 				{
-					df.resolve('Incorrect ' + command_name + ' effect speed: ' + params_list[params_index]);
+					df.resolve('Неверное значение длительности эффекта в функции ' + command_name + ': ' + params_list[params_index]);
 					return df.promise();
 				}
 			}
@@ -406,7 +406,7 @@ var vnds_interpreter = function()
 			$sprite_name = $('#' + sprite_name);
 			if ($sprite_name.length === 0)
 			{
-				df.resolve('Incorrect ' + command_name + ' identificator: ' + sprite_name);
+				df.resolve('Неверный идентификатор спрайта в функции ' + command_name + ': ' + sprite_name);
 				return df.promise();
 			}
 			if (effect_speed !== 0) // Если задержка указана
@@ -456,7 +456,7 @@ var vnds_interpreter = function()
 				x = x * 100 / 256; // переводим DS в проценты
 			if (!$.isNumeric(x) && (position_x.indexOf(x) === -1))
 			{
-				df.resolve('Incorrect ' + command_name + ' X-coordinate: ' + x);
+				df.resolve('Неверные X-координаты в функции ' + command_name + ': ' + x);
 				return df.promise();
 			}
 			params_index++;
@@ -474,7 +474,7 @@ var vnds_interpreter = function()
 
 			if (!$.isNumeric(y) && (position_y.indexOf(y) === -1))
 			{
-				df.resolve('Incorrect ' + command_name + ' Y-coordinate: ' + y);
+				df.resolve('Неверные Y-координаты в функции ' + command_name + ': ' + y);
 				return df.promise();
 			}
 
@@ -513,7 +513,7 @@ var vnds_interpreter = function()
 			{
 				if (params_list.length - params_index == 1)
 				{
-					df.resolve('Missing ' + command_name + ' effect speed');
+					df.resolve('Отсутствует параметр длительности эффекта в функции ' + command_name);
 					return df.promise();
 				}
 				params_index++;
@@ -521,7 +521,7 @@ var vnds_interpreter = function()
 			effect_speed = get_duration(params_list[params_index]);
 			if (effect_speed === false)
 			{
-				df.resolve('Incorrect ' + command_name + ' effect speed: ' + params_list[params_index]);
+				df.resolve('Неверное значение длительности эффекта в функции ' + command_name + ': ' + params_list[params_index]);
 				return df.promise();
 			}
 		}
@@ -533,7 +533,7 @@ var vnds_interpreter = function()
 			$.get(sprite_path)
 				.fail(function()
 				{
-					df.resolve('File<br>' + sprite_path + '<br> not found');
+					df.resolve('Файл<br>' + sprite_path + '<br> не найден');
 				})
 				.done(function()
 				{
@@ -550,7 +550,7 @@ var vnds_interpreter = function()
 		else // Если имя файла не определено, то просто перемещаем спрайт
 		{
 			if (this.game.sprites[sprite_name] === undefined)
-				df.resolve('Unknown ' + command_name + ' identificator: ' + sprite_name);
+				df.resolve('Неверный идентификатор спрайта в функции ' + command_name + ': ' + sprite_name);
 			else
 			{
 				draw_sprite(_this, df,
@@ -738,13 +738,13 @@ var vnds_interpreter = function()
 		let df = $.Deferred();
 		if (params === undefined)
 		{
-			df.resolve('Missing ' + command_name + ' parameters');
+			df.resolve('Отсутствуют параметры функции ' + command_name);
 			return df.promise();
 		}
 		let params_list = this.get_params_list(params);
 		if ((params_list.length < 1) || (params_list.length > 4))
 		{
-			df.resolve('Incorrect ' + command_name + ' parameters');
+			df.resolve('Неверные параметры функции ' + command_name);
 			return df.promise();
 		}
 		let _this = this;
@@ -753,7 +753,7 @@ var vnds_interpreter = function()
 			params_list[key] = _this.get_var(value);
 			if (params_list[key] === false)
 			{
-				df.resolve('Unknown ' + command_name + ' variable ' + value);
+				df.resolve('Неизвестная переменная функции ' + command_name + ': ' + value);
 				return df.promise();
 			}
 		});
@@ -762,7 +762,7 @@ var vnds_interpreter = function()
 		image_name = image_name.replace('@', 'img_');
 		if ((image_name !== '~') && (image_name !== '*') && (image_name.toLowerCase() !== 'bg') && (this.game.sprites[image_name] === undefined))
 		{
-			df.resolve('Unknown ' + command_name + ' identificator or filename: ' + params_list[params_index]);
+			df.resolve('Неверный идентификатор или имя файла спрайта в функции ' + command_name + ': ' + params_list[params_index]);
 			return df.promise();
 		}
 		let effect_name;
@@ -772,7 +772,7 @@ var vnds_interpreter = function()
 		{
 			if (params_list.length > 1)
 			{
-				df.resolve('Incorrect ' + command_name + ' parameters');
+				df.resolve('Неверные параметры функции ' + command_name);
 				return df.promise();
 			}
 			effect_name = '~';
@@ -785,7 +785,7 @@ var vnds_interpreter = function()
 			{
 				if (params_list.length > 2)
 				{
-					df.resolve('Incorrect ' + command_name + ' parameters');
+					df.resolve('Неверные параметры функции ' + command_name);
 					return df.promise();
 				}
 			}
@@ -794,7 +794,7 @@ var vnds_interpreter = function()
 				let effects_list = ['h-shake', 'v-shake', 'blur', 'grayscale', 'saturate', 'sepia', 'invert', 'opacity'];
 				if ((effects_list.indexOf(effect_name) === -1) && (effect_name !== '~'))
 				{
-					df.resolve('Unknown ' + command_name + ' effect: ' + effect_name);
+					df.resolve('Неизвестное значение эффекта в функции ' + command_name + ': ' + effect_name);
 					return df.promise();
 				}
 				params_index++;
@@ -805,7 +805,7 @@ var vnds_interpreter = function()
 						effect_strength = effect_strength.slice(0, -1);
 					if ((!$.isNumeric(effect_strength)) || (effect_strength < 0) || (effect_strength > 100))
 					{
-						df.resolve('Incorrect ' + command_name + ' strength value: ' + effect_strength);
+						df.resolve('Неверное значение силы эффекта в функции ' + command_name + ': ' + effect_strength);
 						return df.promise();
 					}
 				}
@@ -817,7 +817,7 @@ var vnds_interpreter = function()
 					effect_speed = get_duration(params_list[params_index]);
 					if (effect_speed === false)
 					{
-						df.resolve('Incorrect ' + command_name + ' effect speed: ' + params_list[params_index]);
+						df.resolve('Неверное значение длительности эффекта в функции ' + command_name + ': ' + params_list[params_index]);
 						return df.promise();
 					}
 				}
@@ -908,13 +908,13 @@ var vnds_interpreter = function()
 		let delay = this.get_var(params);
 		if (delay === false)
 		{
-			df.resolve('Unknown ' + command_name + ' variable ' + params);
+			df.resolve('Неизвестная переменная функции ' + command_name + ': ' + params);
 			return df.promise();
 		}
 		delay = get_duration(delay);
 		if (!$.isNumeric(delay))
 		{
-			df.resolve('Incorrect ' + command_name + ' value: ' + delay);
+			df.resolve('Неверное значение задержки в функции ' + command_name + ': ' + delay);
 			return df.promise();
 		}
 		$('#message_box_next').hide();
@@ -961,13 +961,13 @@ var vnds_interpreter = function()
 		let df = $.Deferred();
 		if (params === undefined)
 		{
-			df.resolve('Missing ' + command_name + ' parameters');
+			df.resolve('Отсутствуют параметры функции ' + command_name);
 			return df.promise();
 		}
 		let params_list = this.get_params_list(params);
 		if (params_list.length > 2)
 		{
-			df.resolve('Incorrect ' + command_name + ' parameters');
+			df.resolve('Неверные параметры функции ' + command_name);
 			return df.promise();
 		}
 		let _this = this;
@@ -976,7 +976,7 @@ var vnds_interpreter = function()
 			params_list[key] = _this.get_var(value);
 			if (params_list[key] === false)
 			{
-				df.resolve('Unknown ' + command_name + ' variable ' + value);
+				df.resolve('Неизвестная переменная функции ' + command_name + ': ' + value);
 				return df.promise();
 			}
 		});
@@ -995,7 +995,7 @@ var vnds_interpreter = function()
 			clearTimeout(this.sound_timeout);
 		if (!$.isNumeric(iteration))
 		{
-			df.resolve('Incorrect ' + command_name + ' iteration value: ' + iteration);
+			df.resolve('Неверное значение количества повторов в функции ' + command_name + ': ' + iteration);
 			return df.promise();
 		}
 		else
@@ -1010,7 +1010,7 @@ var vnds_interpreter = function()
 		$.get(filename)
 			.fail(function()
 			{
-				df.resolve('File<br>' + filename + '<br> not found');
+				df.resolve('Файл<br>' + filename + '<br> не найден');
 			})
 			.done(function()
 			{
@@ -1064,13 +1064,13 @@ var vnds_interpreter = function()
 		let df = $.Deferred();
 		if (params === undefined)
 		{
-			df.resolve('Missing ' + command_name + ' parameters');
+			df.resolve('Отсутствуют параметры функции ' + command_name);
 			return df.promise();
 		}
 		let params_list = this.get_params_list(params);
 		if (params_list.length > 2)
 		{
-			df.resolve('Incorrect ' + command_name + ' parameters');
+			df.resolve('Неверные параметры функции ' + command_name);
 			return df.promise();
 		}
 		let _this = this;
@@ -1079,7 +1079,7 @@ var vnds_interpreter = function()
 			params_list[key] = _this.get_var(value);
 			if (params_list[key] === false)
 			{
-				df.resolve('Unknown ' + command_name + ' variable ' + value);
+				df.resolve('Неизвестная переменная функции ' + command_name + ': ' + value);
 				return df.promise();
 			}
 		});
@@ -1090,7 +1090,7 @@ var vnds_interpreter = function()
 			effect_speed = get_duration(params_list[1]);
 			if (effect_speed === false)
 			{
-				df.resolve('Incorrect ' + command_name + ' effect speed: ' + params_list[1]);
+				df.resolve('Неверное значение длительности эффекта в функции ' + command_name + ': ' + params_list[1]);
 				return df.promise();
 			}
 			if ((this.game.music !== null) && (effect_speed > 0))
@@ -1132,7 +1132,7 @@ var vnds_interpreter = function()
 				$.get(filename)
 					.fail(function()
 					{
-						return df.resolve('File<br>' + filename + '<br> not found');
+						return df.resolve('Файл<br>' + filename + '<br> не найден');
 					})
 					.done(function()
 					{
@@ -1222,7 +1222,7 @@ var vnds_interpreter = function()
 		let df = $.Deferred();
 		if (params === undefined)
 		{
-			df.reject('Missing GOTO parameters');
+			df.reject('Отсутствуют параметры функции GOTO');
 			return df.promise();
 		}
 
@@ -1230,7 +1230,7 @@ var vnds_interpreter = function()
 		let label = this.get_var(params);
 		if (label === false)
 		{
-			df.reject('Unknown GOTO variable: ' + params);
+			df.reject('Неизвестная переменная функции GOTO: ' + params);
 			return df.promise();
 		}
 		let script_name = get_file_name(this.game.script_name);
@@ -1249,7 +1249,7 @@ var vnds_interpreter = function()
 			}
 			else
 			{
-				df.reject('Can\'t find line ' + label + ' in script ' + this.game.script_name);
+				df.reject('Строка ' + label + ' в скрипте ' + this.game.script_name + ' не найдена');
 				return df.promise();
 			}
 		}
@@ -1270,7 +1270,7 @@ var vnds_interpreter = function()
 					}
 				}
 			}
-			df.reject('Can\'t find label ' + label + ' in script ' + this.game.script_name);
+			df.reject('Метка ' + label + ' в скрипте ' + this.game.script_name + ' не найдена');
 			return df.promise();
 		}
 	}
@@ -1294,7 +1294,7 @@ var vnds_interpreter = function()
 		let df = $.Deferred();
 		if (params === undefined)
 		{
-			df.reject('Missing JUMP parameters');
+			df.reject('Отсутствуют параметры функции JUMP');
 			return df.promise();
 		}
 		params = params.replace('label ', '');
@@ -1302,7 +1302,7 @@ var vnds_interpreter = function()
 		let param1 = this.get_var(params_list[0]);
 		if (param1 === false)
 		{
-			df.reject('Unknown JUMP variable: ' + params_list[0]);
+			df.reject('Неизвестная переменная функции JUMP: ' + params_list[0]);
 			return df.promise();
 		}
 		let label, filename;
@@ -1318,7 +1318,7 @@ var vnds_interpreter = function()
 				filename = this.get_var(param1);
 				if (filename === false)
 				{
-					df.reject('Unknown JUMP variable: ' + param1);
+					df.reject('Неизвестная переменная функции JUMP: ' + param1);
 					return df.promise();
 				}
 				label = null;
@@ -1329,19 +1329,19 @@ var vnds_interpreter = function()
 			filename = this.get_var(param1);
 			if (filename === false)
 			{
-				df.reject('Unknown JUMP variable: ' + param1);
+				df.reject('Неизвестная переменная функции JUMP: ' + param1);
 				return df.promise();
 			}
 			label = this.get_var(params_list[1]);
 			if (label === false)
 			{
-				df.reject('Unknown JUMP variable: ' + params_list[1]);
+				df.reject('Неизвестная переменная функции JUMP: ' + params_list[1]);
 				return df.promise();
 			}
 		}
 		else
 		{
-			df.reject('Incorrect JUMP parameters');
+			df.reject('Неверные параметры функции JUMP');
 			return df.promise();
 		}
 		this.append_text = false;
@@ -1383,7 +1383,7 @@ var vnds_interpreter = function()
 							df.resolve();
 						}
 						else
-							df.reject('Can\'t find line number ' + label + ' in script ' + _this.game.script_name);
+							df.reject('Строка ' + label + ' в скрипте ' + _this.game.script_name + ' не найдена');
 					}
 					else
 					{
@@ -1402,7 +1402,7 @@ var vnds_interpreter = function()
 								}
 							}
 						}
-						df.reject('Can\'t find label ' + label + ' in script ' + _this.game.script_name);
+						df.reject('Метка ' + label + ' в скрипте ' + _this.game.script_name + ' не найдена');
 					}
 				}
 				else
@@ -1448,7 +1448,7 @@ var vnds_interpreter = function()
 		if (params !== undefined)
 		{
 			let df = $.Deferred();
-			df.reject('Incorrect CLT parameters');
+			df.reject('Неверные параметры функции CLT');
 			return df.promise();
 		}
 		let df = this.cleartext(params, 'CLT');
@@ -1536,7 +1536,7 @@ var vnds_interpreter = function()
 			cur_text = this.get_var(params.substring(1)).toString();
 			if (cur_text === false)
 			{
-				df.resolve('Unknown ' + command_name + ' variable ' + params.substring(1));
+				df.resolve('Неизвестная переменная функции ' + command_name + ': ' + params.substring(1));
 				return df.promise();
 			}
 			if (cur_text.length === 0)
@@ -1563,7 +1563,7 @@ var vnds_interpreter = function()
 			cur_text = this.get_var(params).toString();
 			if (cur_text === false)
 			{
-				df.resolve('Unknown ' + command_name + ' variable ' + params);
+				df.resolve('Неизвестная переменная функции ' + command_name + ': ' + params);
 				return df.promise();
 			}
 			if (is_note)
@@ -1601,7 +1601,7 @@ var vnds_interpreter = function()
 		}
 		catch (e)
 		{
-			df.reject('Error in local storage ' + e.name);
+			df.reject('Ошибка в локальном хранилище: ' + e.name);
 			return df.promise();
 		}
 		cur_text = cur_text.toString().trim();
@@ -1711,7 +1711,7 @@ var vnds_interpreter = function()
 		if (params !== undefined)
 		{
 			let df = $.Deferred();
-			df.reject('Incorrect ' + command_name + ' parameters');
+			df.reject('Неверные параметры функции ' + command_name);
 			return df.promise();
 		}
 		let df = this.text('', command_name);
@@ -1756,7 +1756,7 @@ var vnds_interpreter = function()
 		let df = $.Deferred();
 		if (params === undefined)
 		{
-			df.reject('Missing ' + command_name + ' parameters');
+			df.reject('Отсутствуют параметры функции ' + command_name);
 			return df.promise();
 		}
 		if (params === '~ ~')
@@ -1768,20 +1768,20 @@ var vnds_interpreter = function()
 		let params_list = this.get_params_list(params);
 		if ((params_list.length < 2) || (params_list.length > 3))
 		{
-			df.reject('Incorrect ' + command_name + ' parameters: ' + params);
+			df.reject('Неверные параметры функции ' + command_name + ': ' + params);
 			return df.promise();
 		}
 		let variable = params_list[0];
 		if ($.isNumeric(variable))
 		{
-			df.reject('Incorrect ' + command_name + ' variable: ' + variable);
+			df.reject('Неизвестная переменная функции ' + command_name + ': ' + variable);
 			return df.promise();
 		}
 		variable = 'var_' + variable.replace('$', '');
 		let mod = params_list[1];
 		if (['~', '=', '+', '-', '.', '*', '/'].indexOf(mod) === -1)
 		{
-			df.reject('Incorrect ' + command_name + ' operation: ' + mod);
+			df.reject('Неизвестная операция в функции ' + command_name + ': ' + mod);
 			return df.promise();
 		}
 		let value;
@@ -1790,7 +1790,7 @@ var vnds_interpreter = function()
 			value = this.get_var(params_list[2]);
 			if (value === false)
 			{
-				df.reject('Unknown ' + command_name + ' variable: ' + params_list[2]);
+				df.reject('Неизвестная переменная функции ' + command_name + ': ' + params_list[2]);
 				return df.promise();
 			}
 			if ($.isNumeric(value))
@@ -1827,7 +1827,7 @@ var vnds_interpreter = function()
 					this.game.local_variables[variable] *= value;
 				else
 				{
-					df.reject('Incorrect ' + command_name + ' operation: variable ' + variable + ' not defined');
+					df.reject('Неверная операция в функции ' + command_name + ': переменная ' + variable + ' не определена');
 					return df.promise();
 				}
 				break;
@@ -1837,12 +1837,12 @@ var vnds_interpreter = function()
 						this.game.local_variables[variable] = this.game.local_variables[variable] / value;
 					else
 					{
-						df.reject('Incorrect ' + command_name + ' operation: divide by zero');
+						df.reject('Неверная операция в функции ' + command_name + ': деление на ноль');
 						return df.promise();
 					}
 				else
 				{
-					df.reject('Incorrect ' + command_name + ' operation: variable ' + variable + ' not defined');
+					df.reject('Неверная операция в функции ' + command_name + ': переменная ' + variable + ' не определена');
 					return df.promise();
 				}
 				break;
@@ -1878,7 +1878,7 @@ var vnds_interpreter = function()
 		let df = $.Deferred();
 		if (params === undefined)
 		{
-			df.reject('Missing ' + command_name + ' parameters');
+			df.reject('Отсутствуют параметры функции ' + command_name);
 			return df.promise();
 		}
 		if (params === '~ ~')
@@ -1889,7 +1889,7 @@ var vnds_interpreter = function()
 			}
 			catch (e)
 			{
-				df.reject('Error in local storage ' + e.name);
+				df.reject('Ошибка в локальном хранилище: ' + e.name);
 				return df.promise();
 			}
 			df.resolve();
@@ -1898,20 +1898,20 @@ var vnds_interpreter = function()
 		let params_list = this.get_params_list(params);
 		if ((params_list.length < 2) || (params_list.length > 3))
 		{
-			df.reject('Incorrect ' + command_name + ' parameters: ' + params);
+			df.reject('Неверные параметры функции ' + command_name + ': ' + params);
 			return df.promise();
 		}
 		let variable = params_list[0];
 		if ($.isNumeric(variable))
 		{
-			df.reject('Incorrect ' + command_name + ' variable: ' + variable);
+			df.reject('Неизвестная переменная функции ' + command_name + ': ' + variable);
 			return df.promise();
 		}
 		variable = 'var_' + variable.replace('$', '');
 		let mod = params_list[1];
 		if (['~', '=', '+', '-', '.', '*', '/'].indexOf(mod) === -1)
 		{
-			df.reject('Incorrect ' + command_name + ' operation: ' + mod);
+			df.reject('Неизвестная операция в функции ' + command_name + ': ' + mod);
 			return df.promise();
 		}
 		let value;
@@ -1920,7 +1920,7 @@ var vnds_interpreter = function()
 			value = this.get_var(params_list[2]);
 			if (value === false)
 			{
-				df.reject('Unknown ' + command_name + ' variable ' + params_list[2]);
+				df.reject('Неизвестная переменная функции ' + command_name + ': ' + params_list[2]);
 				return df.promise();
 			}
 		}
@@ -1961,7 +1961,7 @@ var vnds_interpreter = function()
 						global_variables[variable] *= value;
 					else
 					{
-						df.reject('Incorrect ' + command_name + ' operation: variable ' + variable + ' not defined');
+						df.reject('Неверная операция в функции ' + command_name + ': переменная ' + variable + ' не определена');
 						return df.promise();
 					}
 					break;
@@ -1971,12 +1971,12 @@ var vnds_interpreter = function()
 							global_variables[variable] = global_variables[variable] / value;
 						else
 						{
-							df.reject('Incorrect ' + command_name + ' operation: divide by zero');
+							df.reject('Неверная операция в функции ' + command_name + ': деление на ноль');
 							return df.promise();
 						}
 					else
 					{
-						df.reject('Incorrect ' + command_name + ' operation: variable ' + variable + ' not defined');
+						df.reject('Неверная операция в функции ' + command_name + ': переменная ' + variable + ' не определена');
 						return df.promise();
 					}
 					break;
@@ -1987,7 +1987,7 @@ var vnds_interpreter = function()
 		}
 		catch (e)
 		{
-			df.reject('Error in local storage ' + e.name);
+			df.reject('Ошибка в локальном хранилище: ' + e.name);
 		}
 		return df.promise();
 	}
@@ -2011,19 +2011,19 @@ var vnds_interpreter = function()
 		let df = $.Deferred();
 		if (params === undefined)
 		{
-			df.reject('Missing ' + command_name + ' parameters');
+			df.reject('Отсутствуют параметры функции ' + command_name);
 			return df.promise();
 		}
 		let params_list = this.get_params_list(params);
 		if (params_list.length > 3)
 		{
-			df.reject('Incorrect ' + command_name + ' parameters');
+			df.reject('Неверные параметры функции ' + command_name);
 			return df.promise();
 		}
 		let variable = params_list[0];
 		if ($.isNumeric(variable))
 		{
-			df.reject('Incorrect ' + command_name + ' variable: ' + variable);
+			df.reject('Неверное значение переменной функции ' + command_name + ': ' + variable);
 			return df.promise();
 		}
 		variable = 'var_' + variable.replace('$', '');
@@ -2033,12 +2033,12 @@ var vnds_interpreter = function()
 			max_value = this.get_var(params_list[params_list.length - 1]);
 			if (max_value === false)
 			{
-				df.reject('Unknown ' + command_name + ' variable ' + params_list[2]);
+				df.reject('Неизвестная переменная функции ' + command_name + ': ' + params_list[2]);
 				return df.promise();
 			}
 			if (!$.isNumeric(max_value))
 			{
-				df.reject('Incorrect ' + command_name + ' high value: ' + max_value);
+				df.reject('Неверное максимальное значение функции ' + command_name + ': ' + max_value);
 				return df.promise();
 			}
 			if (params_list.length === 3) // Если параметров 3, то присваиваем минимальное значение
@@ -2046,12 +2046,12 @@ var vnds_interpreter = function()
 				min_value = this.get_var(params_list[1]);
 				if (min_value === false)
 				{
-					df.reject('Unknown ' + command_name + ' variable ' + params_list[1]);
+					df.reject('Неизвестная переменная функции ' + command_name + ': ' + params_list[1]);
 					return df.promise();
 				}
 				if (!$.isNumeric(min_value))
 				{
-					df.reject('Incorrect ' + command_name + ' low value: ' + min_value);
+					df.reject('Неверное минимальное значение функции ' + command_name + ': ' + min_value);
 					return df.promise();
 				}
 			}
@@ -2081,7 +2081,7 @@ var vnds_interpreter = function()
 		}
 		catch (e)
 		{
-			df.reject('Error in local storage ' + e.name);
+			df.reject('Ошибка в локальном хранилище: ' + e.name);
 			return df.promise();
 		}
 		if (config.log_level != LOG_DISABLE) console.log(command_name + ' ' + variable + ' = ' + value);
@@ -2109,7 +2109,7 @@ var vnds_interpreter = function()
 		let df = $.Deferred();
 		if (params === undefined)
 		{
-			df.reject('Missing ' + command_name + ' parameters');
+			df.reject('Отсутствуют параметры функции ' + command_name);
 			return df.promise();
 		}
 		let $choice_menu = $('#choice_menu');
@@ -2117,7 +2117,7 @@ var vnds_interpreter = function()
 		let choices_cnt = choices.length;
 		if (choices_cnt > 22)
 		{
-			df.reject('Too much choices: ' + choices_cnt);
+			df.reject('Слишком большое количество выборов: ' + choices_cnt);
 			return df.promise();
 		}
 		this.cleartext();
@@ -2133,7 +2133,7 @@ var vnds_interpreter = function()
 			let choice = this.get_var(choices[i]);
 			if (choice === false)
 			{
-				df.reject('Unknown ' + command_name + ' variable ' + choices[i]);
+				df.reject('Неизвестная переменная функции ' + command_name + ': ' + choices[i]);
 				return df.promise();
 			}
 			let $id = $('#' + id);
@@ -2237,19 +2237,19 @@ var vnds_interpreter = function()
 		let df = $.Deferred();
 		if (params === undefined)
 		{
-			df.reject('Missing IF parameters');
+			df.reject('Неверные параметры функции IF');
 			return df.promise();
 		}
 		let params_list = this.get_params_list(params);
 		if (params_list.length !== 3)
 		{
-			df.reject('Incorrect IF parameters');
+			df.reject('Неверные параметры функции IF');
 			return df.promise();
 		}
 		let variable = params_list[0];
 		if ($.isNumeric(variable))
 		{
-			df.reject('Incorrect IF variable: ' + variable);
+			df.reject('Неверное значение переменной функции IF: ' + variable);
 			return df.promise();
 		}
 		variable = 'var_' + variable.replace('$', '');
@@ -2261,7 +2261,7 @@ var vnds_interpreter = function()
 		}
 		catch (e)
 		{
-			df.reject('Error in local storage ' + e.name);
+			df.reject('Ошибка в локальном хранилище: ' + e.name);
 			return df.promise();
 		}
 		if (variable === 'var_selected')
@@ -2274,13 +2274,13 @@ var vnds_interpreter = function()
 			variable = 0;
 		if (['<', '<=', '==', '!=', '>=', '>'].indexOf(operation) === -1)
 		{
-			df.reject('Incorrect IF operation: ' + operation);
+			df.reject('Неверная операция в функции IF: ' + operation);
 			return df.promise();
 		}
 		let value = this.get_var(params_list[2]);
 		if (value === false)
 		{
-			df.reject('Unknown IF variable ' + params_list[2]);
+			df.reject('Неизвестная переменная функции IF' + command_name + ': ' + params_list[2]);
 			return df.promise();
 		}
 		if ((!config.is_check) && (!perform_code(variable + operation + value)))
@@ -2321,7 +2321,7 @@ var vnds_interpreter = function()
 		let df = $.Deferred();
 		if (params !== undefined)
 		{
-			df.reject('Incorrect RESET parameters');
+			df.reject('Неверные параметры функции RESET');
 			return df.promise();
 		}
 		try
@@ -2330,11 +2330,11 @@ var vnds_interpreter = function()
 		}
 		catch (e)
 		{
-			show_warning('Error in local storage ' + e.name);
+			show_warning('Ошибка в локальном хранилище: ' + e.name);
 			return false;
 		}
 		this.save('~');
-		show_info('All game data erased succesfully!');
+		show_info('Данные успешно удалены');
 		df.resolve();
 		return df.promise();
 	}
@@ -2351,7 +2351,7 @@ var vnds_interpreter = function()
 		let df = $.Deferred();
 		if (params !== undefined)
 		{
-			df.reject('Incorrect ' + command_name + ' parameters');
+			df.reject('Неверные параметры функции ' + command_name);
 		}
 		else
 		{
@@ -2390,24 +2390,20 @@ var vnds_interpreter = function()
 		let df = $.Deferred();
 		if (params === undefined)
 		{
-			df.reject('Missing CHECK parameters');
+			df.reject('Отсутствуют параметры функции CHECK');
 			return df.promise();
 		}
 
 		let filename = this.get_var(params);
 		if (filename === false)
 		{
-			df.reject('Unknown CHECK variable: ' + params);
+			df.reject('Неизвестная переменная функции CHECK: ' + params);
 			return df.promise();
 		}
 
 		config.is_check = false;
 		this.first_check_jump = true;
-//		show_info('Script checks started: ' + filename);
 		this.execute({command: 'jump', params: filename});
-//		config.is_check = false;
-//		df.resolve();
-//		return df.promise();
 	}
 
 
@@ -2446,13 +2442,13 @@ var vnds_interpreter = function()
 			}
 			catch (e)
 			{
-				show_warning('Error in local storage ' + e.name);
+				show_warning('Ошибка в локальном хранилище: ' + e.name);
 				return false;
 			}
 		}
 		if (!$.isNumeric(slot))
 		{
-			show_warning('Incorrect SAVE slot: ' + slot);
+			show_warning('Неверный слот для сохранения: ' + slot);
 			return false;
 		}
 		let save_game =
@@ -2478,7 +2474,7 @@ var vnds_interpreter = function()
 		}
 		catch (e)
 		{
-			show_warning('Error in local storage ' + e.name);
+			show_warning('Ошибка в локальном хранилище: ' + e.name);
 			return false;
 		}
 	}
@@ -2495,7 +2491,7 @@ var vnds_interpreter = function()
 		if (config.log_level != LOG_DISABLE) console.log('LOAD ' + slot);
 		if (!$.isNumeric(slot))
 		{
-			show_warning('Incorrect LOAD slot: ' + slot);
+			show_warning('Неверный слот для загрузки: ' + slot);
 			return false;
 		}
 		let load_game = this.get_load(slot);
@@ -2551,7 +2547,7 @@ var vnds_interpreter = function()
 		}
 		if ((line.length === 0) || (line.charAt(0) === ';') || (line.indexOf('//') === 0))
 		{
-			show_error('Cant\'t find any command in script ' + this.game.script_name);
+			show_error('Больше команд в скрипте не найдено: ' + this.game.script_name);
 			return false;
 		}
 		this.game.script_line_num++;
@@ -2678,7 +2674,7 @@ var vnds_interpreter = function()
 				}
 				catch (e)
 				{
-					show_error('Error in local storage ' + e.name);
+					show_error('Ошибка в локальном хранилище: ' + e.name);
 					return false;
 				}
 			}
@@ -2705,7 +2701,7 @@ var vnds_interpreter = function()
 					}
 					catch (e)
 					{
-						show_error('Error in local storage ' + e.name);
+						show_error('Ошибка в локальном хранилище: ' + e.name);
 						return false;
 					}
 				}
@@ -2727,7 +2723,7 @@ var vnds_interpreter = function()
 		}
 		catch (e)
 		{
-			show_warning('Error in local storage ' + e.name);
+			show_warning('Ошибка в локальном хранилище: ' + e.name);
 			return false;
 		}
 		return load_game;
