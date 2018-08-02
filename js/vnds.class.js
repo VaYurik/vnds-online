@@ -2912,7 +2912,6 @@ var vnds_interpreter = function()
 		let load_game = this.get_load(slot);
 		if (!load_game)
 			return false;
-		this.drop();
 		this.cleartext();
 		this.setimg('~');
 		if (load_game.bg_color)
