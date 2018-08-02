@@ -1,0 +1,4 @@
+title=Katawa Shoujo
+font=playtime_cyr2.ttf
+text_size=1.3em
+line_height=1
