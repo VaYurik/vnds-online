@@ -11,7 +11,7 @@ var config =
 	sound_volume: 0.5,            // Громкость звука
 	is_sound: true,               // Включён или выключен звук
 
-	text_size: 0,                 // Размер шрифта и некоторых других элементов интерфейса
+	text_size_factor: 0,          // Коэффициент увеличения размера шрифта и некоторых других элементов интерфейса
 
 	effect_speed: 250,            // Скорость эффектов (меньше - быстрее)
 	text_speed: 20,               // Скорость вывода текста (меньше - быстрее)
@@ -44,8 +44,10 @@ var old_text_speed;             // Предыдущая скорость выв�
 var music_volume;               // Текущая громкость музыки для эффекта затухания
 var is_message_box;             // Переменная, хранящая состояние блока вывода текста
 var type_interval;              // Переменная для хранения идентификатора интервала при печати печатающей машинки
-var filters_timeouts = [];      // Переменная для хранения массива идентификаторов интервалов, использующихся для фильтров
-var effects_timeouts = [];      // Переменная для хранения массива идентификаторов интервалов, использующихся для эффектов
+var filters_timeouts = [];      // Переменная для хранения массива идентификаторов таймаутов, использующихся для фильтров
+var effects_timeouts = [];      // Переменная для хранения массива идентификаторов таймаутов, использующихся для эффектов
+var effects_intervals = [];     // Переменная для хранения массива идентификаторов интервалов, использующихся для эффектов
+var animation_interval;         // Переменная для хранения идентификатора интервала, использующегося для анимации
 var is_promo = false;           // Информация о том, был ли произведён клик на баннер или нет
 var vn;                         // Объект класса интерпретатора
 var is_php_enabled;             // Имеется ли поддержка php на сервере
@@ -56,7 +58,7 @@ var resolution =                // Разрешение окна игры (ра�
 			height: null,             // высота
 			ratio: null               // коэффициент относительно разрешения игры
 		}
-var font_size_ratio;            // Коэффициент размера шрифта, в зависимости от размера окна
+var text_size_ratio;            // Коэффициент размера шрифта, в зависимости от размера окна
 
 $(document).ready(function()
 {
@@ -153,12 +155,16 @@ function exec_window_resize_events()
 		});
 		resolution.ratio = resolution.width / vn.game.resolution.width;
 		if ($('#message_box').height() <= 170)
-			font_size_ratio = 1;
+			text_size_ratio = 1;
 		else
-			font_size_ratio = resolution.ratio;
+			text_size_ratio = resolution.ratio;
 
-		$('#message_box_name').css('font-size', font_size_ratio * (11 + config.text_size) / 10 + 'em');
-		$('#message_box_text').css('font-size', font_size_ratio * (10 + config.text_size) / 10 + 'em');
+		$('#message_box_name').css('font-size', text_size_ratio * (Number(vn.game.text_size) + (1 / vn.game.text_size) * 0.1 + config.text_size_factor / 10) + 'em');
+		$('#message_box_text').css(
+		{
+			'font-size': text_size_ratio * (Number(vn.game.text_size) + config.text_size_factor / 10) + 'em',
+			'line-height': vn.game.line_height
+		});
 }
 	else
 	{
@@ -180,7 +186,7 @@ function init_log()
 		{
 			$info.animate(
 			{
-				top: '-175px',
+				top: '-222px',
 				left: '-180px',
 				'padding-bottom': '30px'
 			}, 200);
@@ -318,6 +324,14 @@ function create_main_menu()
 							ratio: value.height / value.width
 						};
 						vn.game.font = value.font;
+						if (value.text_size)
+							vn.game.text_size = value.text_size;
+						else
+							vn.game.text_size = 1;
+						if (value.line_height)
+							vn.game.line_height = value.line_height;
+						else
+							vn.game.line_height = 'normal';
 						vn.game.icons =
 						{
 							small: value.icon_s,
@@ -342,14 +356,16 @@ function create_main_menu()
 							$('#game_screen').stop().fadeIn(config.effect_speed);
 							if (vn.game.font !== null)
 							{
-								$('#message_box_text').css('font-family', vn.game.short_name + '_font');
 								$('#message_box_name').css('font-family', vn.game.short_name + '_font');
+								$('#message_box_text').css('font-family', vn.game.short_name + '_font');
 							}
 							else
 							{
-								$('#message_box_text').css('font-family', '');
 								$('#message_box_name').css('font-family', '');
+								$('#message_box_text').css('font-family', '');
 							}
+							$('#message_box_name').css('font-size', Number(vn.game.text_size) + 0.1 + 'em');
+							$('#message_box_text').css('font-size', Number(vn.game.text_size) + 'em');
 							create_game_menu();
 						});
 					});
@@ -415,9 +431,9 @@ function load_settings()
 			item = localStorage.getItem('is_fullscreen');
 			if (item !== null)
 				config.is_fullscreen = Boolean(Number(item));
-			item = localStorage.getItem('text_size');
+			item = localStorage.getItem('text_size_factor');
 			if (item !== null)
-				config.text_size = Number(item);
+				config.text_size_factor = Number(item);
 			item = localStorage.getItem('log_level');
 			if (item !== null)
 				config.log_level = Number(item);
@@ -444,7 +460,7 @@ function save_settings()
 			localStorage.setItem('text_speed', Number(config.text_speed));
 			localStorage.setItem('auto_text_pause', Number(config.auto_text_pause));
 			localStorage.setItem('is_skip_unread', Number(config.is_skip_unread));
-			localStorage.setItem('text_size', Number(config.text_size));
+			localStorage.setItem('text_size_factor', Number(config.text_size_factor));
 			localStorage.setItem('is_fullscreen', Number(config.is_fullscreen));
 			localStorage.setItem('log_level', Number(config.log_level));
 		}
@@ -462,12 +478,15 @@ function apply_text_size()
 {
 	let $message_box = $('#message_box');
 	if ($message_box.height() <= 170)
-	{
-		$message_box.css('height', (12 + config.text_size * 2.5) * 10 + 'px');
-	}
-	$('#message_box_menu').css('font-size', (9 + config.text_size) / 10 + 'em');
-	$('#message_box_name').css('font-size', font_size_ratio * (11 + config.text_size) / 10 + 'em');
-	$('#message_box_text').css('font-size', font_size_ratio * (10 + config.text_size) / 10 + 'em');
+		$message_box.css('height', (120 + config.text_size_factor * 25) + 'px');
+	$('#message_box_menu').css('font-size', (0.9 + config.text_size_factor / 10) + 'em');
+	let text_size;
+	if (vn === undefined)
+		text_size = 1;
+	else
+		text_size = Number(vn.game.text_size);
+	$('#message_box_name').css('font-size', text_size_ratio * (text_size + (1 / text_size) * 0.1 + config.text_size_factor / 10) + 'em');
+	$('#message_box_text').css('font-size', text_size_ratio * (text_size + config.text_size_factor / 10) + 'em');
 }
 
 // Функция отображения блока сообщений
@@ -757,7 +776,7 @@ function set_auto(state)
 	}
 	else
 	{
-		clearInterval(vn.text_timeout);
+		clearTimeout(vn.text_timeout);
 		$('#message_box_menu_auto').removeClass('enabled');
 	}
 }
@@ -780,6 +799,8 @@ function set_sound(state)
 function show_notification(str, delay = 0)
 {
 	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (vn)
+		vn.is_pause = true;
 	$('#modal_box_next').hide();
 	$('#modal_box_text').html(str);
 	
@@ -794,19 +815,21 @@ function show_notification(str, delay = 0)
 function close_notification(callback)
 {
 	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
-	if (callback !== undefined)
-		$('#modal_screen').stop().fadeOut(config.effect_speed, function()
-		{
+	$('#modal_screen').stop().fadeOut(config.effect_speed, function()
+	{
+		if (vn)
+			vn.is_pause = false;
+		if (callback !== undefined)
 			callback();
-		});
-	else
-		$('#modal_screen').stop().fadeOut(config.effect_speed);
+	});
 }
 
 // Вывод модального оповещения
 function show_dialog(str, callback)
 {
 	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (vn)
+		vn.is_pause = true;
 	$('#modal_box_next').show();
 	$('#modal_box_text').html(str);
 	$('#modal_screen').stop().fadeIn(config.effect_speed, function()
@@ -1009,6 +1032,7 @@ function create_save_load_menu(mod, callback)
 	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
 	let $save_load_menu = $('#save_load_menu');
 	let $overlay = $('#overlay');
+ 	vn.is_pause = true;
 	$overlay.stop().fadeTo(config.effect_speed, 1);
 	show_promo();
 	config.is_check = false;
@@ -1035,9 +1059,20 @@ function create_save_load_menu(mod, callback)
 		if (Boolean(load_game))
 		{
 			$id.removeClass('center');
-			$('<img />')
-				.attr('src', vn.game.dir + '/background/' + load_game.bg)
-				.appendTo($id);
+			if (load_game.bg.indexOf('#') === -1)
+			{
+				$('<img />')
+					.attr('src', vn.game.dir + '/background/' + load_game.bg)
+					.appendTo($id);
+			}
+			else
+			{
+				$('<img />')
+					.attr('src', 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=')
+					.css('background-color', load_game.bg)
+					.appendTo($id);
+			}
+				
 			$id.append('<div>' + get_file_name(load_game.script_name) + ' <span>[' + load_game.script_line_num + ']</span></div>');
 			$id.find('div').css('text-align', 'left');
 		}
@@ -1060,6 +1095,7 @@ function create_save_load_menu(mod, callback)
 					vn.save(selected);
 				else
 					vn.load(selected);
+				vn.is_pause = false;
 			});
 
 			return false;
@@ -1089,6 +1125,7 @@ function create_save_load_menu(mod, callback)
 		{
 			$save_load_menu.find('button').remove();
 			$save_load_menu.find('h2').remove();
+			vn.is_pause = false;
 			if (callback !== undefined)
 				callback();
 		});
@@ -1130,7 +1167,7 @@ function create_config_menu(callback)
 	let $config_menu_text_speed = $('#config_menu_text_speed');
 	let $config_menu_auto_text_pause = $('#config_menu_auto_text_pause');
 	let $config_menu_sound_volume = $('#config_menu_sound_volume');
-	$config_menu_text_size.val(config.text_size);
+	$config_menu_text_size.val(config.text_size_factor);
 	$config_menu_text_speed.val(20 - config.text_speed);
 	$config_menu_auto_text_pause.val(config.auto_text_pause / 200);
 	$('#config_menu_is_skip_unread').prop('checked', config.is_skip_unread);
@@ -1149,7 +1186,7 @@ function create_config_menu(callback)
 	{
 		$config_menu.find('button').off('click');
 		$(document).off('keydown.config');
-		config.text_size = Number($config_menu_text_size.val());
+		config.text_size_factor = Number($config_menu_text_size.val());
 		config.text_speed = Number(20 - $config_menu_text_speed.val());
 		config.auto_text_pause = Number($config_menu_auto_text_pause.val() * 200);
 		config.is_skip_unread = $('#config_menu_is_skip_unread').prop('checked');
@@ -1196,7 +1233,7 @@ function show_error(message, delay = 0)
 	let post_array;
 	if (vn)
 	{
-		message = 'Error at ' + vn.game.script_name + ' line ' + vn.game.script_line_num + '!<br><br>' + message;
+		message = 'Критическая ошибка в скрипте ' + vn.game.script_name + ' в строке ' + vn.game.script_line_num + '!<br><br>' + message;
 		post_array = 
 		{
 			message: message,
@@ -1225,7 +1262,7 @@ function show_warning(message, callback)
 	let post_array;
 	if (vn)
 	{
-		message = 'Warning at ' + vn.game.script_name + ' line ' + vn.game.script_line_num + '!<br><br>' + message;
+		message = 'Ошибка в скрипте ' + vn.game.script_name + ' в строке ' + vn.game.script_line_num + '!<br><br>' + message;
 		post_array = 
 		{
 			message: message,
@@ -1283,7 +1320,7 @@ function obj_to_str(obj)
 }
 
 // "Печатающая машинка"
-function type_writer(str, text_speed)
+function type_writer(str, text_speed, prev_text = '')
 {
 	let $message_box_name = $('#message_box_name');
 	var $message_box_text = $('#message_box_text');
@@ -1293,31 +1330,38 @@ function type_writer(str, text_speed)
 	
 	clearInterval(type_interval);
 	type_interval = undefined;
+	let char_name = '';
 	let rb_pos = str.indexOf(']');
 	if ((str[0] === '[') && (rb_pos > 0) && (rb_pos + 1 < str.length))
 	{
 		$message_box_name.show();
-		let char_name = str.substring(1, rb_pos++).trim();
+		char_name = str.substring(1, rb_pos++).trim();
 		$message_box_name.html(char_name);
-		str = str.substring(++rb_pos);
+		char_name = '[' + char_name + ']';
+		str = str.substring(rb_pos);
 		str = '<i>' + str + '</i>';
 	}
 	else
 		$message_box_name.hide();
+	rb_pos = prev_text.indexOf(']');
+	if ((prev_text[0] === '[') && (rb_pos > 0) && (rb_pos + 1 < prev_text.length))
+		prev_text = prev_text.substring(++rb_pos).trim();
+	if (str === '')
+		return char_name + prev_text;
+	var type_str = prev_text;
 	if (config.is_skip)
 	{
 		setTimeout(function()
 		{
-			$message_box_text.html(str);
+			$message_box_text.html(type_str + str);
 		}, config.skip_text_speed);
-		return false;
+		return char_name + type_str + str;
 	}
 	if (text_speed === 0)
 	{
-		$message_box_text.html(str);
-		return;
+		$message_box_text.html(type_str + str);
+		return char_name + type_str + str;
 	}
-	var type_str = '';
 	var line_str = '';
 	var sub_str = '';
 	var i = 0;
@@ -1394,6 +1438,7 @@ function type_writer(str, text_speed)
 			type_interval = undefined;
 		}
 	}, text_speed);
+	return char_name + prev_text + str;
 }
 
 function get_text_width(str, font)
@@ -1590,37 +1635,67 @@ function filter_grayscale(obj, strength = 100, duration)
 function effect_hshake($images, strength = 100, duration)
 {
 	strength = Math.ceil(strength / 20);
-	let effect = 'hshake' + strength;
-	start_effect($images, effect, duration);
+	start_effect($images, 'hshake', strength, duration);
 }
 
 // Эффекты - v-shake
 function effect_vshake($images, strength = 100, duration)
 {
 	strength = Math.ceil(strength / 20);
-	let effect = 'vshake' + strength;
-	start_effect($images, effect, duration);
+	start_effect($images, 'vshake', strength, duration);
+}
+
+// Эффекты - zoom-in
+function effect_zoomin($images, strength = 100, duration)
+{
+	strength = (100 + Number(strength)) / 100;
+	duration = duration + 'ms';
+	start_effect($images, 'zoom', strength, duration);
+}
+
+// Эффекты - zoom-out
+function effect_zoomout($images, strength = 100, duration)
+{
+	strength = (100 - Number(strength)) / 100;
+	duration = duration + 'ms';
+	start_effect($images, 'zoom', strength, duration);
 }
 
 // Начать выполнение эффекта
-function start_effect($images, effect, duration)
+function start_effect($images, effect, strength, duration)
 {
 	$images.forEach(function($image)
 	{
-		$image.css(
+		if (effect.indexOf('shake') !== -1)
 		{
-			'-webkit-animation': effect + ' infinite linear 0.1s',
-			'animation': effect + ' infinite linear 0.1s',
-			'transform': 'translate(0, 0)'
-		});
-		if (duration !== undefined)
-		{
-			let effect_inteval = setTimeout(function()
+			$image.css(
 			{
-				stop_img_effects($image);
-				effects_timeouts.splice(effects_timeouts.indexOf(effect_inteval), 1);
-			}, duration);
-			effects_timeouts.push(effect_inteval);
+				'-webkit-animation': effect + strength + ' infinite linear 0.1s',
+				'animation': effect + strength + ' infinite linear 0.1s',
+				'transform': 'translate(0, 0)'
+			});
+			if (duration !== undefined)
+			{
+				let effect_timeout = setTimeout(function()
+				{
+					stop_img_effects($image);
+					effects_timeouts.splice(effects_timeouts.indexOf(effect_timeout), 1);
+				}, duration);
+				effects_timeouts.push(effect_timeout);
+			}
+		}
+		else if (effect === 'zoom')
+		{
+			$image.css(
+			{
+				'-webkit-transition': 'transform ' + duration,
+				'-moz-transition': 'transform ' + duration,
+				'-o-transition': 'transform ' + duration,
+				'-ms-transition': 'transform ' + duration,
+				'transition': 'transform ' + duration,
+				'-webkit-transform': 'scale(' + strength + ')',
+				'transform': 'scale(' + strength + ')'
+			});
 		}
 	});
 }
@@ -1635,10 +1710,21 @@ function reset_effects_timeouts()
 	effects_timeouts = [];
 }
 
+// Сброс всех интервалов эффектов
+function reset_effects_intervals()
+{
+	$.each(effects_intervals, function(key, value)
+	{
+		clearInterval(value);
+	});
+	effects_intervals = [];
+}
+
 // Завершение всех эффектов для спрайта
 function stop_all_effects($images)
 {
 	reset_effects_timeouts();
+	reset_effects_intervals();
 	$images.forEach(function($image)
 	{
 		stop_img_effects($image);
@@ -1649,6 +1735,7 @@ function stop_all_effects($images)
 function stop_overall_effects()
 {
 	reset_effects_timeouts();
+	reset_effects_intervals();
 	stop_img_effects($('#background'));
 	$('#sprites').find('img').each(function()
 	{
@@ -1686,13 +1773,13 @@ function start_filter($images, filter, duration)
 		});
 		if (duration !== undefined)
 		{
-			let filter_inteval = setTimeout(function()
+			let filter_timeout = setTimeout(function()
 			{
 				stop_img_filters($image);
 				let pos;
-				filters_timeouts.splice(filters_timeouts.indexOf(filter_inteval), 1);
+				filters_timeouts.splice(filters_timeouts.indexOf(filter_timeout), 1);
 			}, duration);
-			filters_timeouts.push(filter_inteval);
+			filters_timeouts.push(filter_timeout);
 		}
 	});
 }
@@ -1748,6 +1835,7 @@ function stop_img_filters($image)
 function stop_overall_effects_filters()
 {
 	reset_effects_timeouts();
+	reset_effects_intervals();
 	let $background = $('#background');
 	stop_img_effects($background);
 	stop_img_filters($background);
@@ -1762,6 +1850,61 @@ function stop_overall_effects_filters()
 			.stop(true, true)
 			.css('prop', $(this).css('prop'));
 	});
+}
+
+// Анимации - snow
+function animation_snow(strength = 100) // В эффекте использован код плагина Ивана Лазаревича (http://workshop.rs)
+{
+	let flake_char = '&#149;'; // символ снежинки
+	let min_size = 7;          // минимальный размер снежинки
+	let max_size = 15;         // максимальный размер снежинки
+	let delay = (101 - strength) * 10; // задержка между снежинками в миллисекундах
+	let $flake = $('<div class="flake" />').css('position', 'absolute');
+
+	$flake.html(flake_char);
+
+	animation_interval = setInterval(function()
+	{
+		let start_x = Math.random() * (resolution.width - 75) + 75;
+		let end_x = start_x - 150 + Math.random() * 300;
+		let start_y = 0;
+		let end_y = resolution.height;
+		let start_opacity = 1;
+		let end_opacity = 0.5 + Math.random();
+		let flake_size = min_size + Math.random() * max_size;
+		let fall_speed = (end_y - start_y) * 10 + Math.random() * (max_size - flake_size) * 500;
+		$flake
+			.clone()
+			.appendTo('#sprites')
+			.css(
+				{
+					'left': start_x,
+					'top': start_y,
+					'opacity': start_opacity,
+					'font-size': flake_size,
+					'-moz-text-shadow': '0 0 0.15em #FFF',
+					'-webkit-text-shadow': '0 0 0.15em #FFF',
+					'text-shadow': '0 0 0.15em #FFF',
+					'color': '#EEE'
+				})
+			.animate(
+				{
+					'left': end_x,
+					'top': end_y,
+					'opacity': end_opacity
+				}, fall_speed, 'linear', function()
+				{
+					$(this).remove();
+				});
+	}, delay);
+}
+
+// Завершение анимации
+function stop_animation()
+{
+	clearInterval(animation_interval);
+	animation_interval = undefined;
+	$('.flake').remove();
 }
 
 // Сброс всех таймаутов
@@ -1785,4 +1928,12 @@ String.prototype.reIndexOf = function(regexp, start_pos)
 {
 	var found_pos = this.substring(start_pos || 0).search(regexp);
 	return (found_pos >= 0) ? (found_pos + (start_pos || 0)) : found_pos;
+}
+
+function function_exists(function_name)
+{
+	if (typeof function_name == 'string')
+		return (typeof window[function_name] == 'function');
+	else
+		return (function_name instanceof Function);
 }
