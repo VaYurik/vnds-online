@@ -15,3 +15,4 @@ VNDS2 ports:<br>
   Шепотки (rus): https://yadi.sk/d/Bk72Bogg3YBShS<br>
   Katawa Shoujo (rus, monday): https://yadi.sk/d/BCTjsKAz3Zqwnv
   
+Вннимание! В папке games висит неполный кусок папки Katawa Shoujo! Полная версия - по ссылке выше, а там висит обрубок, который я не могу удалить, потому что местные кодеры ниасилили прикрутить удаление папок.
