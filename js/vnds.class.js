@@ -5,10 +5,13 @@ var vnds_interpreter = function()
 {
 	this.is_expand_text = false; // Флаг расширения при выводе текста - опция @ команды text
 	this.prev_text = '';         // Предыдущий (уже выведенный) текст (для опций @ и + команды text)
-	this.is_load_game = false;        // Флаг, была ли выполнена загрузка сохранённой игры или нет (для опций @ и + команды text)
+	this.cur_text = '';          // Текущий (уже выведенный) текст (для опций @ и + команды text)
+	this.is_load_game = false;   // Флаг, была ли выполнена загрузка сохранённой игры или нет (для опций @ и + команды text)
 	this.sound_timeout;
 	this.text_timeout;
 	this.text_interval;
+	this.delay_timeout;
+	this.pause_interval;
 	this.first_check_jump = false;
 	this.is_pause = false;       // На паузе ли игра (вызвано меню, например)
 
@@ -1083,6 +1086,8 @@ var vnds_interpreter = function()
 			df.resolve('Неверное значение задержки в функции ' + command_name + ': ' + delay);
 			return df.promise();
 		}
+		this.prev_text = this.cur_text;
+		this.save(0);
 		$('#message_box_next').hide();
 		$('#message_box_text').css('cursor', 'default');
 		$('#sprites').css('cursor', 'default');
@@ -1090,17 +1095,16 @@ var vnds_interpreter = function()
 			delay = config.skip_text_pause;
 		else if (config.is_check)
 			delay = 0;
-		this.is_load_game = false;
 		let _this = this;
-		setTimeout(function()
+		this.delay_timeout = setTimeout(function()
 		{
 			if (_this.is_pause)
 			{
-				let pause_interval = setInterval(function()
+				_this.pause_interval = setInterval(function()
 				{
 					if (!_this.is_pause)
 					{
-						clearInterval(pause_interval);
+						clearInterval(_this.pause_interval);
 						df.resolve();
 					}
 				}, 1000);
@@ -1587,6 +1591,7 @@ var vnds_interpreter = function()
 			return df.promise();
 		}
 		let script_name = get_file_name(this.game.script_name);
+		$('#sprites').off('click');
 		$('#message_box_text').off('click');
 		$('#message_box_next').off('click');
 		if ($.isNumeric(label))
@@ -1695,6 +1700,7 @@ var vnds_interpreter = function()
 			df.reject('Неверные параметры функции JUMP');
 			return df.promise();
 		}
+		$('#sprites').off('click');
 		$('#message_box_text').off('click');
 		$('#message_box_next').off('click');
 		this.game.script_name = filename;
@@ -1783,10 +1789,23 @@ var vnds_interpreter = function()
 		let df = $.Deferred();
 		this.is_expand_text = false;
 		this.prev_text = '';
-		$('#message_box_name')
-			.html('')
-			.hide();
-		$('#message_box_text').html('');
+		$('#message_box_name').html('').hide();
+		let $message_box_text = $('#message_box_text');
+		$message_box_text.html('');
+
+		// Сброс всех кликов
+		$message_box_text.off('click');
+		$('#sprites').off('click');
+		$('#message_box_next').off('click');
+
+		// Сброс всех интервалов и таймаутов
+		clearInterval(type_interval);
+		type_interval = undefined;
+		clearInterval(this.text_interval);
+		clearTimeout(this.text_timeout);
+		clearTimeout(this.delay_timeout);
+		clearInterval(this.pause_interval);
+
 		df.resolve();
 		return df.promise();
 	}
@@ -1943,15 +1962,18 @@ var vnds_interpreter = function()
 		$message_box_next.off('click');
 		show_message_box();
 
-		if (this.is_load_game)
-			type_writer(this.prev_text, 0);
-		else
+		if (!config.is_skip)
+			$message_box_next.show();
+
+		if (!this.is_load_game)
 		{
 			let is_append_text = (params[0] === '+');
 			if ((!is_append_text) && (!this.is_expand_text))
 			{
 				this.prev_text = '';
 			}
+			else
+				this.prev_text = this.cur_text;
 			if (is_append_text)
 			{
 				if (params.substr(0, 2) !== '++')
@@ -1960,18 +1982,18 @@ var vnds_interpreter = function()
 					this.prev_text += ' ';
 				type_writer(this.prev_text, 0);
 			}
-			
-			this.is_expand_text = (params[0] === '@');
-			if (this.is_expand_text)
-			{
-				if (params.substr(0, 2) !== '@@')
-					cur_str += '<br>';
-				else
-					cur_str += ' ';
-			}
-			this.prev_text = type_writer(cur_str, config.text_speed, this.prev_text);
+		}
+		this.is_expand_text = (params[0] === '@');
+		if (this.is_expand_text)
+		{
+			if (params.substr(0, 2) !== '@@')
+				cur_str += '<br>';
+			else
+				cur_str += ' ';
 		}
 		this.is_load_game = false;
+		this.cur_text = type_writer(cur_str, config.text_speed, this.prev_text);
+		this.save(0);
 
 		let _this = this;
 		if ((config.is_skip) || (config.is_auto))
@@ -1995,13 +2017,11 @@ var vnds_interpreter = function()
 				if (type_interval === undefined)
 				{
 					clearInterval(_this.text_interval);
-					_this.text_timeout = undefined;
+					clearTimeout(_this.text_timeout);
 					$message_box_next.trigger('click');
 				}
-			}, 100);
+			}, 1000);
 		}
-		if (!config.is_skip)
-			$message_box_next.show();
 		$message_box_text.find('a').on('click', function(e)
 		{
 			e.stopPropagation();
@@ -2038,7 +2058,7 @@ var vnds_interpreter = function()
 			{
 				clearInterval(type_interval);
 				type_interval = undefined;
-				type_writer(_this.prev_text, 0);
+				type_writer(_this.cur_text, 0);
 				return df.promise();
 			}
 			else
@@ -2050,12 +2070,13 @@ var vnds_interpreter = function()
 //				stop_overall_effects_filters();
 				if (_this.is_pause)
 				{
-					let pause_interval = setInterval(function()
+					_this.pause_interval = setInterval(function()
 					{
 						if (!_this.is_pause)
 						{
-							clearInterval(pause_interval);
-							return df.resolve();
+							clearInterval(_this.pause_interval);
+							df.resolve();
+							return df.promise();
 						}
 					}, 1000);
 				}
@@ -2573,6 +2594,7 @@ var vnds_interpreter = function()
 		}
  		while ((max_width > resolution.width) && (i > 0));
 		$choice_menu.find('button').width(max_width + 'px');
+		this.save(0);
 		set_skip(false);
 		hide_message_box(false, function()
 		{
@@ -2861,7 +2883,6 @@ var vnds_interpreter = function()
 			show_warning('Неверный слот для сохранения: ' + slot);
 			return false;
 		}
-
 		let save_game =
 		{
 			local: this.game.local_variables,
@@ -2923,6 +2944,12 @@ var vnds_interpreter = function()
 		this.game.script_name = load_game.script_name;
 		this.is_expand_text = load_game.is_expand_text;
 		this.prev_text = load_game.prev_text;
+		if (this.prev_text)
+		{
+			show_message_box();
+			this.cur_text = this.prev_text;
+			type_writer(this.prev_text, 0);
+		}
 		this.is_load_game = true;
 		if (load_game.music)
 			this.music(load_game.music);
@@ -3021,7 +3048,7 @@ var vnds_interpreter = function()
 			return false;
 		if (!function_exists(this[code.command]))
 			show_error('Ошибка синтаксиса');
-		this.save(0);
+//		this.save(0);
 		let _this = this;
 		let df;
 		df = this[code.command](code.params);

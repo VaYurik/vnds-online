@@ -1368,9 +1368,10 @@ function type_writer(str, text_speed, prev_text = '')
 	type_interval = setInterval(function()
 	{
 		message_box_font = $message_box_text.css('font-size') + ' ' + $message_box_text.css('font-family');
-		padding_left = $message_box_text.css('padding-left').replace('px', '');
-		padding_right = $message_box_text.css('padding-right').replace('px', '');
-		message_box_width = $message_box_text.width() - padding_left - padding_right;
+//		padding_left = $message_box_text.css('padding-left').replace('px', '');
+//		padding_right = $message_box_text.css('padding-right').replace('px', '');
+//		message_box_width = $message_box_text.width() - padding_left - padding_right;
+		message_box_width = $message_box_text.width();
 		if (i < str.length)
 		{
 			while (str[i] === '&') // Обработка сущностей
