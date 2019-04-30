@@ -1,0 +1,31 @@
+label ending
+	stopskip
+
+	cls
+	music "Afternoon.ogg" easy 1.0s
+	bg #000 dissolve 1.0s
+	img @logo "ui/bt-logoonly.png" dissolve 0.5s
+	delay 1.0s
+	img @credits "ui/credits1.png" 20% bottom-out
+	img @logo 5% 5% 1.0s
+	delay 1.0s
+	img @credits 20% top-out 20s
+	delay 20s
+	img @logo 75% 5% 1.0s
+	img @credits "ui/credits2.png" -10% bottom-out
+	img @credits -10% top-out 20s
+	delay 20s
+	img @logo center 5% 1.0s
+	img @credits "ui/credits3.png" center bottom-out
+	img @credits center center 10s
+	delay 10s
+	img @credits ~ dissolve 1.0s
+	img @logo center center 1.0s
+	music ~ easy 5.0s
+	delay 3s
+	img ~ dissolve 2.0s
+	delay 2.0s
+	sfx "sfx/crunch.ogg"
+
+	jump "main.scr"
+

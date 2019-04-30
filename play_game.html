@@ -1,5 +1,4 @@
 ﻿<!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="ru">
 	<head>
 		<title>VNDS-online</title>
@@ -8,6 +7,7 @@
 		<meta name="description" content="Интерпретатор VNDS">
 		<link id="favicon" rel="icon" href="images/vnds.png">
 		<script src="js/jquery-3.3.1.min.js"></script>
+		<script src="js/jquery.smoke.effect.js"></script>
 		<script src="js/functions.js"></script>
 		<script src="js/vnds.class.js"></script>
 
@@ -20,6 +20,7 @@
 		</noscript>
 		<audio id="music" preload="auto"></audio>
 		<audio id="sound" preload="auto"></audio>
+		<audio id="sfx" preload="auto"></audio>
 		<section id="main_screen">
 			<h2>Выберите игру</h2>
 			<section id="main_menu"></section>
@@ -28,6 +29,7 @@
 			<div id="overlay"></div>
 			<video id="video" width="100%" height="100%" preload="auto"></video>
 			<div id="background"></div>
+			<div id="relay"></div>
 			<section id="sprites"></section>
 			<section id="game_menu" class="centered">
 				<button id="game_menu_start">Начать</button>
@@ -108,14 +110,16 @@
 				<li>Видео: <span id="info_video"></span></li>
 				<li>Музыка: <span id="info_music"></span></li>
 				<li>Звук: <span id="info_sound"></span></li>
+				<li>Звук.эффект: <span id="info_sfx"></span></li>
 			</ul>
 			<div id="info_show">Инфо</div>
 		</section>
 		<section id="thanks">
-			<iframe frameborder="0" allowtransparency="true" scrolling="no" src="https://money.yandex.ru/embed/donate.xml?account=41001543226857&quickpay=donate&payment-type-choice=on&mobile-payment-type-choice=on&default-sum=200&targets=%D0%9D%D0%B0+%D1%80%D0%B0%D0%B7%D0%B2%D0%B8%D1%82%D0%B8%D0%B5+%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B0+%D0%B8+%D0%BD%D0%B0+%D0%BF%D0%B5%D1%87%D0%B5%D0%BD%D1%8C%D0%BA%D0%B8&project-name=%D0%9F%D0%B5%D1%80%D0%B5%D0%B2%D0%BE%D0%B4%D1%8B+%D0%B8+%D0%BD%D0%B5+%D1%82%D0%BE%D0%BB%D1%8C%D0%BA%D0%BE&project-site=http%3A%2F%2Fvayurik.ru&button-text=05&successURL=" width="508" height="93"></iframe>
+			<!--iframe frameborder="0" allowtransparency="true" scrolling="no" src="https://money.yandex.ru/embed/donate.xml?account=41001543226857&quickpay=donate&payment-type-choice=on&mobile-payment-type-choice=on&default-sum=200&targets=%D0%9D%D0%B0+%D1%80%D0%B0%D0%B7%D0%B2%D0%B8%D1%82%D0%B8%D0%B5+%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B0+%D0%B8+%D0%BD%D0%B0+%D0%BF%D0%B5%D1%87%D0%B5%D0%BD%D1%8C%D0%BA%D0%B8&project-name=%D0%9F%D0%B5%D1%80%D0%B5%D0%B2%D0%BE%D0%B4%D1%8B+%D0%B8+%D0%BD%D0%B5+%D1%82%D0%BE%D0%BB%D1%8C%D0%BA%D0%BE&project-site=http%3A%2F%2Fvayurik.ru&button-text=05&successURL=" width="508" height="93"></iframe-->
+			<iframe src="https://money.yandex.ru/quickpay/shop-widget?writer=seller&targets=%D0%9D%D0%B0%20%D0%BF%D0%B5%D1%87%D0%B5%D0%BD%D1%8E%D1%88%D0%BA%D0%B8&targets-hint=&default-sum=200&button-text=11&payment-type-choice=on&mobile-payment-type-choice=on&hint=&successURL=&quickpay=shop&account=41001543226857" width="423" height="226" frameborder="0" allowtransparency="true" scrolling="no"></iframe>
 			<div id="thanks_show">Спасибо!</div>
 		</section>
-		<section id="version"><a href="versions.txt" target="_blank">Версия 2.5</a></section>
+		<section id="version"><a href="versions.txt" target="_blank">Версия 2.6</a></section>
 		<section id="copy"><a href="https://vk.com/vayurik" target="_blank">&copy; VaYurik</a></section>
 		<section id="modal_screen">
 			<div id="modal_box" class="centered">

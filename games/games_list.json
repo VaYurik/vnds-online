@@ -22,5 +22,17 @@
 		"thumb_s":		"games\/mike\/thumbnail.png",
 		"thumb_b":		"games\/mike\/thumbnail-high.png",
 		"error":			null
+	},
+	{
+		"dir":				"games\/ks",
+		"full_name":	"Katawa Shoujo (1 act)",
+		"short_name":	"ks",
+		"width":			"800",
+		"height":			"600",
+		"icon_s":			"games\/ks\/icon.png",
+		"icon_b":			"games\/ks\/icon-high.png",
+		"thumb_s":		"games\/ks\/thumbnail.png",
+		"thumb_b":		"games\/ks\/thumbnail-high.png",
+		"error":			null
 	}
 ]

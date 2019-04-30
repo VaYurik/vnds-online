@@ -1,74 +1,147 @@
-// Ман по командам VNDS: https://github.com/chaoskagami/vndc/blob/master/SCRIPTINGDOC.md
+// Добавить цвет фона окна сообщений в настройки
 
 // Функции VNDS
 var vnds_interpreter = function()
 {
-	this.is_expand_text = false; // Флаг расширения при выводе текста - опция @ команды text
-	this.prev_text = '';         // Предыдущий (уже выведенный) текст (для опций @ и + команды text)
-	this.cur_text = '';          // Текущий (уже выведенный) текст (для опций @ и + команды text)
-	this.is_load_game = false;   // Флаг, была ли выполнена загрузка сохранённой игры или нет (для опций @ и + команды text)
-	this.sound_timeout;
-	this.text_timeout;
-	this.text_interval;
-	this.delay_timeout;
-	this.pause_interval;
-	this.first_check_jump = false;
-	this.is_pause = false;       // На паузе ли игра (вызвано меню, например)
+	this.is_expand_text = false;      // Флаг расширения при выводе текста - опция @ команды text
+	this.prev_text = '';              // Предыдущий (уже выведенный) текст (для опций @ и + команды text)
+	this.cur_text = '';               // Текущий (уже выведенный) текст (для опций @ и + команды text)
+	this.is_load_game = false;        // Флаг, была ли выполнена загрузка сохранённой игры или нет (для опций @ и + команды text)
+	this.sound_timeout;               // Переменная для хранения идентификатора таймаута воспроизведения звука
+	this.sfx_timeout;                 // Переменная для хранения идентификатора таймаута воспроизведения звукового эффекта
+	this.text_timeout;                // Переменная для хранения идентификатора таймаута вывода текста
+	this.text_interval;               // Переменная для хранения идентификатора интервала вывода текста
+	this.relay_interval;              // Переменная для хранения идентификатора интервала цикличного вывода изображений
+	this.delay_timeout;               // Переменная для хранения идентификатора таймаута команды delay
+	this.pause_interval;              // Переменная для хранения идентификатора интервала задержки
+	this.music_interval;              // Переменная для хранения идентификатора интервала музыки
+	this.is_first_check_jump = false; // Признак первого перехода после начала действия команды check
+	this.is_pause = false;            // На паузе ли игра (вызвано меню, например)
 
 	this.init = function()
 	{
 		this.game =
 		{
-			dir: null,                  // Путь к директории с файлами игры
-			full_name: null,            // Полное наименование игры, взятое из файла info.txt (title)
-			short_name: null,           // Короткое наименование игры, взятое из названия директории игры
-			resolution:                 // Разрешение игры, взятое из файла img.ini
+			dir: null,                    // Путь к директории с файлами игры
+			full_name: null,              // Полное наименование игры, взятое из файла info.txt (title)
+			short_name: null,             // Короткое наименование игры, взятое из названия директории игры
+			resolution:                   // Разрешение игры, взятое из файла img.ini
 			{
-				width: null,              // ширина (width)
-				height: null,             // высота (height)
-				ratio: null               // отношение высоты к ширине (height / width)
+				width: null,                // ширина (width)
+				height: null,               // высота (height)
+				ratio: null                 // отношение высоты к ширине (height / width)
 			},
-			font: null,                 // Название шрифта для окна сообщений, взятое из файла info.txt (font)
-			text_size: null,            // Размер шрифта для окна сообщений, взятый из файла info.txt (text_size)
-			line_height: null,          // Высота строки для окна сообщений, взятая из файла info.txt (line_height)
-			icons:                      // Иконки игры, взятые из директории игры
+			font: null,                   // Название шрифта для окна сообщений, взятое из файла info.txt (font)
+			text_size: null,              // Размер шрифта для окна сообщений, взятый из файла info.txt (text_size)
+			line_height: null,            // Высота строки для окна сообщений, взятая из файла info.txt (line_height)
+			bg_color: null,               // Цвет фона окна сообщений, взятый из файла info.txt (bg_color)
+			icons:                        // Иконки игры, взятые из директории игры
 			{
-				small: null,              // иконка маленькая (icon)
-				big: null                 // иконка большая (icon-high)
+				small: null,                // иконка маленькая (icon)
+				big: null                   // иконка большая (icon-high)
 			},
-			thumbs:                     // Превьюшки игры, взятые из директории игры
+			thumbs:                       // Превьюшки игры, взятые из директории игры
 			{
-				small: null,              // превьюшка для кнопки выбора игры (thumbnail)
-				big: null                 // превьюшка для фона меню игры (thumbnail-high)
+				small: null,                // превьюшка для кнопки выбора игры (thumbnail)
+				big: null                   // превьюшка для фона меню игры (thumbnail-high)
 			},
-			local_variables: {},        // Массив локальных переменных
-			selected: null,             // Последнее значение переменной selected
-			script_name: null,          // Название текущего скрипта
-			script_lines: [],           // Список строк текущего скрипта
-			script_line_num: null,      // Номер текущей строки скрипта
-			sound: null,                // Текущий воспроизводящийся звук
-			music: null,                // Текущая воспроизводящаяся музыка
-			video: null,                // Текущее воспроизводящееся видео
-			background: null,           // Текущий фон
-			sprites:                    // Массив отображающихся в текущий момент спрайтов
-			{                           // индекс массива - имя спрайта без расширения
-				name: null,               // идентификатор спрайта
-				file: null,               // имя файла спрайта
-				x: null,                  // координата x
-				y: null                   // координата y
-			},
-			animation:                  // Действующая анимация
+			local_variables: {},          // Массив локальных переменных
+			selected: null,               // Последнее значение переменной selected
+			script_name: null,            // Название текущего скрипта
+			script_lines: [],             // Список строк текущего скрипта
+			script_line_num: null,        // Номер текущей строки скрипта
+			sfx:                          // Текущий звуковой эффект
 			{
-				name: null,               // название анимации
-				strength: null            // сила анимации
+				file: null,                 // имя файла звукового эффекта
+				volume: null                // громкость звукового эффекта
+			},
+			sound:                        // Текущий воспроизводящийся звук
+			{
+				file: null,                 // имя файла звук
+				volume: null                // громкость звук
+			},
+			music:                        // Текущая воспроизводящаяся музыка
+			{
+				file: null,                 // имя файла музыки
+				volume: null                // громкость музыки
+			},
+			video: null,                  // Текущее воспроизводящееся видео
+			background:                   // Текущий фон
+			{
+				file: null,                 // имя файла фона или код цвета
+				x: null,                    // координата x
+				y: null,                    // координата y
+				filters: null               // строка фильтров, применённых к фону
+			},
+			relay:                        // Изображения для цикличного вывода
+			{
+				files: [],                  // массив имён файлов изображений для цикличного вывода
+				delay: null,                // время показа каждого изображения
+				speed: null                 // задержка при смене изображений
+			},
+			sprites:                      // Массив отображающихся в текущий момент спрайтов
+			{                             // индекс массива - имя спрайта без расширения
+				name: null,                 // идентификатор спрайта
+				file: null,                 // имя файла спрайта
+				x: null,                    // координата x
+				y: null,                    // координата y
+				filters: null               // строка фильтров, применённых к спрайту
+			},
+			animation:                    // Действующая анимация
+			{
+				name: null,                 // название анимации
+				strength: null              // сила анимации
 			}
 		};
 	}
 
+/*====================================================================================================
+	Смена цвета фона подложки (это не фон, а то, что под ним)
+	bgcolor [код цвета]
+
+	[код цвета] - код цвета в шестнадцатеричной системе счисления, начинается с "#"
+
+  ====================================================================================================*/
+
+	this.bgcolor = function(params, command_name = 'BGCOLOR')
+	{
+		if (config.log_level != LOG_DISABLE) console.log(command_name + ' ' + params);
+		let df = $.Deferred();
+		if (params === undefined)
+		{
+			df.resolve('Отсутствуют параметры функции ' + command_name);
+			return df.promise();
+		}
+		let params_list = this.get_params_list(params);
+		if ((params_list.length != 1) || (params_list[0].indexOf('#') != 0))
+		{
+			df.resolve('Неверные параметры функции ' + command_name);
+			return df.promise();
+		}
+		let background = params_list[0];
+		$('#info_bg_color').text(background);
+		if (!is_hex_color(background))
+		{
+			df.resolve('Неверное значение цвета в функции ' + command_name + ': ' + background);
+			return df.promise();
+		}
+		let $game_screen = $('#game_screen');
+		$('#game_screen').css('background-color', background);
+		df.resolve();
+		return df.promise();
+	}
+
+/* bgc - синоним функции bgcolor */
+	this.bgc = function(params)
+	{
+		let df = this.bgcolor(params, 'BGC');
+		return df;
+	}
+
 
 /*====================================================================================================
-	Вывод изображения в качестве фона, с удалением всех спрайтов
-	bgload [имя файла или код цвета] [эффект] [длительность]
+	Вывод изображения или цвета в качестве фона, с удалением всех спрайтов
+	bgload [имя файла или код цвета] [выравнивание X] [выравнивание Y] [эффект] [длительность]
 	bgload [имя файла или код цвета] [длительность]
 
 	[имя файла] - имя графического файла в директории "background"
@@ -92,97 +165,190 @@ var vnds_interpreter = function()
 			return df.promise();
 		}
 		let params_list = this.get_params_list(params);
-		if (params_list.length > 5)
-		{
-			df.resolve('Неверные параметры функции ' + command_name);
-			return df.promise();
-		}
 		if (config.is_check)
 			config.is_skip = true;
+
 		let _this = this;
-		let params_index = 0;
 		$.each(params_list, function(key, value)
 		{
 			params_list[key] = _this.get_var(value);
 			if (params_list[key] === false)
-			{
-				df.resolve('Неизвестная переменная функции ' + command_name + ': ' + value);
-				return df.promise();
-			}
+				return df.resolve('Неизвестная переменная функции ' + command_name + ': ' + value);
 		});
-		let background = params_list[params_index];
-		let effect_speed = 0;
-		let effect;
+		if (df.state() === 'resolved')
+			return df.promise();
 
-		if (params_list.length > 1) // Если параметров больше одного и не включён режим пропуска
-		{
-			let effect_speed_param;
-			params_index++;
-			let value = params_list[params_index].toLowerCase();
-			if ((value == 'dissolve') || (value == 'slide') || (value == 'flip')) // Если следующий параметр - эффект
+		let effect_speed = 0;
+		let effect_name;
+		let filters_list = ['none', 'brightness', 'blur', 'grayscale', 'saturate', 'sepia', 'invert', 'opacity'];
+		let effects_list = ['dissolve', 'slide', 'flip'];
+		let background;
+		let params_index = 0;
+
+		if (is_image_file(params_list[params_index]) || (is_hex_color(params_list[params_index])))
+			background = params_list[params_index++];
+
+		let position_x = ['left', 'right', 'center'];
+		let position_y = ['top', 'bottom', 'center'];
+		let x = 'center'
+		let y = 'center';
+		if (params_list.length - params_index >= 2)
+		{			
+			let param = params_list[params_index].toLowerCase();
+			if ((effects_list.indexOf(param) === -1) && (filters_list.indexOf(param) === -1)) // Если осталось больше одного параметра и следующий параметр не эффект и не фильтр, значит следом идут координаты
 			{
-				if (params_list.length === 2) // Если указан эффект, но не указана длительность - ошибка
+				x = param;
+				if (x.indexOf('px') !== -1)
 				{
-					df.resolve('Отсутствует параметр длительности эффекта в функции ' + command_name);
+					x = x.slice(0, -2); // переводим пиксели в проценты
+					if ($.isNumeric(x))
+						x = x * 100 / this.game.resolution.width;
+				}
+				else if (x.indexOf('%') !== -1)
+					x = x.slice(0, -1); // ничего не переводим - уже проценты
+				else if ($.isNumeric(x))
+					x = x * 100 / 256; // переводим DS в проценты
+				if (!$.isNumeric(x) && (position_x.indexOf(x) === -1))
+				{
+					df.resolve('Неверные X-координаты в функции ' + command_name + ': ' + x);
 					return df.promise();
 				}
-				effect = value;
 				params_index++;
-				effect_speed_param = params_list[params_index].toLowerCase(); // Получаем длительность
+				y = params_list[params_index].toLowerCase();
+				if (y.indexOf('px') !== -1)
+				{
+					y = y.slice(0, -2); // переводим пиксели в проценты
+					if ($.isNumeric(y))
+						y = y * 100 / this.game.resolution.width;
+				}
+				else if (y.indexOf('%') !== -1)
+					y = y.slice(0, -1); // ничего не переводим - уже проценты
+				else if ($.isNumeric(y))
+					y = y * 100 / 192; // переводим DS в проценты
+
+				if (!$.isNumeric(y) && (position_y.indexOf(y) === -1))
+				{
+					df.resolve('Неверные Y-координаты в функции ' + command_name + ': ' + y);
+					return df.promise();
+				}
+
+				if ($.isNumeric(x))
+					x += '%';
+
+				if ($.isNumeric(y))
+					y += '%';
+				params_index++;
 			}
-			else // Если следующий параметр не эффект, то длительность, а эффект по умолчанию - dissolve
+		}
+		let filters_css = '', filters_str = '';
+		while ((params_list.length - params_index > 0) && (filters_list.indexOf(params_list[params_index].toLowerCase()) !== -1))
+		{
+			let filter_name = params_list[params_index++].toLowerCase();
+			filters_str += filter_name + ' ';
+			let filter_strength = 50;
+			if ((params_list.length - params_index > 0) && (params_list[params_index].indexOf('%') !== -1))
 			{
-				effect = 'dissolve';
-				effect_speed_param = value;
+				filter_strength = params_list[params_index].slice(0, -1);
+				if ((!$.isNumeric(filter_strength)) || (filter_strength < 0) || (filter_strength > 200))
+				{
+					df.resolve('Неверное значение силы фильтра в функции ' + command_name + ': ' + params_list[params_index]);
+					return df.promise();
+				}
+				filters_str += params_list[params_index] + ' ';
+				params_index++;
 			}
-			effect_speed = get_duration(effect_speed_param);
+			if (filter_name === 'blur')
+				filter_strength = Math.ceil(filter_strength / 10) + 'px';
+			else
+				filter_strength = filter_strength + '%';
+			filters_css += filter_name + '(' + filter_strength + ') ';
+		}
+		if (filters_css === '')
+			filters_css = 'none';
+		if (params_list.length - params_index > 0)
+		{
+			param = params_list[params_index].toLowerCase();
+			if (effects_list.indexOf(param) !== -1)
+			{
+				effect_name = param;
+				params_index++;
+			}
+		}
+		if (params_list.length - params_index > 0) 
+		{
+			effect_speed = get_duration(params_list[params_index]);
 			if (effect_speed === false)
 			{
-				df.resolve('Неверное значение длительности эффекта в функции ' + command_name + ': ' + effect_speed_param);
+				df.resolve('Неверное значение длительности эффекта в функции ' + command_name + ': ' + params_list[params_index]);
 				return df.promise();
 			}
-			if (config.is_skip) // Проверка на скип здесь, чтобы выполнились все проверки синтаксиса команды выше
-				effect_speed = 0;
+			params_index++;
 		}
-		else // Если параметров больше нет, значит эффект dissolve, а длительность - ноль
+		if (params_list.length - params_index > 0)
 		{
-			effect = 'dissolve';
-			effect_speed = 0;
+			df.resolve('Неверные параметры функции ' + command_name);
+			return df.promise();
 		}
-
-		if (config.is_skip) // Проверка на скип здесь, чтобы выполнились все проверки синтаксиса команды выше
+		if (config.is_skip)
 			effect_speed = 0;
-
-		if (background.indexOf('#') === 0) // Если значение параметра фона начинается с "#", то это цвет
+		$('#info_background').text(background);
+		if (background !== undefined) // Если имя файла фона определено и отличается от текущего, то создаём фон
 		{
-			$('#info_bg_color').text(background);
-			if ((!is_hex(background)) || ((background.length != 4) && (background.length != 7)))
+			if (background.indexOf('#') === 0) // Если значение параметра фона начинается с "#", то это цвет
 			{
-				df.resolve('Неверное значение цвета в функции ' + command_name + ': ' + background);
+				$('#info_bg_color').text(background);
+				if (!is_hex_color(background))
+					df.resolve('Неверное значение цвета в функции ' + command_name + ': ' + background);
+				draw_bg(_this, df,
+				{
+					file: background,
+					x: x,
+					y: y,
+					filters_css: filters_css,
+					filters_str: filters_str
+				}, effect_name, effect_speed, is_remove_sprites);
+			}
+			else // Иначе - файл
+			{
+				let filename = this.game.dir + '/background/' + escape(background);
+				let _this = this;
+				$.get(filename)
+					.fail(function()
+					{
+						df.resolve('Файл<br>' + filename + '<br> не найден');
+					})
+					.done(function()
+					{
+						draw_bg(_this, df,
+						{
+							file: background,
+							x: x,
+							y: y,
+							filters_css: filters_css,
+							filters_str: filters_str
+						}, effect_name, effect_speed, is_remove_sprites);
+					});
+			}
+		}
+		else
+		{
+			if (this.game.background.file === undefined)
+			{
+				df.resolve('Отсутствует имя файла или цвет фона в функции ' + command_name);
 				return df.promise();
 			}
-			this.game.background = background;
-			draw_bg(this, background, effect, effect_speed, is_remove_sprites);
-		}
-		else // Иначе - файл
-		{
-			$('#info_background').text(background);
-			let filename = this.game.dir + '/background/' + escape(background);
-			let _this = this;
-			$.get(filename)
-				.fail(function()
-				{
-					df.resolve('Файл<br>' + filename + '<br> не найден');
-				})
-				.done(function()
-				{
-					_this.game.background = background;
-					draw_bg(_this, filename, effect, effect_speed, is_remove_sprites);
-				});
+			draw_bg(_this, df,
+			{
+				file: this.game.background.file,
+				x: x,
+				y: y,
+				filters_css: filters_css,
+				filters_str: filters_str
+			}, effect_name, effect_speed, is_remove_sprites);
 		}
 		return df.promise();
 
-		function draw_bg(obj, background, effect, effect_speed, is_remove_sprites)
+		function draw_bg(obj, df, background, effect_name, effect_speed, is_remove_sprites)
 		{
 			if (is_remove_sprites)
 			{
@@ -190,84 +356,101 @@ var vnds_interpreter = function()
 				obj.setimg('~');
 			}
 			let $game_screen = $('#game_screen');
+			let handle = $game_screen.prop('onclick');
+			$game_screen.off('click');
 			let $background = $('#background');
-			if (effect_speed === 0)
+			$background.css(
 			{
-				if (background.indexOf('#') === 0)
+				'-webkit-transition': 'none',
+				'transition': 'none'
+			});
+			if (effect_name === 'dissolve')
+			{
+				$background.stop().fadeOut(effect_speed / 2, function()
 				{
-					$game_screen.css('background-color', background);
-					$background.css('background', background);
-				}
-				else
-					$background.css('background-image', 'url(' + background + ')');
-				$background.css(
-				{
-					'background-size': 'cover',
-					'background-repeat': 'no-repeat',
-					'background-position': 'center center'
+					set_background(_this, $(this), background);
+					$(this).fadeIn(effect_speed / 2, function()
+						{
+							if (is_hex_color(background.file))
+								$game_screen.css('background-color', background);
+							$game_screen.on('click', handle);
+							return df.resolve();
+						});
 				});
-				df.resolve();
+			}
+			else if (effect_name === 'slide')
+			{
+				$background.stop().slideUp(effect_speed, function()
+				{
+					set_background(_this, $(this), background);
+					$(this).slideDown(effect_speed, function()
+					{
+						if (is_hex_color(background.file))
+							$game_screen.css('background-color', background);
+						$game_screen.on('click', handle);
+						return df.resolve();
+					});
+				});
+			}
+			else if (effect_name === 'flip')
+			{
+				$background.stop().animate({'width': 'toggle'}, effect_speed, function()
+				{
+					set_background(_this, $(this), background);
+					$(this).animate({'width': 'toggle'}, effect_speed, function()
+					{
+						if (is_hex_color(background.file))
+							$game_screen.css('background-color', background);
+						$game_screen.on('click', handle);
+						return df.resolve();
+					});
+				});
 			}
 			else
 			{
-				let handle = $game_screen.prop('onclick');
-				$game_screen.off('click');
+				if ((_this.game.background.x !== background.x) || (_this.game.background.y !== background.y))
+				{
+					$background.css(
+					{
+						'-webkit-transition': 'ease-in-out ' + effect_speed + 'ms',
+						'transition': 'ease-in-out ' + effect_speed + 'ms'
+					});
+				}
+				set_background(_this, $background, background);
+				if (is_hex_color(background.file))
+					$game_screen.css('background-color', background);
+				$game_screen.on('click', handle);
+				return df.resolve();
+			}
 
-				if (effect == 'dissolve')
+			function set_background(_this, obj, background)
+			{
+				_this.game.background =
 				{
-					$background.stop().fadeOut(effect_speed / 2, function()
-					{
-						if (background.indexOf('#') === 0)
-							$(this).css('background', background);
-						else
-							$(this).css('background-image', 'url(' + background + ')');
-						$(this).css(
-						{
-							'background-size': 'cover',
-							'background-repeat': 'no-repeat',
-							'background-position': 'center center'
-						});
-						$(this).fadeIn(effect_speed / 2, function()
-							{
-								if (background.indexOf('#') === 0)
-									$game_screen.css('background-color', background);
-								$game_screen.on('click', handle);
-								return df.resolve();
-							});
-					});
-				}
-				else if (effect == 'slide')
+					file: background.file,
+					x: background.x,
+					y: background.y,
+					filters: background.filters_str
+				};
+				obj.css(
 				{
-					$background.stop().slideUp(effect_speed, function()
+					'top': 0,
+					'left': 0,
+					'-webkit-filter': background.filters_css,
+					'filter': background.filters_css,
+					'-webkit-transform': 'translateZ(0)',
+					'transform': 'translateZ(0)'
+				});
+				if (is_hex_color(background.file))
+					obj.css('background', background.file);
+				else
+					obj.css(
 					{
-						$(this).css(
-						{
-							'background': background,
-							'background-position': 'center center'
-						});
-						$(this).slideDown(effect_speed, function()
-						{
-							$game_screen.on('click', handle);
-							return df.resolve();
-						});
+						'background-image': 'url(' + _this.game.dir + '/background/' + background.file + ')',
+						'background-size': 'cover',
+						'background-repeat': 'no-repeat',
+						'background-position': background.x + ' ' + background.y
 					});
-				}
-				else if (effect == 'flip')
-				{
-					$background.stop().animate({'width': 'toggle'}, effect_speed, function()
-					{
-						$(this).css(
-						{
-							'background': background,
-							'background-position': 'center center'
-						});
-						$(this).animate({'width': 'toggle'}, effect_speed, function()
-						{
-							$game_screen.on('click', handle);
-							return df.resolve();
-						});
-					});
-				}
 			}
 		}
 	}
@@ -292,16 +475,16 @@ var vnds_interpreter = function()
 	[координата X] [координата Y] - координаты спрайта по x и y,
 	без единиц измерения - в системе координат Nintendo DS, "px" - пиксели, "%" - проценты
 
-	[эффект] - на текущий момент один - dissolve, он же по умолчанию.
+	[фильтр] - фильтры: brightness, blur, grayscale, saturate, sepia, invert, opacity
 
-	[длительность] - без единиц измерения - фреймы, "ms" - миллисекунды, "s" - секунды
+	[сила] - сила фильтра в процентах (0%-100%)
+
+	[эффект] - на текущий момент один - dissolve, он же по умолчанию
 	
-	[is_wait] - ждать ли завершения перемещения спрайта перед переходом к следующей команде или нет
-	В общем случае ждать не нужно, так можно оперировать сразу с несколькими спрайтами одновременно,
-	а если понадобится последовательное выполнение команд, можно воспользоваться командой delay
+	[длительность] - без единиц измерения - фреймы, "ms" - миллисекунды, "s" - секунды
   ====================================================================================================*/
 
-	this.setimg = function(params, command_name = 'SETIMG', is_wait = false)
+	this.setimg = function(params, command_name = 'SETIMG')
 	{
 		if (config.log_level != LOG_DISABLE) console.log(command_name + ' ' + params);
 		let df = $.Deferred();
@@ -310,27 +493,24 @@ var vnds_interpreter = function()
 			df.resolve('Отсутствуют параметры функции ' + command_name);
 			return df.promise();
 		}
+		let params_list = this.get_params_list(params);
 		if (config.is_check)
 			config.is_skip = true;
-		let params_list = this.get_params_list(params);
-		if ((params_list.length < 1) || (params_list.length > 6))
-		{
-			df.resolve('Неверные параметры функции ' + command_name);
-			return df.promise();
-		}
+
 		let _this = this;
 		$.each(params_list, function(key, value)
 		{
 			params_list[key] = _this.get_var(value);
 			if (params_list[key] === false)
-			{
-				df.resolve('Неизвестная переменная функции ' + command_name + ': ' + value);
-				return df.promise();
-			}
+				return df.resolve('Неизвестная переменная функции ' + command_name + ': ' + value);
 		});
+		if (df.state() === 'resolved')
+			return df.promise();
 
 		let params_index = 0;
 		let effect_speed = 0;
+		let effect_name = 'dissolve';
+		let filters_list = ['none', 'brightness', 'blur', 'grayscale', 'saturate', 'sepia', 'invert', 'opacity'];
 		let effects_list = ['dissolve'];
 		if ((params_list[params_index] === '~') || (params_list[params_index] === '*'))  // Удаление всех спрайтов
 		{
@@ -339,24 +519,29 @@ var vnds_interpreter = function()
 				params_index++;
 			if (params_list[params_index] !== undefined)
 			{
-				if (effects_list.indexOf(params_list[params_index]) !== -1) // Если эффект "dissolve", то просто читаем следующий параметр
+				if (effects_list.indexOf(params_list[params_index].toLowerCase()) !== -1) // Если эффект "dissolve", то просто читаем следующий параметр
+					params_index++;
+				if (params_list.length - params_index > 0)
 				{
-					if (params_list.length - params_index == 1)
+					effect_speed = get_duration(params_list[params_index]);
+					if (effect_speed === false)
 					{
-						df.resolve('Отсутствует параметр длительности эффекта в функции ' + command_name);
+						df.resolve('Неверное значение длительности эффекта в функции ' + command_name + ': ' + params_list[params_index]);
 						return df.promise();
 					}
 					params_index++;
 				}
-				effect_speed = get_duration(params_list[params_index]);
-				if (effect_speed === false)
+				else
+					effect_speed = config.effect_speed;
+				if (params_list.length - params_index > 0)
 				{
-					df.resolve('Неверное значение длительности эффекта в функции ' + command_name + ': ' + params_list[params_index]);
+					df.resolve('Неверные параметры функции ' + command_name);
 					return df.promise();
 				}
 			}
 			if (config.is_skip) // Проверка на скип здесь, чтобы выполнились все проверки синтаксиса команды выше
 				effect_speed = 0;
+
 			let $sprites = $('#sprites');
 			$sprites.find('img').each(function()
 			{
@@ -373,25 +558,18 @@ var vnds_interpreter = function()
 					$(this).remove();
 			});
 			this.game.sprites = {};
+			$('#info_sprites').text('~');
 			df.resolve();
 			return df.promise();
 		}
 
 		let sprite_name;
-		if (params_list[params_index].indexOf('.') === -1) // Если первый параметр не имя файла, значит идентификатор
-		{
-/*			if (params_list[params_index].indexOf('@') !== 0)
-			{
-				df.resolve('Неверный идентификатор спрайта в функции ' + command_name + ': ' + params_list[params_index]);
-				return df.promise();
-			}*/
-			sprite_name = params_list[params_index].replace('@', '');
-			params_index++;
-		}
+		if (!is_image_file(params_list[params_index])) // Если первый параметр не имя файла, значит идентификатор
+			sprite_name = params_list[params_index++].replace('@', '');
 
 		if (sprite_name === undefined) // Если идентификатора не было
 		{
-			if (params_list[params_index].indexOf('.') === -1) // ...и если первый параметр не имя файла (т.е. идентификатор получить невозможно)
+			if (!is_image_file(params_list[params_index])) // ...и если первый параметр не имя файла (т.е. идентификатор получить невозможно)
 			{
 				df.resolve('Отсутствует имя файла спрайта в функции ' + command_name);
 				return df.promise();
@@ -406,37 +584,40 @@ var vnds_interpreter = function()
 		}
 		sprite_name = 'img_' + sprite_name;
 		let sprite_file;
-		if (params_list[params_index].indexOf('.') !== -1) // Если следующий параметр имя файла
-		{
-			sprite_file = params_list[params_index];
-			params_index++;
-		}
+		if (is_image_file(params_list[params_index])) // Если следующий параметр имя файла
+			sprite_file = params_list[params_index++];
+
+		let $sprite_name;
 
 		if (params_list[params_index] === '~') // Если после идентификатора или имени файла идёт команда удаления спрайта
 		{
 			params_index++;
 			if (params_list[params_index] !== undefined)
 			{
-				if (effects_list.indexOf(params_list[params_index]) !== -1) // Если эффект "dissolve", то просто читаем следующий параметр
+				if (effects_list.indexOf(params_list[params_index].toLowerCase()) !== -1) // Если эффект "dissolve", то просто читаем следующий параметр
+					params_index++;
+				if (params_list.length - params_index > 0)
 				{
-					if (params_list.length - params_index == 1)
+					effect_speed = get_duration(params_list[params_index]);
+					if (effect_speed === false)
 					{
-						df.resolve('Отсутствует параметр длительности эффекта в функции ' + command_name);
+						df.resolve('Неверное значение длительности эффекта в функции ' + command_name + ': ' + params_list[params_index]);
 						return df.promise();
 					}
 					params_index++;
 				}
-				effect_speed = get_duration(params_list[params_index]);
-				if (effect_speed === false)
+				if (params_list.length - params_index > 0)
 				{
-					df.resolve('Неверное значение длительности эффекта в функции ' + command_name + ': ' + params_list[params_index]);
+					df.resolve('Неверные параметры функции ' + command_name);
 					return df.promise();
 				}
 			}
 			if (config.is_skip) // Проверка на скип здесь, чтобы выполнились все проверки синтаксиса команды выше
 				effect_speed = 0;
 
-			let $sprite_name;
+			if (effect_speed > config.auto_text_pause)
+				effect_speed = config.auto_text_pause;
+
 			$sprite_name = $('#temp_' + sprite_name);
 			if ($sprite_name.length > 0)
 			{
@@ -449,6 +630,7 @@ var vnds_interpreter = function()
 				df.resolve('Неверный идентификатор спрайта в функции ' + command_name + ': ' + sprite_name);
 				return df.promise();
 			}
+			$('#info_sprites').text(sprite_name + ' ~');
 			if (effect_speed !== 0) // Если задержка указана
 			{
 				$sprite_name
@@ -457,17 +639,9 @@ var vnds_interpreter = function()
 					{
 						$sprite_name.remove();
 						delete(_this.game.sprites[sprite_name]);
-						if (is_wait)
-						{
-							df.resolve();
-							return df.promise();
-						};
 					});
-				if (!is_wait)
-				{
-					df.resolve();
-					return df.promise();
-				};
+				df.resolve();
+				return df.promise();
 			}
 			else // Если задержка не указана
 			{
@@ -477,12 +651,17 @@ var vnds_interpreter = function()
 				return df.promise();
 			}
 		}
-		$('#info_sprites').text(sprite_name + ' ' + sprite_file);
+		else
+		{
+			$sprite_name = $('#temp_' + sprite_name);
+			if ($sprite_name.length > 0)
+				$sprite_name.remove();
+		}
 
 		let position_x = ['left', 'right', 'left-side', 'right-side', 'left-in', 'right-in', 'left-out', 'right-out', 'center'];
 		let position_y = ['top', 'bottom', 'top-side', 'bottom-side', 'top-in', 'bottom-in', 'top-out', 'bottom-out', 'center'];
 		let x, y;
-		if ((params_list.length - params_index > 1) && (effects_list.indexOf(params_list[params_index]) === -1)) // Если осталось больше одного параметра и следующий параметр не эффект, значит следом идут координаты
+		if ((params_list.length - params_index > 1) && (filters_list.indexOf(params_list[params_index].toLowerCase()) === -1) && (effects_list.indexOf(params_list[params_index].toLowerCase()) === -1)) // Если осталось больше одного параметра и следующий параметр не эффект, значит следом идут координаты
 		{
 			x = params_list[params_index].toLowerCase();
 			if (x.indexOf('px') !== -1)
@@ -547,29 +726,66 @@ var vnds_interpreter = function()
 				y = 'center';
 			}
 		}
-		if (params_list.length - params_index > 0) // Если ещё что-то осталось, это длительность и, возможно, эффект
+		let filters_css = '', filters_str = '';
+		while ((params_list.length - params_index > 0) && (filters_list.indexOf(params_list[params_index].toLowerCase()) !== -1))
 		{
-			if (effects_list.indexOf(params_list[params_index].toLowerCase()) !== -1) // Если эффект "dissolve", то просто читаем следующий параметр
+			let filter_name = params_list[params_index++].toLowerCase();
+			filters_str += filter_name + ' ';
+			let filter_strength = 50;
+			if ((params_list.length - params_index > 0) && (params_list[params_index].indexOf('%') !== -1))
 			{
-				if (params_list.length - params_index == 1)
+				filter_strength = params_list[params_index].slice(0, -1);
+				if ((!$.isNumeric(filter_strength)) || (filter_strength < 0) || (filter_strength > 200))
 				{
-					df.resolve('Отсутствует параметр длительности эффекта в функции ' + command_name);
+					df.resolve('Неверное значение силы фильтра в функции ' + command_name + ': ' + params_list[params_index]);
 					return df.promise();
 				}
+				filters_str += params_list[params_index] + ' ';
 				params_index++;
 			}
+			if (filter_name === 'blur')
+				filter_strength = Math.ceil(filter_strength / 10) + 'px';
+			else
+				filter_strength = filter_strength + '%';
+			filters_css += filter_name + '(' + filter_strength + ') ';
+		}
+		if (filters_css === '')
+			filters_css = 'none';
+
+		if (params_list.length - params_index > 0)
+		{
+			param = params_list[params_index].toLowerCase();
+			if (effects_list.indexOf(param) !== -1)
+			{
+				effect_name = param;
+				params_index++;
+			}
+		}
+		if (params_list.length - params_index > 0) 
+		{
 			effect_speed = get_duration(params_list[params_index]);
 			if (effect_speed === false)
 			{
 				df.resolve('Неверное значение длительности эффекта в функции ' + command_name + ': ' + params_list[params_index]);
 				return df.promise();
 			}
+			params_index++;
+		}
+
+		if (params_list.length - params_index > 0)
+		{
+			df.resolve('Неверные параметры функции ' + command_name);
+			return df.promise();
 		}
 		if (config.is_skip) // Проверка на скип здесь, чтобы выполнились все проверки синтаксиса команды выше
 			effect_speed = 0;
-		if (sprite_file !== undefined) // Если имя файла спрайта определено, то создаём спрайт
+
+		$('#info_sprites').text(sprite_name + ' ' + sprite_file);
+
+		if (sprite_file !== undefined) // Если имя файла спрайта определено и отличается от текущего, то создаём спрайт
 		{
 			let sprite_path = this.game.dir + '/foreground/' + escape(sprite_file);
+
 			$.get(sprite_path)
 				.fail(function()
 				{
@@ -583,8 +799,10 @@ var vnds_interpreter = function()
 						path: sprite_path,
 						file: sprite_file,
 						x: x,
-						y: y
-					}, effect_speed, is_wait);
+						y: y,
+						filters_css: filters_css,
+						filters_str: filters_str
+					}, effect_speed);
 				});
 		}
 		else // Если имя файла не определено, то просто перемещаем спрайт
@@ -598,69 +816,71 @@ var vnds_interpreter = function()
 					name: sprite_name,
 					file: this.game.sprites[sprite_name].file,
 					x: x,
-					y: y
-				}, effect_speed, is_wait);
+					y: y,
+					filters_css: filters_css,
+					filters_str: filters_str
+				}, effect_speed);
 			}
 		}
 		return df.promise();
 
 		// Функция вывода спрайта
-		function draw_sprite(obj, df, sprite, effect_speed, is_wait)
+		function draw_sprite(obj, df, sprite, effect_speed)
 		{
 			let $game_screen = $('#game_screen');
 			let handle = $game_screen.prop('onclick');
-			let $sprite_name = $('#' + sprite.name);
 			$game_screen.off('click');
+			let $sprite_name = $('#' + sprite.name);
+			let x = sprite.x;
+			let y = sprite.y;
 			if (sprite.path === undefined) // Если ссылка на новый файл спрайта не передана, то такой спрайт уже существует - просто двигаем его
 			{
 				if ((sprite.x === 'right') || (sprite.x === 'right-side'))
-					sprite.x = 75 - (50 * $sprite_name.width() / resolution.width) + '%';
+					x = 75 - (50 * $sprite_name.width() / resolution.width) + '%';
 				else if (sprite.x === 'right-in')
-					sprite.x = 100 - (100 * $sprite_name.width() / resolution.width) + '%';
+					x = 100 - (100 * $sprite_name.width() / resolution.width) + '%';
 				else if ((sprite.x === 'left') || (sprite.x === 'left-side'))
-					sprite.x = 25 - (50 * $sprite_name.width() / resolution.width) + '%';
+					x = 25 - (50 * $sprite_name.width() / resolution.width) + '%';
 				else if (sprite.x === 'left-out')
-					sprite.x = -(100 * $sprite_name.width() / resolution.width) + '%';
+					x = -(100 * $sprite_name.width() / resolution.width) + '%';
 				else if (sprite.x === 'center')
-					sprite.x = 50 - (50 * $sprite_name.width() / resolution.width) + '%';
+					x = 50 - (50 * $sprite_name.width() / resolution.width) + '%';
 
 				if ((sprite.y === 'bottom') || (sprite.y === 'bottom-side'))
-					sprite.y = 75 - (50 * $sprite_name.height() / resolution.height) + '%';
+					y = 75 - (50 * $sprite_name.height() / resolution.height) + '%';
 				else if (sprite.y === 'bottom-in')
-					sprite.y = 100 - (100 * $sprite_name.height() / resolution.height) + '%';
+					y = 100 - (100 * $sprite_name.height() / resolution.height) + '%';
 				else if ((sprite.y === 'top') || (sprite.y === 'top-side'))
-					sprite.y = 25 - (50 * $sprite_name.height() / resolution.height) + '%';
+					y = 25 - (50 * $sprite_name.height() / resolution.height) + '%';
 				else if (sprite.y === 'top-out')
-					sprite.y = -(100 * $sprite_name.height() / resolution.height) + '%';
+					y = -(100 * $sprite_name.height() / resolution.height) + '%';
 				else if (sprite.y === 'center')
-					sprite.y = 50 - (50 * $sprite_name.height() / resolution.height) + '%';
+					y = 50 - (50 * $sprite_name.height() / resolution.height) + '%';
 
 				obj.game.sprites[sprite.name] =
 				{
 					name: sprite.name,
 					file: sprite.file,
 					x: sprite.x,
-					y: sprite.y
+					y: sprite.y,
+					filters: filters_str
 				};
 				$sprite_name
 					.stop(true, true)
+					.css(
+					{
+						'-webkit-filter': filters_css,
+						'filter': filters_css,
+						'-webkit-transform': 'translateZ(0)',
+						'transform': 'translateZ(0)'
+					})
 					.animate(
 					{
-						'left': sprite.x,
-						'top': sprite.y
-					}, effect_speed, function()
-					{
-						if (is_wait)
-						{
-							$game_screen.on('click', handle);
-							return df.resolve();
-						}
-					});
-				if (!is_wait)
-				{
-					$game_screen.on('click', handle);
-					return df.resolve();
-				}
+						'left': x,
+						'top': y
+					}, effect_speed);
+				$game_screen.on('click', handle);
+				return df.resolve();
 			}
 			else // Если ссылка таки была передана, загружаем спрайт
 			{
@@ -668,10 +888,16 @@ var vnds_interpreter = function()
 				if ($sprite_name.length > 0)
 				{
 					$sprite_name.attr('id', 'temp_' + sprite.name);
+					$('<img />')
+						.attr('id', sprite.name)
+						.insertAfter('#temp_' + sprite.name);
 				}
-				$('<img />')
-					.attr('id', sprite.name)
-					.appendTo($('#sprites'));
+				else
+				{
+					$('<img />')
+						.attr('id', sprite.name)
+						.appendTo($('#sprites'));
+				}
 				$('#' + sprite.name)
 					.attr('src', sprite.path)
 					.one('load', function()
@@ -680,59 +906,59 @@ var vnds_interpreter = function()
 						let height = $(this).height() / obj.game.resolution.height * 100;
 
 						if ((sprite.x === 'right') || (sprite.x === 'right-side'))
-							sprite.x = (75 - width / 2) + '%';
+							x = (75 - width / 2) + '%';
 						else if (sprite.x === 'right-in')
-							sprite.x = (100 - width) + '%';
+							x = (100 - width) + '%';
 						else if ((sprite.x === 'left') || (sprite.x === 'left-side'))
-							sprite.x = (25 - width / 2) + '%';
+							x = (25 - width / 2) + '%';
 						else if (sprite.x === 'left-out')
-							sprite.x = -width + '%';
+							x = -width + '%';
 						else if (sprite.x === 'center')
-							sprite.x = (50 - width / 2) + '%';
+							x = (50 - width / 2) + '%';
 
 						if ((sprite.y === 'bottom') || (sprite.y === 'bottom-side'))
-							sprite.y = (75 - height / 2) + '%';
+							y = (75 - height / 2) + '%';
 						else if (sprite.y === 'bottom-in')
-							sprite.y = (100 - height) + '%';
+							y = (100 - height) + '%';
 						else if ((sprite.y === 'top') || (sprite.y === 'top-side'))
-							sprite.y = (25 - height / 2) + '%';
+							y = (25 - height / 2) + '%';
 						else if (sprite.y === 'top-out')
-							sprite.y = -height + '%';
+							y = -height + '%';
 						else if (sprite.y === 'center')
-							sprite.y = (50 - height / 2) + '%';
+							y = (50 - height / 2) + '%';
 
 						obj.game.sprites[sprite.name] =
 						{
 							name: sprite.name,
 							file: sprite.file,
 							x: sprite.x,
-							y: sprite.y
+							y: sprite.y,
+							filters: filters_str
 						};
 						$(this)
-							.css({
+							.stop(true, true)
+							.css(
+							{
 								'visibility': 'visible',
 								'width': width + '%',
 								'height': height + '%',
-								'left': sprite.x,
-								'top': sprite.y
+								'left': x,
+								'top': y,
+								'-webkit-filter': filters_css,
+								'filter': filters_css,
+								'-webkit-transform': 'translateZ(0)',
+								'transform': 'translateZ(0)'
 							})
-							.animate({'opacity': 1}, effect_speed, function() // В этом месте fadeIn и fadeTo работают некорректно
+							.animate({'opacity': 0.75}, effect_speed * 0.75, function() // В этом месте fadeIn и fadeTo работают некорректно
 							{
-								$('#temp_' + sprite.name).fadeOut(effect_speed, function()
+								$('#temp_' + sprite.name).fadeOut(effect_speed * 0.5, function()
 								{
 									$(this).remove();
 								});
-								if (is_wait)
-								{
-									$game_screen.on('click', handle);
-									return df.resolve();
-								}
+								$(this).animate({'opacity': 1}, effect_speed * 0.25);
 							});
-						if (!is_wait)
-						{
-							$game_screen.on('click', handle);
-							return df.resolve();
-						}
+						$game_screen.on('click', handle);
+						return df.resolve();
 					});
 			}
 		}
@@ -752,7 +978,160 @@ var vnds_interpreter = function()
 		return df;
 	}
 
+/*====================================================================================================
+	Цикличная смена набора изображений
+	relay [имя файла 1] [имя файла 2] [имя файла 3] [задержка] [эффект] [длительность]
+	relay ~
 
+	[имя файла N] - имена файлов изображений
+
+	[задержка] - время вывода каждого изображения, без единиц измерения - фреймы, "ms" - миллисекунды, "s" - секунды
+	
+	[эффект] - на текущий момент один - dissolve, он же по умолчанию
+	
+	[длительность] - без единиц измерения - фреймы, "ms" - миллисекунды, "s" - секунды
+  ====================================================================================================*/
+
+	this.relay = function(params, command_name = 'RELAY')
+	{
+		if (config.log_level != LOG_DISABLE) console.log(command_name + ' ' + params);
+		let df = $.Deferred();
+		if (params === undefined)
+		{
+			df.resolve('Отсутствуют параметры функции ' + command_name);
+			return df.promise();
+		}
+		let params_list = this.get_params_list(params);
+		let _this = this;
+		$.each(params_list, function(key, value)
+		{
+			params_list[key] = _this.get_var(value);
+			if (params_list[key] === false)
+				return df.resolve('Неизвестная переменная функции ' + command_name + ': ' + value);
+		});
+		if (df.state() === 'resolved')
+			return df.promise();
+
+		let effect_speed;
+		let images_list = [];
+		let params_index = 0;
+		if (params_list[params_index] !== '~')
+		{
+			while ((params_list[params_index] !== undefined) && (is_image_file(params_list[params_index])))
+			{
+				images_list.push(params_list[params_index++]);
+			}
+			if (images_list.length === 0)
+			{
+				df.resolve('Отсутствует имя файла изображения в функции ' + command_name + ': ' + params_list[params_index]);
+				return df.promise();
+			}
+		}
+		else
+			images_list[params_index++] = '~';
+
+		if (images_list[0] !== '~')
+		{
+			if (params_list.length - params_index > 0)
+			{
+				image_delay = get_duration(params_list[params_index]);
+				if (image_delay === false)
+				{
+					df.resolve('Неверное значение длительности вывода в функции ' + command_name + ': ' + params_list[params_index]);
+					return df.promise();
+				}
+			}
+			else
+			{
+				df.resolve('Неверные параметры функции ' + command_name);
+				return df.promise();
+			}
+			params_index++;
+		}
+
+		if ((params_list.length - params_index > 0) && (params_list[params_index] === 'dissolve'))
+			params_index++;
+
+		if (params_list.length - params_index > 0)
+		{
+			effect_speed = get_duration(params_list[params_index]);
+			if (effect_speed === false)
+			{
+				df.resolve('Неверное значение длительности эффекта в функции ' + command_name + ': ' + params_list[params_index]);
+				return df.promise();
+			}
+			params_index++;
+		}
+
+		if ((images_list[0] !== '~') && (params_list.length - params_index > 0))
+		{
+			df.resolve('Неверные параметры функции ' + command_name);
+			return df.promise();
+		}
+
+		let $relay = $('#relay');
+		if (images_list[0] === '~')
+		{
+			clearInterval(this.relay_interval);
+			this.relay_interval = undefined;
+			this.game.relay.files = [];
+			this.game.relay.delay = null;
+			this.game.relay.speed = null;
+			$relay.stop().fadeOut(effect_speed, function()
+			{
+				$(this).css({'background-image': ''});
+			});
+			df.resolve();
+			return df.promise();
+		}
+
+		this.game.relay.files = images_list;
+		this.game.relay.delay = image_delay;
+		this.game.relay.speed = effect_speed;
+		if (this.relay_interval !== undefined)
+		{
+			$relay.stop().fadeTo(effect_speed / 2, 0, function()
+			{
+				$(this).css(
+				{
+					'background-image': 'url(' + _this.game.dir + '/foreground/' + escape(images_list[0]) + ')'
+				});
+				$(this).fadeTo(effect_speed / 2, 1);
+			});
+		}
+		else
+		{
+			$relay.css(
+			{
+				'background-image': 'url(' + _this.game.dir + '/foreground/' + escape(images_list[0]) + ')'
+			});
+			$relay.stop().fadeTo(effect_speed, 1);
+		}
+		let i = 1;
+		clearInterval(this.relay_interval);
+		this.relay_interval = setInterval(function()
+		{
+			$relay.stop().fadeTo(effect_speed / 2, 0, function()
+			{
+				$(this).css(
+				{
+					'background-image': 'url(' + _this.game.dir + '/foreground/' + escape(images_list[i++]) + ')'
+				});
+				$(this).fadeTo(effect_speed / 2, 1);
+				if (i >= images_list.length) 
+					i = 0;
+			});
+		}, image_delay);
+		df.resolve();
+		return df.promise();
+	}
+
+/* rel - синоним функции relay */
+	this.rel = function(params)
+	{
+		let df = this.relay(params, 'REL');
+		return df;
+	}
 
 /*====================================================================================================
 	Применить эффект к изображению спрайта или фона
@@ -764,9 +1143,9 @@ var vnds_interpreter = function()
 	[имя файла] - имя файла спрайта, если для него не указан идентификатор
 	Вместо идентификатора можно использовать символ "*" - это значит "все спрайты"
 
-	[эффект] - эффекты: h-shake, v-shake, zoom-in, zoom-out; фильтры: blur, grayscale, saturate, sepia, invert, opacity
+	[эффект] - эффекты: h-shake, v-shake, zoom-in, zoom-out, hop, rotate-left, rotate-right
 
-	[сила] - сила эффекта в процентах (0-100)
+	[сила] - сила эффекта в процентах (0%-100%)
 
 	[длительность] - без единиц измерения - фреймы, "ms" - миллисекунды, "s" - секунды
 	Если не указана, то будет действовать либо до команды отмены, либо до команды смены изображения
@@ -782,39 +1161,36 @@ var vnds_interpreter = function()
 			return df.promise();
 		}
 		let params_list = this.get_params_list(params);
-		if ((params_list.length < 1) || (params_list.length > 4))
-		{
-			df.resolve('Неверные параметры функции ' + command_name);
-			return df.promise();
-		}
 		let _this = this;
 		$.each(params_list, function(key, value)
 		{
 			params_list[key] = _this.get_var(value);
 			if (params_list[key] === false)
-			{
-				df.resolve('Неизвестная переменная функции ' + command_name + ': ' + value);
-				return df.promise();
-			}
+				return df.resolve('Неизвестная переменная функции ' + command_name + ': ' + value);
 		});
+		if (df.state() === 'resolved')
+			return df.promise();
+
 		let params_index = 0;
 		let image_name, effect_name;
-		let effects_list = ['zoom-in', 'zoom-out', 'h-shake', 'v-shake', 'blur', 'grayscale', 'saturate', 'sepia', 'invert', 'opacity'];
+		let effects_list = ['zoom-in', 'zoom-out', 'h-shake', 'v-shake', 'hop', 'rotate-left', 'rotate-right'];
 		let param = params_list[params_index].replace(/\/|\./g, '_'); // Получаем первый параметр
 		if (effects_list.indexOf(param.toLowerCase()) === -1) // Если это не эффект, значит идентификатор изображения
 		{
 			image_name = param;
 			image_name = image_name.replace('@', 'img_');
+			params_index++;
 		}
-		else
-			effect_name = param.toLowerCase();
 		if ((image_name !== undefined) && (image_name !== '~') && (image_name !== '*') && (image_name.toLowerCase() !== 'bg') && (this.game.sprites[image_name] === undefined))
 		{
-			df.resolve('Неверный идентификатор или имя файла спрайта в функции ' + command_name + ': ' + params_list[params_index]);
+			df.resolve('Неверный идентификатор или имя файла спрайта в функции ' + command_name);
 			return df.promise();
 		}
-		let effect_strength;
+		let transform_css = '';
+		let effect_prop, effect_ease;
+		let effect_strength = 0;
 		let effect_speed;
+		let effect_speed_mult = 1;
 		if (image_name === '~')
 		{
 			if (params_list.length > 1)
@@ -822,131 +1198,120 @@ var vnds_interpreter = function()
 				df.resolve('Неверные параметры функции ' + command_name);
 				return df.promise();
 			}
+			image_name = undefined;
 			effect_name = '~';
 		}
 		else
 		{
-			if (effect_name === undefined) // Получаем название эффекта
+			while ((params_list.length - params_index > 0) && (effects_list.indexOf(params_list[params_index].toLowerCase()) !== -1))
 			{
-				params_index++;
-				effect_name = params_list[params_index].toLowerCase();
-			}
-			if (effect_name === '~') // Если команда сброса действующих фильтров
-			{
-				if (params_list.length > 2)
+				effect_name = params_list[params_index++].toLowerCase();
+				if ((params_list.length - params_index > 0) && (params_list[params_index].indexOf('%') !== -1))
 				{
-					df.resolve('Неверные параметры функции ' + command_name);
-					return df.promise();
-				}
-			}
-			else
-			{
-				if ((effects_list.indexOf(effect_name) === -1) && (effect_name !== '~'))
-				{
-					df.resolve('Неизвестное значение эффекта в функции ' + command_name + ': ' + effect_name);
-					return df.promise();
-				}
-				params_index++;
-				if (params_list.length - params_index > 0) // Если есть ещё параметры, значит следующий - сила эффекта, иначе - 100
-				{
-					effect_strength = params_list[params_index];
-					if (effect_strength.indexOf('%') !== -1) // Если есть символ процента, то выпиливаем его
-						effect_strength = effect_strength.slice(0, -1);
+					effect_strength = params_list[params_index].slice(0, -1);
 					if ((!$.isNumeric(effect_strength)) || (effect_strength < 0) || (effect_strength > 100))
 					{
 						df.resolve('Неверное значение силы эффекта в функции ' + command_name + ': ' + params_list[params_index]);
 						return df.promise();
 					}
-				}
-				else
-					effect_strength = 100;
-				params_index++;
-				if (params_list.length - params_index > 0) // Если есть ещё параметры, значит следующий - длительность эффекта, иначе - бесконечно
-				{
-					effect_speed = get_duration(params_list[params_index]);
-					if (effect_speed === false)
+					params_index++;
+					if (effect_strength === 0)
+						continue;
+
+					switch (effect_name)
 					{
-						df.resolve('Неверное значение длительности эффекта в функции ' + command_name + ': ' + params_list[params_index]);
-						return df.promise();
+						case 'h-shake':
+							effect_prop = 'left';
+							effect_strength = Math.ceil(effect_strength / 20);
+							effect_ease = 'linear';
+							break;
+						case 'v-shake':
+							effect_prop = 'top';
+							effect_strength = Math.ceil(effect_strength / 20);
+							effect_ease = 'linear';
+							break;
+						case 'hop':
+							effect_prop = 'top';
+							effect_strength = Math.ceil(effect_strength / 3);
+							effect_ease = 'swing';
+							effect_speed_mult = effect_strength / 3;
+							break;
+						case 'rotate-left':
+							effect_strength = -1 * Math.ceil(effect_strength * 3.6);
+							transform_css += 'rotate(' + effect_strength + 'deg) '
+							break;
+						case 'rotate-right':
+							effect_strength = Math.ceil(effect_strength * 3.6);
+							transform_css += 'rotate(' + effect_strength + 'deg) '
+							break;
+						case 'zoom-in':
+							effect_strength = (100 + Number(effect_strength)) / 100;
+							transform_css += 'scale(' + effect_strength + ') '
+							break;
+						case 'zoom-out':
+							effect_strength = (100 - Number(effect_strength)) / 100;
+							transform_css += 'scale(' + effect_strength + ') '
+							break;
 					}
 				}
+			}
+		}
+		if (params_list.length - params_index > 0) // Если есть ещё параметры, значит следующий - длительность эффекта, иначе - бесконечно
+		{
+			effect_speed = get_duration(params_list[params_index]);
+			if (effect_speed === false)
+			{
+				df.resolve('Неверное значение длительности эффекта в функции ' + command_name + ': ' + params_list[params_index]);
+				return df.promise();
 			}
 		}
 		let $images = []; // Массив объектов, к которым будет применяться эффект
 		if (image_name === undefined)
 		{
-			$images[0] = $('#background');
-			$('#sprites').find('img').each(function()
-			{
-				$images.push($(this));
-			});
-		}
-		else if (image_name === '~')
-		{
-			$images[0] = $('#background');
-			$('#sprites').find('img').each(function()
-			{
-				$images.push($(this));
-			});
+			$images = push_bg($images);
+			$images = push_all_sprites($images);
 		}
 		else if (image_name.toLowerCase() === 'bg')
-			$images[0] = $('#background');
+			$images = push_bg($images);
 		else if (image_name.toLowerCase() === '*')
-		{
-			$('#sprites').find('img').each(function()
-			{
-				$images.push($(this));
-			});
-		}
+			$images = push_all_sprites($images);
 		else
-			$images[0] = $('#' + image_name);
+			push_one_sprite($images, image_name);
 
 		let $game_screen = $('#game_screen');
 		let handle = $game_screen.prop('onclick');
 		$game_screen.off('click');
 		if (!config.is_check)
 		{
-			switch (effect_name)
-			{
-				case '~':
-					stop_all_effects($images);
-					stop_all_filters($images);
-					break;
-				case 'zoom-in':
-					effect_zoomin($images, effect_strength, effect_speed);
-					break;
-				case 'zoom-out':
-					effect_zoomout($images, effect_strength, effect_speed);
-					break;
-				case 'h-shake':
-					effect_hshake($images, effect_strength, effect_speed);
-					break;
-				case 'v-shake':
-					effect_vshake($images, effect_strength, effect_speed);
-					break;
-				case 'blur':
-					filter_blur($images, effect_strength, effect_speed);
-					break;
-				case 'grayscale':
-					filter_grayscale($images, effect_strength, effect_speed);
-					break;
-				case 'opacity':
-					filter_opacity($images, effect_strength, effect_speed);
-					break;
-				case 'saturate':
-					filter_saturate($images, effect_strength, effect_speed);
-					break;
-				case 'sepia':
-					filter_sepia($images, effect_strength, effect_speed);
-					break;
-				case 'invert':
-					filter_invert($images, effect_strength, effect_speed);
-					break;
-			}
+			if (effect_name === '~')
+				stop_all_img_effects($images);
+			else
+				start_effect($images, effect_prop, effect_strength, effect_ease, effect_speed_mult, transform_css, effect_speed);
 		}
 		$game_screen.on('click', handle);
 		df.resolve();
 		return df.promise();
+
+		function push_bg($images)
+		{
+			$images.push($('#background'));
+			return $images;
+		}
+		
+		function push_one_sprite($images, image_name)
+		{
+			$images.push($('#' + image_name));
+			return $images;
+		}
+
+		function push_all_sprites($images)
+		{
+			$('#sprites').find('img').each(function()
+			{
+				$images.push($(this));
+			});
+			return $images;
+		}
 	}
 
 /* eff - синоним функции effect */
@@ -988,11 +1353,11 @@ var vnds_interpreter = function()
 		{
 			params_list[key] = _this.get_var(value);
 			if (params_list[key] === false)
-			{
-				df.resolve('Неизвестная переменная функции ' + command_name + ': ' + value);
-				return df.promise();
-			}
+				return df.resolve('Неизвестная переменная функции ' + command_name + ': ' + value);
 		});
+		if (df.state() === 'resolved')
+			return df.promise();
+
 		let anim_name = params_list[0].toLowerCase();
 		let anim_strength;
 		if (anim_name === '~')
@@ -1005,7 +1370,7 @@ var vnds_interpreter = function()
 		}
 		else
 		{
-			let anims_list = ['snow'];
+			let anims_list = ['snow', 'fog'];
 			if (anims_list.indexOf(anim_name) === -1)
 			{
 				df.resolve('Неизвестное значение анимации в функции ' + command_name + ': ' + anim_name);
@@ -1047,6 +1412,9 @@ var vnds_interpreter = function()
 				case 'snow':
 					animation_snow(anim_strength);
 					break;
+				case 'fog':
+					animation_fog(anim_strength);
+					break;
 			}
 		}
 		$game_screen.on('click', handle);
@@ -1067,7 +1435,6 @@ var vnds_interpreter = function()
 	delay [длительность]
 
 	[длительность] - без единиц измерения - фреймы, "ms" - миллисекунды, "s" - секунды
-
   ====================================================================================================*/
 
 	this.delay = function(params, command_name = 'DELAY')
@@ -1132,12 +1499,14 @@ var vnds_interpreter = function()
 
 /*====================================================================================================
 	Воспроизведение звука
-	sound [имя файла] [количество]
+	sound [имя файла] [количество] [громкость]
 	sound ~ - остановить воспроизведение
 
 	[имя файла] - имя звукового файла в директории "sound"
 
 	[количество] - число повторов звука, по умолчанию - 1; -1 - беспрерывное воспроизведение до выполнения команды остановки
+	
+	[громкость] - громкость звука в процентах
   ====================================================================================================*/
 
 	this.sound = function(params, command_name = 'SOUND')
@@ -1150,7 +1519,19 @@ var vnds_interpreter = function()
 			return df.promise();
 		}
 		let params_list = this.get_params_list(params);
-		if (params_list.length > 2)
+		let max_param_count;
+		let $sound;
+		if (command_name === 'SFX')
+		{
+			$sound = $('#sfx');
+			max_param_count = 2;
+		}
+		else
+		{
+			$sound = $('#sound');
+			max_param_count = 3;
+		}
+		if (params_list.length > max_param_count)
 		{
 			df.resolve('Неверные параметры функции ' + command_name);
 			return df.promise();
@@ -1160,72 +1541,150 @@ var vnds_interpreter = function()
 		{
 			params_list[key] = _this.get_var(value);
 			if (params_list[key] === false)
-			{
-				df.resolve('Неизвестная переменная функции ' + command_name + ': ' + value);
-				return df.promise();
-			}
+				return df.resolve('Неизвестная переменная функции ' + command_name + ': ' + value);
 		});
-		let sound = params_list[0];
-		let iteration;
-		if (params_list.length > 1)
-			iteration = params_list[1];
-		else
-			iteration = 1;
-		this.game.sound = null;
-		let $sound = $('#sound');
-		$sound.prop('loop', false);
-		$sound.prop('volume', config.sound_volume);
-		$sound.trigger('pause');
-		if (this.sound_timeout)
-			clearTimeout(this.sound_timeout);
-		if (!$.isNumeric(iteration))
+		if (df.state() === 'resolved')
+			return df.promise();
+
+		let sound_file;
+		let sound_iterations = 1;
+		let params_index = 0;
+		if ((params_list[params_index].toLowerCase().search(/mp3|ogg|aac|wma/) !== -1) || (params_list[params_index] === '~'))
+			sound_file = params_list[params_index++];
+		if (((command_name === 'SFX') && (sound_file === undefined)) || ((command_name !== 'SFX') && (!sound_file) && (!this.game.sound.file)))
 		{
-			df.resolve('Неверное значение количества повторов в функции ' + command_name + ': ' + iteration);
+			df.resolve('Отсутствует имя файла звука в функции ' + command_name);
 			return df.promise();
 		}
-		else
-			iteration = Number(iteration);
-		$('#info_sound').text(sound);
-		if (sound === '~')
+		let sound_volume = config.sound_volume;
+		for (; params_index < params_list.length; params_index++) // Если следующий параметр не эффект, то длительность или громкость, а эффект по умолчанию - easy
 		{
-			df.resolve();
-			return df.promise();
-		}
-		let filename = this.game.dir + '/sound/' + escape(sound);
-		$.get(filename)
-			.fail(function()
+			if (params_list[params_index].indexOf('%') !== -1)
 			{
-				df.resolve('Файл<br>' + filename + '<br> не найден');
-			})
-			.done(function()
-			{
-				if (config.is_check)
+				sound_volume = params_list[params_index].slice(0, -1);
+				if ((!$.isNumeric(sound_volume)) || (sound_volume < 0) || (sound_volume > 100) || (sound_file === '~'))
 				{
-					df.resolve();
+					df.resolve('Неверное значение громкости в функции ' + command_name + ': ' + params_list[params_index]);
 					return df.promise();
 				}
-				if ((iteration > 1) || (iteration === -1))
-					$sound.prop('loop', true);
-				$sound.attr('src', filename);
-				$sound.trigger('play');
-				_this.game.sound = sound;
-				if ((iteration === 1) || (iteration === -1))
-					_this.game.sound = null;
+				sound_volume = Number(sound_volume) * config.sound_volume / 100;
+			}
+			else
+			{
+				if (command_name === 'SFX')
+					return df.resolve('Неверное значение громкости в функции ' + command_name + ': ' + params_list[params_index]);
 				else
 				{
-					$sound.on('canplay', function()
+					if (!$.isNumeric(params_list[params_index]))
 					{
-						let duration = _this.duration * iteration * 1000;
-						_this.sound_timeout = setTimeout(function()
-						{
-							_this.sound('~');
-						}, duration);
-						$sound.off('canplay');
-					});
+						df.resolve('Неверное значение количества повторов в функции ' + command_name + ': ' + sound_iterations);
+						return df.promise();
+					}
+					else
+						sound_iterations = Number(params_list[params_index]);
 				}
-				df.resolve();
-			});
+			}
+		}
+		if (config.is_skip) // Проверка на скип здесь, чтобы выполнились все проверки синтаксиса команды выше
+			effect_speed = 0;
+		stop_sound(this, command_name, $sound, sound_file);
+		start_sound(this, command_name, $sound, sound_file, sound_iterations, sound_volume);
+		df.resolve();
 		return df.promise();
+
+		function start_sound(_this, command_name, $sound, sound_file, sound_iterations, sound_volume)
+		{
+			if (sound_file === undefined)
+			{
+				if (config.is_check)
+					return;
+				if (command_name === 'SFX')
+				{
+					_this.game.sfx.volume = sound_volume;
+					$('#info_sfx').text(_this.game.sfx.file + ' ' + sound_volume);
+				}
+				else
+				{
+					_this.game.sound.volume = sound_volume;
+					$('#info_sound').text(_this.game.sound.file + ' ' + sound_volume);
+				}
+				$sound.prop('volume', sound_volume);
+			}
+			else if (sound_file !== '~')
+			{
+				if (command_name === 'SFX')
+				{
+					_this.game.sfx =
+					{
+						file: sound_file,
+						volume: sound_volume
+					};
+					$('#info_sfx').text(sound_file + ' ' + sound_volume);
+				}
+				else
+				{
+					_this.game.sound =
+					{
+						file: sound_file,
+						volume: sound_volume
+					};
+					$('#info_sound').text(sound_file + ' ' + sound_volume);
+				}
+				let filename = _this.game.dir + '/sound/' + escape(sound_file);
+				$.get(filename)
+					.fail(function()
+					{
+						show_warning('Файл<br>' + filename + '<br> не найден'); // Здесь сделано явно, потому что ошибка может возникнуть после выхода из процедуры
+					})
+					.done(function()
+					{
+						if (config.is_check)
+							return;
+						if ((sound_iterations > 1) || (sound_iterations === -1))
+							$sound.prop('loop', true);
+						$sound.attr('src', filename);
+						$sound.trigger('play');
+						$sound.prop('volume', sound_volume);
+						if (sound_iterations === -1)
+						{
+							_this.game.sound =
+							{
+								file: sound_file,
+								volume: sound_volume
+							};
+						}
+						else if (sound_iterations > 1)
+						{
+							let sound_duration = this.duration * sound_iterations * 1000;
+							clearTimeout(this.sound_timeout);
+							_this.sound_timeout = setTimeout(function()
+							{
+								stop_sound(_this, command_name, $sound, sound_file);
+							}, sound_duration);
+						}
+					});
+			}
+		}
+
+		function stop_sound(_this, command_name, $sound, sound_file)
+		{
+			clearTimeout(this.sound_timeout);
+			if (sound_file === undefined)
+				return;
+			if (command_name === 'SFX')
+			{
+				$('#info_sfx').text('~');
+				_this.game.sfx = {};
+			}
+			else
+			{
+				$('#info_sound').text('~');
+				_this.game.sound = {};
+			}
+			$sound.prop('loop', false);
+			$sound.trigger('pause');
+			$sound.prop('volume', 0);
+		}
 	}
 
 /* snd - синоним функции sound */
@@ -1235,9 +1694,27 @@ var vnds_interpreter = function()
 		return df;
 	}
 
+
+/*====================================================================================================
+	Воспроизведение звукового эффекта
+	sfx [имя файла] [громкость]
+	sfx ~ - остановить воспроизведение
+
+	[имя файла] - имя звукового файла в директории "sound"
+
+	[громкость] - громкость звука в процентах
+  ====================================================================================================*/
+
+	this.sfx = function(params)
+	{
+		let df = this.sound(params, 'SFX');
+		return df;
+	}
+
+
 /*====================================================================================================
 	Воспроизведение мелодии
-	mus [имя файла] [эффект] [длительность]
+	mus [имя файла] [эффект] [длительность] [громкость]
 	music ~ - остановить воспроизведение
 
 	[имя файла] - имя звукового файла в директории "sound"
@@ -1246,6 +1723,7 @@ var vnds_interpreter = function()
 	
 	[длительность] - без единиц измерения - фреймы, "ms" - миллисекунды, "s" - секунды
 
+	[громкость] - громкость звука в процентах
   ====================================================================================================*/
 
 	this.music = function(params, command_name = 'MUSIC')
@@ -1258,133 +1736,155 @@ var vnds_interpreter = function()
 			return df.promise();
 		}
 		let params_list = this.get_params_list(params);
-		if (params_list.length > 3)
+		if (params_list.length > 4)
 		{
 			df.resolve('Неверные параметры функции ' + command_name);
 			return df.promise();
 		}
 		let _this = this;
-		let params_index = 0;
 		$.each(params_list, function(key, value)
 		{
 			params_list[key] = _this.get_var(value);
 			if (params_list[key] === false)
-			{
-				df.resolve('Неизвестная переменная функции ' + command_name + ': ' + value);
-				return df.promise();
-			}
+				return df.resolve('Неизвестная переменная функции ' + command_name + ': ' + value);
 		});
-		let music = params_list[0];
-		let effect_speed = 0;
-		let effect;
-		if (params_list.length > 1) // Если параметров больше одного и не включён режим пропуска
+		if (df.state() === 'resolved')
+			return df.promise();
+
+		let music_file;
+		let params_index = 0;
+		if ((params_list[params_index].toLowerCase().search(/mp3|ogg|aac|wma/) !== -1) || (params_list[params_index] === '~'))
+			music_file = params_list[params_index++];
+		let effect_speed = 0
+		let effect_name = 'easy'; // Пока эффект один, тут такое вот порно
+		let music_volume = config.sound_volume;
+		for (; params_index < params_list.length; params_index++) // Если следующий параметр не эффект, то длительность или громкость, а эффект по умолчанию - easy
 		{
-			let effect_speed_param;
-			params_index++;
-			let value = params_list[params_index].toLowerCase();
-			if (value == 'easy') // Если следующий параметр - эффект
+			if (params_list[params_index].indexOf('%') !== -1)
 			{
-				if (params_list.length === 2) // Если указан эффект, но не указана длительность - ошибка
+				music_volume = params_list[params_index].slice(0, -1);
+				if ((!$.isNumeric(music_volume)) || (music_volume < 0) || (music_volume > 100) || (music_file === '~'))
 				{
-					df.resolve('Отсутствует параметр длительности эффекта в функции ' + command_name);
+					df.resolve('Неверное значение громкости в функции ' + command_name + ': ' + params_list[params_index]);
 					return df.promise();
 				}
-				effect = value;
-				params_index++;
-				effect_speed_param = params_list[params_index].toLowerCase(); // Получаем длительность
+				music_volume = Number(music_volume) * config.sound_volume / 100;
 			}
-			else // Если следующий параметр не эффект, то длительность, а эффект по умолчанию - easy
+			else if (params_list[params_index].toLowerCase() === 'easy')
+				effect_name = params_list[params_index].toLowerCase();
+			else
 			{
-				effect_speed_param = value;
-			}
-			effect_speed = get_duration(effect_speed_param);
-			if (effect_speed === false)
-			{
-				df.resolve('Неверное значение длительности эффекта в функции ' + command_name + ': ' + effect_speed_param);
-				return df.promise();
-			}
-			if (config.is_skip) // Проверка на скип здесь, чтобы выполнились все проверки синтаксиса команды выше
-				effect_speed = 0;
-		}
-		else // Если параметров больше нет, значит эффект easy, а длительность - ноль
-			effect_speed = 0;
-		this.sound('~');
-		let $music = $('#music');
-		if ((this.game.music !== null) && (effect_speed > 0) && (!config.is_check))
-		{
-			let music_volume = config.sound_volume;
-			let iteration = music_volume / effect_speed * 100;
-			let music_interval = setInterval(function()
-			{
-				$music.prop('volume', music_volume);
-				music_volume -= iteration;
-				if (music_volume <= 0)
+				effect_speed = get_duration(params_list[params_index]);
+				if (effect_speed === false)
 				{
-					clearInterval(music_interval);
-					stop_music(_this);
-					start_music(_this, music);
+					df.resolve('Неверное значение длительности эффекта в функции ' + command_name + ': ' + params_list[params_index]);
+					return df.promise();
+				}
+			}
+		}
+		if (config.is_skip) // Проверка на скип здесь, чтобы выполнились все проверки синтаксиса команды выше
+			effect_speed = 0;
+		let $music = $('#music');
+		if ((this.game.music.file) && (music_file) && (effect_speed > 0) && (!config.is_check))
+		{
+			let cur_volume = $music.prop('volume');
+			let music_volume_step = cur_volume / effect_speed * 100;
+			clearInterval(_this.music_interval);
+			_this.music_interval = setInterval(function()
+			{
+				$music.prop('volume', cur_volume);
+				cur_volume -= music_volume_step;
+				if (cur_volume <= 0)
+				{
+					stop_music(_this, $music, music_file);
+					start_music(_this, $music, music_file, music_volume);
 				}
 			}, 100);
 		}
-		else
+		else if ((!this.game.music.file) && (!music_file))
 		{
-			stop_music(_this);
-			start_music(_this, music);
+			df.resolve('Отсутствует имя файла музыки в функции ' + command_name);
+			return df.promise();
+		}
+		else	
+		{
+			stop_music(_this, $music, music_file);
+			start_music(_this, $music, music_file, music_volume);
 		}
 		df.resolve();
 		return df.promise();
 
-		function start_music(obj, music)
+		function start_music(_this, $music, music_file, music_volume)
 		{
-			$('#info_music').text(music);
-			if (music !== '~')
+			if (music_file === undefined)
 			{
-				let filename = obj.game.dir + '/sound/' + escape(music);
+				if (config.is_check)
+					return;
+				_this.game.music.volume = music_volume;
+				$('#info_music').text(_this.game.music.file + ' ' + music_volume);
+				play_music(_this, $music, music_volume);
+			}
+			else if (music_file !== '~')
+			{
+				_this.game.music =
+				{
+					file: music_file,
+					volume: music_volume
+				};
+				$('#info_music').text(music_file + ' ' + music_volume);
+				let filename = _this.game.dir + '/sound/' + escape(music_file);
 				$.get(filename)
 					.fail(function()
 					{
-						show_warning('Файл<br>' + filename + '<br> не найден'); // Здесь сделано явно, потому что процесс ошибка может возникнуть после выхода из процедуры
+						show_warning('Файл<br>' + filename + '<br> не найден'); // Здесь сделано явно, потому что ошибка может возникнуть после выхода из процедуры
 					})
 					.done(function()
 					{
 						if (config.is_check)
 							return;
-						let $music = $('#music');
 						$music.attr('src', filename);
 						$music.prop('loop', true);
-						obj.game.music = music;
 						$music.trigger('play');
-						if (effect_speed > 0)
-						{
-							let music_volume = 0;
-							let iteration = config.sound_volume / effect_speed * 100;
-							let music_interval = setInterval(function()
-							{
-								music_volume += iteration;
-								$music.prop('volume', music_volume);
-
-								if (music_volume >= config.sound_volume)
-								{
-									clearInterval(music_interval);
-									music_volume = config.sound_volume;
-									$music.prop('volume', config.sound_volume);
-								}
-							}, 100);
-						}
-						else
-							$music.prop('volume', config.sound_volume);
+						play_music(_this, $music, music_volume);
 					});
+			}
+			
+			function play_music(_this, $music, music_volume)
+			{
+				if (effect_speed > 100)
+				{
+					let ratio;
+					let cur_volume = $music.prop('volume');
+					cur_volume > music_volume ? ratio = -1 : ratio = 1;
+					let music_volume_step = ratio * (music_volume - cur_volume) * 100 / effect_speed;
+					_this.music_interval = setInterval(function()
+					{
+						cur_volume += music_volume_step * ratio;
+						$music.prop('volume', cur_volume);
+
+						if (ratio * cur_volume >= ratio * music_volume)
+						{
+							clearInterval(_this.music_interval);
+							cur_volume = music_volume;
+							$music.prop('volume', music_volume);
+						}
+					}, 100);
+				}
+				else
+					$music.prop('volume', music_volume);
 			}
 		}
 
-		function stop_music(obj)
+		function stop_music(_this, $music, music_file)
 		{
-			let $music = $('#music');
+			clearInterval(_this.music_interval);
+			if (music_file === undefined)
+				return;
+			$('#info_music').text('~');
 			$music.prop('loop', false);
 			$music.trigger('pause');
 			$music.prop('volume', 0);
-			obj.game.music = null;
-			music_volume = 0;
+			_this.game.music = {};
 		}
 	}
 
@@ -1429,33 +1929,31 @@ var vnds_interpreter = function()
 		{
 			params_list[key] = _this.get_var(value);
 			if (params_list[key] === false)
-			{
-				df.resolve('Неизвестная переменная функции ' + command_name + ': ' + value);
-				return df.promise();
-			}
+				return df.resolve('Неизвестная переменная функции ' + command_name + ': ' + value);
 		});
+		if (df.state() === 'resolved')
+			return df.promise();
+
 		let video = params_list[0];
 		let effect_speed = 0;
-		let effect;
+		let effect_name;
 		if (params_list.length > 1) // Если параметров больше одного и не включён режим пропуска
 		{
 			let effect_speed_param;
-			params_index++;
-			let value = params_list[params_index].toLowerCase();
-			if (value == 'dissolve') // Если следующий параметр - эффект
+			let param = params_list[++params_index].toLowerCase();
+			if (param === 'dissolve') // Если следующий параметр - эффект
 			{
 				if (params_list.length === 2) // Если указан эффект, но не указана длительность - ошибка
 				{
 					df.resolve('Отсутствует параметр длительности эффекта в функции ' + command_name);
 					return df.promise();
 				}
-				effect = value;
-				params_index++;
-				effect_speed_param = params_list[params_index].toLowerCase(); // Получаем длительность
+				effect_name = param;
+				effect_speed_param = params_list[++params_index].toLowerCase(); // Получаем длительность
 			}
 			else // Если следующий параметр не эффект, то длительность, а эффект по умолчанию - dissolve
 			{
-				effect_speed_param = value;
+				effect_speed_param = param;
 			}
 			effect_speed = get_duration(effect_speed_param);
 			if (effect_speed === false)
@@ -1471,6 +1969,7 @@ var vnds_interpreter = function()
 
 		this.music('~ ' + effect_speed / 4);
 		this.sound('~');
+		this.sfx('~');
 		this.anim('~');
 		this.clearscreen();
 
@@ -1485,10 +1984,7 @@ var vnds_interpreter = function()
 			.done(function()
 			{
 				if (config.is_check)
-				{
-					df.resolve();
-					return df.promise();
-				}
+					return df.resolve();
 				$video.attr('src', filename);
 				$video.prop('volume', config.sound_volume);
 				$video.prop('muted', !config.is_sound);
@@ -1516,11 +2012,11 @@ var vnds_interpreter = function()
 			if (config.is_sound)
 			{
 				let video_volume = config.sound_volume;
-				let iteration = video_volume / effect_speed * 100;
+				let video_volume_step = video_volume / effect_speed * 100;
 				let video_interval = setInterval(function()
 				{
 					$video.prop('volume', video_volume);
-					video_volume -= iteration;
+					video_volume -= video_volume_step;
 					if (video_volume <= 0)
 					{
 						clearInterval(video_interval);
@@ -1533,7 +2029,7 @@ var vnds_interpreter = function()
 			{
 				$video.trigger('pause');
 				obj.game.video = null;
-				$('#info_video').text('');
+				$('#info_video').text('~');
 				return df.resolve();
 			});
 		}
@@ -1718,12 +2214,12 @@ var vnds_interpreter = function()
 				if (!config.is_check)
 				{
 					_this.game.script_lines = script_lines;
-					let images_list = _this.get_images_list(); 
+					let images_list = _this.get_images_list();
 					preload_images(images_list);
 				}
-				if (_this.first_check_jump)
+				if (_this.is_first_check_jump)
 				{
-					_this.first_check_jump = false;
+					_this.is_first_check_jump = false;
 					config.is_check = true;
 				}
 				if (label)
@@ -1762,8 +2258,7 @@ var vnds_interpreter = function()
 				}
 				else
 				{
-					if (!config.is_check)
-						_this.game.script_line_num = 0;
+					_this.game.script_line_num = 0;
 					df.resolve();
 				}
 			})
@@ -1839,12 +2334,12 @@ var vnds_interpreter = function()
 	{
 		if (config.log_level != LOG_DISABLE) console.log(command_name + ' ' + params);
 		let df = $.Deferred();
+		let $game_screen = $('#game_screen');
 		if ((params === undefined) || (params.length === 0))
 		{
 			this.cleartext();
 			hide_message_box(false, function()
 			{
-				let $game_screen = $('#game_screen');
 				if ((config.is_skip) || (config.is_check) || (params.length === 0) || (config.is_auto))
 				{
 					let delay;
@@ -1923,6 +2418,7 @@ var vnds_interpreter = function()
 		cur_str = cur_str.replace(/<br \/>|<br>|\\n/g, '<br> ');
 		cur_str = cur_str.replace('<<', '«');
 		cur_str = cur_str.replace('>>', '»');
+		cur_str = cur_str.replace(/-|–|—/g, '&#8209;');
 		
 		let script_name = get_file_name(this.game.script_name);
 		try
@@ -1944,7 +2440,7 @@ var vnds_interpreter = function()
 				}
 			}
 		}
-		catch (e)
+		catch(e)
 		{
 			df.reject('Ошибка в локальном хранилище: ' + e.name);
 			return df.promise();
@@ -1980,7 +2476,7 @@ var vnds_interpreter = function()
 					this.prev_text += '<br>';
 				else
 					this.prev_text += ' ';
-				type_writer(this.prev_text, 0);
+				type_writer(this.prev_text);
 			}
 		}
 		this.is_expand_text = (params[0] === '@');
@@ -2058,16 +2554,17 @@ var vnds_interpreter = function()
 			{
 				clearInterval(type_interval);
 				type_interval = undefined;
-				type_writer(_this.cur_text, 0);
+				type_writer(_this.cur_text);
 				return df.promise();
 			}
 			else
 			{
 				clearTimeout(_this.text_timeout);
+				clearInterval(_this.text_interval);
 				$sprites.off('click');
 				$message_box_text.off('click');
 				$message_box_next.off('click');
-//				stop_overall_effects_filters();
+//				stop_all_effects();
 				if (_this.is_pause)
 				{
 					_this.pause_interval = setInterval(function()
@@ -2297,7 +2794,7 @@ var vnds_interpreter = function()
 			{
 				localStorage.removeItem(this.game.short_name + '_global');
 			}
-			catch (e)
+			catch(e)
 			{
 				df.reject('Ошибка в локальном хранилище: ' + e.name);
 				return df.promise();
@@ -2349,24 +2846,28 @@ var vnds_interpreter = function()
 					global_variables[variable] = value;
 					break;
 				case '+':
+				case '+=':
 					if (global_variables[variable] !== undefined)
 						global_variables[variable] += value;
 					else
 						global_variables[variable] = value;
 					break;
 				case '-':
+				case '-=':
 					if (global_variables[variable] !== undefined)
 						global_variables[variable] -= value;
 					else
 						global_variables[variable] = -value;
 					break;
 				case '.':
+				case '.=':
 					if (global_variables[variable] !== undefined)
 						global_variables[variable] += value.toString();
 					else
 						global_variables[variable] = value.toString();
 					break;
 				case '*':
+				case '*=':
 					if (global_variables[variable] !== undefined)
 						global_variables[variable] *= value;
 					else
@@ -2376,6 +2877,7 @@ var vnds_interpreter = function()
 					}
 					break;
 				case '/':
+				case '/=':
 					if (global_variables[variable] !== undefined)
 						if (value != 0)
 							global_variables[variable] = global_variables[variable] / value;
@@ -2395,7 +2897,7 @@ var vnds_interpreter = function()
 			localStorage.setItem(this.game.short_name + '_global', global_variables);
 			df.resolve();
 		}
-		catch (e)
+		catch(e)
 		{
 			df.reject('Ошибка в локальном хранилище: ' + e.name);
 		}
@@ -2489,7 +2991,7 @@ var vnds_interpreter = function()
 			else
 				this.game.local_variables[variable] = value;
 		}
-		catch (e)
+		catch(e)
 		{
 			df.reject('Ошибка в локальном хранилище: ' + e.name);
 			return df.promise();
@@ -2568,32 +3070,7 @@ var vnds_interpreter = function()
 				});
 			}
 		}
-		let i = 15;
- 		while (($choice_menu.height() > resolution.height) && (i > 0))
-		{
-			$choice_menu.find('button').css(
-			{
-				'font-size': (i / 10) + 'em',
-				'margin': (i / 2) + 'px 0',
-				'padding': (i / 2) + 'px 0'
-			});
-			i--;
-		}
-		let max_width;
-		do
-		{
-			$choice_menu.find('button').css('font-size', (i / 10) + 'em');
-			max_width = 0;
-			$.each($choice_menu, function()
-			{
-				if ($(this).width() > max_width)
-					max_width = $(this).width();
-			});
-			max_width = (max_width + 30);
-			i--;
-		}
- 		while ((max_width > resolution.width) && (i > 0));
-		$choice_menu.find('button').width(max_width + 'px');
+		set_choice_button_size();
 		this.save(0);
 		set_skip(false);
 		hide_message_box(false, function()
@@ -2642,7 +3119,7 @@ var vnds_interpreter = function()
 			<= - меньше или равно
   ====================================================================================================*/
 
-	 this.if = function(params)
+	this.if = function(params)
 	{
 		if (config.log_level != LOG_DISABLE) console.log('IF ' + params);
 		let df = $.Deferred();
@@ -2652,7 +3129,7 @@ var vnds_interpreter = function()
 			return df.promise();
 		}
 		let params_list = this.get_params_list(params);
-		if (params_list.length !== 3)
+		if (params_list.length != 3)
 		{
 			df.reject('Неверные параметры функции IF');
 			return df.promise();
@@ -2670,7 +3147,7 @@ var vnds_interpreter = function()
 		{
 			global_variables = JSON.parse(localStorage.getItem(this.game.short_name + '_global'));
 		}
-		catch (e)
+		catch(e)
 		{
 			df.reject('Ошибка в локальном хранилище: ' + e.name);
 			return df.promise();
@@ -2739,7 +3216,7 @@ var vnds_interpreter = function()
 		{
 			localStorage.clear();
 		}
-		catch (e)
+		catch(e)
 		{
 			show_warning('Ошибка в локальном хранилище: ' + e.name);
 			return false;
@@ -2766,7 +3243,7 @@ var vnds_interpreter = function()
 		}
 		else
 		{
-			set_skip_enabled(false);
+			set_skip(false);
 			df.resolve();
 		}
 		return df.promise();
@@ -2785,6 +3262,7 @@ var vnds_interpreter = function()
 		let df = this.stopskip(params, 'SS');
 		return df;
 	}
+
 
 /*====================================================================================================
 	Завершение выполнения скрипта и переход к списку новелл
@@ -2807,6 +3285,50 @@ var vnds_interpreter = function()
 		}
 		return df.promise();
 	}
+
+
+/*====================================================================================================
+	Выполнение произвольного кода javascript
+	exec [команда]
+
+	[команда] - команда или набор команд javascript, которые нужно выполнить
+	
+  ====================================================================================================*/
+
+	this.exec = function(params)
+	{
+		if (config.log_level != LOG_DISABLE) console.log('EXEC ' + params);
+		let df = $.Deferred();
+		if (params === undefined)
+		{
+			df.resolve('Отсутствуют параметры функции EXEC');
+			return df.promise();
+		}
+
+		let command = this.get_var(params);
+		if (command === false)
+		{
+			df.resolve('Неизвестная переменная функции EXEC: ' + params);
+			return df.promise();
+		}
+		let first_char = command.charAt(0);
+		let last_char = command.substr(-1);
+		if (((first_char === '"') && (last_char === '"')) || ((first_char === "'") && (last_char === "'")))
+			command = command.slice(1, -1);
+
+		try
+		{
+			perform_code(command); 
+		}
+		catch(e)
+		{
+			df.resolve('Неверные параметры функции EXEC: ' + params);
+			return df.promise();
+		}
+		df.resolve();
+		return df.promise();
+	}
+
 
 /*====================================================================================================
 	Запуск проверки скрипта
@@ -2834,20 +3356,15 @@ var vnds_interpreter = function()
 		}
 
 		config.is_check = false;
-		this.first_check_jump = true;
-		this.execute({command: 'jump', params: filename});
+		this.is_first_check_jump = true;
+		this.perform({command: 'jump', params: filename});
 	}
-
-
 
 
 
 /*----------------------------------------------------------------------------------------------------
 	Далее идут различные сервисные функции
   ----------------------------------------------------------------------------------------------------*/
-
-
-
 
 /*====================================================================================================
 	Сохранение игры
@@ -2872,7 +3389,7 @@ var vnds_interpreter = function()
 				});
 				return;
 			}
-			catch (e)
+			catch(e)
 			{
 				show_warning('Ошибка в локальном хранилище: ' + e.name);
 				return false;
@@ -2895,6 +3412,7 @@ var vnds_interpreter = function()
 			sound: this.game.sound,
 			bg_color: $('#game_screen').css('background-color'),
 			bg: this.game.background,
+			relay: this.game.relay,
 			sprites: this.game.sprites,
 			animation: this.game.animation
 		};
@@ -2908,7 +3426,7 @@ var vnds_interpreter = function()
 				show_message_box();
 			}
 		}
-		catch (e)
+		catch(e)
 		{
 			show_warning('Ошибка в локальном хранилище: ' + e.name);
 			return false;
@@ -2935,37 +3453,73 @@ var vnds_interpreter = function()
 			return false;
 		this.cleartext();
 		this.setimg('~');
-		if (load_game.bg_color)
-			$('#game_screen').css('background-color', load_game.bg_color);
-		if (load_game.bg)
-			this.bg(load_game.bg);
+		this.relay('~');
+		this.anim('~');
+		this.drop();
 		this.game.local_variables = load_game.local;
 		this.game.selected = load_game.selected;
 		this.game.script_name = load_game.script_name;
+		if (load_game.bg_color)
+			$('#game_screen').css('background-color', load_game.bg_color);
+		if (!$.isEmptyObject(load_game.bg))
+		{
+			if (load_game.bg.file === undefined) // Костыль для совместимости со старыми сохранениями
+				this.bg(load_game.bg + ' dissolve 0.3s');
+			else
+				this.bg(load_game.bg.file + ' ' + load_game.bg.x + ' ' + load_game.bg.y + ' ' + load_game.bg.filters + 'dissolve 0.3s');
+		}
+		if (load_game.relay.delay)
+		{
+			let param_str = '';
+			for (let i = 0; i < load_game.relay.files.length; i++)
+				param_str += load_game.relay.files[i] + ' ';
+			param_str += load_game.relay.delay + 'ms';
+			this.relay(param_str);
+		}
+		let _this = this;
+		$.each(load_game.sprites, function(key, value)
+		{
+			let param_str = '@' + value.name.replace(/^img_/, '') + ' ' + value.file + ' ' + value.x + ' ' + value.y + ' ' + value.filters + 'dissolve 0.3s';
+			_this.setimg(param_str);
+		});
+		this.game.sprites = load_game.sprites;
+
+		if (!$.isEmptyObject(load_game.music))
+		{
+			this.game.music =
+			{
+				file: load_game.music.file,
+				volume: load_game.music.volume
+			}
+			this.music(load_game.music.file + ' ' + config.sound_volume / load_game.music.volume * 100 + '% 0.3s');
+		}
+		else
+			this.music('~');
+		if (!$.isEmptyObject(load_game.sound))
+		{
+			this.game.sound =
+			{
+				file: load_game.sound.file,
+				volume: load_game.sound.volume
+			}
+			this.sound(load_game.sound.file + ' ' + load_game.sound.volume * 100 + '%');
+		}
+		else
+			this.sound('~');
 		this.is_expand_text = load_game.is_expand_text;
 		this.prev_text = load_game.prev_text;
 		if (this.prev_text)
 		{
 			show_message_box();
 			this.cur_text = this.prev_text;
-			type_writer(this.prev_text, 0);
+			type_writer(this.prev_text);
 		}
 		this.is_load_game = true;
-		if (load_game.music)
-			this.music(load_game.music);
-		if (load_game.sound)
-			this.sound(load_game.sound);
 		this.game.script_line_num = load_game.script_line_num;
-		this.game.sprites = load_game.sprites;
-
-		let _this = this;
-		$.each(load_game.sprites, function(key, value)
-		{
-			_this.setimg('@' + value.name.replace(/^img_/, '') + ' ' + value.file + ' ' + value.x + ' ' + value.y);
-		});
 		this.game.animation = load_game.animation;
-		this.anim(this.game.animation.name + ' ' + this.game.animation.strenght);
-		this.execute({command: 'jump', params: this.game.script_name + ' ' + (this.game.script_line_num - 1)});
+		if (!$.isEmptyObject(load_game.animation))
+			this.anim(this.game.animation.name + ' ' + this.game.animation.strength);
+		this.perform({command: 'jump', params: this.game.script_name + ' ' + (this.game.script_line_num - 1)});
 	}
 
 /* Сброс значений переменных игры */
@@ -2974,7 +3528,7 @@ var vnds_interpreter = function()
 		clearTimeout(this.text_timeout);
 		clearInterval(type_interval);
 		type_interval = undefined;
-		stop_overall_effects_filters();
+		stop_all_effects_filters();
 		this.is_expand_text = false;
 		this.prev_text = '';
 		this.game.local_variables = {};
@@ -2982,9 +3536,11 @@ var vnds_interpreter = function()
 		this.game.script_name = null;
 		this.game.script_lines = [];
 		this.game.script_line_num = null;
-		this.game.sound = null;
-		this.game.music = null;
-		this.game.background = null;
+		this.game.sound = {};
+		this.game.sfx = {};
+		this.game.music = {};
+		this.game.background = {};
+		this.game.relay = {};
 		this.game.sprites = {};
 		this.game.animation = {};
 	}
@@ -2992,16 +3548,15 @@ var vnds_interpreter = function()
 // Получение следующей команды скрипта
 	this.get_next_command = function()
 	{
-		let line = this.game.script_lines[this.game.script_line_num].trim();
-		line = line.replace(/[ \t]{2,}/g, ' ');
-		while (((line.length === 0) || (line.charAt(0) === ';') || (line.indexOf('//') === 0)) && (this.game.script_line_num < this.game.script_lines.length))
+		let line = this.game.script_lines[this.game.script_line_num].replace(/\/\/.*$/, '').replace(/[ \t]{2,}/g, ' ').trim();
+		while (((line.length === 0) || (line.charAt(0) === ';') || (line.indexOf('#') === 0)) && (this.game.script_line_num < this.game.script_lines.length))
 		{
 			this.game.script_line_num++;
 			if (this.game.script_lines[this.game.script_line_num] === undefined)
 				return false;
-			line = this.game.script_lines[this.game.script_line_num].trim();
+			line = this.game.script_lines[this.game.script_line_num].replace(/\/\/.*$/, '').replace(/[ \t]{2,}/g, ' ').trim();
 		}
-		if ((line.length === 0) || (line.charAt(0) === ';') || (line.indexOf('//') === 0))
+		if ((line.length === 0) || (line.charAt(0) === ';') || (line.indexOf('#') === 0))
 		{
 			show_error('Больше команд в скрипте не найдено: ' + this.game.script_name);
 			return false;
@@ -3042,7 +3597,7 @@ var vnds_interpreter = function()
 	}
 
 // Рекурсивное исполнение всех команд скрипта
-	this.execute = function(code)
+	this.perform = function(code)
 	{
 		if (code === false)
 			return false;
@@ -3058,11 +3613,11 @@ var vnds_interpreter = function()
 			{
 				show_warning(warning, function()
 				{
-					_this.execute(_this.get_next_command());
+					_this.perform(_this.get_next_command());
 				});
 			}
 			else
-				_this.execute(_this.get_next_command());
+				_this.perform(_this.get_next_command());
 		});
 		df.fail(function(error)
 		{
@@ -3076,15 +3631,17 @@ var vnds_interpreter = function()
 		let images_list = [];
 		for (let i = 0; i < this.game.script_lines.length; i++)
 		{
-			let filename = this.game.dir;
+			let file_path = this.game.dir;
 			let line = this.game.script_lines[i].trim();
 			if ((line.indexOf('~') !== -1) || (line.indexOf('$') !== -1))
 				continue;
 			let line_lowercase = line.toLowerCase().trim();
-			if ((line_lowercase.indexOf('bgload') === 0) || (line_lowercase.indexOf('bg') === 0))
-				filename += '/background/';
-			else if ((line_lowercase.indexOf('setimg') !== -1) || (line_lowercase.indexOf('sprite') !== -1))
-				filename += '/foreground/';
+			if (line_lowercase.indexOf('bg') === 0)
+				file_path += '/background/';
+			else if ((line_lowercase.indexOf('setimg') === 0) || (line_lowercase.indexOf('img') === 0) || (line_lowercase.indexOf('sprite') === 0))
+				file_path += '/foreground/';
+			else if (line_lowercase.indexOf('rel') === 0)
+				file_path += '/foreground/';
 			else
 				continue;
 			if (line.indexOf('.') !== -1)
@@ -3095,13 +3652,12 @@ var vnds_interpreter = function()
 					split_line[i] = split_line[i].replace(/s$|%$/g, '');
 					if (!$.isNumeric(split_line[i]) && (split_line[i].indexOf('.') !== -1))
 					{
-						filename += split_line[i];
+						filename = file_path + split_line[i];
 						if (images_list.indexOf(filename) === -1)
 						{
 							filename = filename.replace(/'|"/g, '');
 							images_list.push(filename);
 						}
-						break;
 					}
 				}
 			}
@@ -3124,7 +3680,6 @@ var vnds_interpreter = function()
 	{
 		if (typeof(variable) !== 'string')
 			return variable;
-		variable = variable.trim();
 		let value = '';
 		let pos = 0;
 		let regexp = /\{([A-Za-z\$_]{1}[A-Za-z_0-9]{0,})\}|(\$[A-Za-z_]{1}[A-Za-z_0-9]{0,})/g;
@@ -3143,7 +3698,7 @@ var vnds_interpreter = function()
 					else if (this.game.local_variables[temp_var] !== undefined)
 						return this.game.local_variables[temp_var];
 				}
-				catch (e)
+				catch(e)
 				{
 					show_error('Ошибка в локальном хранилище: ' + e.name);
 					return false;
@@ -3170,7 +3725,7 @@ var vnds_interpreter = function()
 						else if (this.game.local_variables[temp_var] !== undefined)
 							value += this.game.local_variables[temp_var];
 					}
-					catch (e)
+					catch(e)
 					{
 						show_error('Ошибка в локальном хранилище: ' + e.name);
 						return false;
@@ -3192,7 +3747,7 @@ var vnds_interpreter = function()
 		{
 			load_game = JSON.parse(localStorage.getItem(this.game.short_name + '_save_' + slot));
 		}
-		catch (e)
+		catch(e)
 		{
 			show_warning('Ошибка в локальном хранилище: ' + e.name);
 			return false;

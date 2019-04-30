@@ -44,11 +44,10 @@ var old_text_speed;             // Предыдущая скорость выв�
 var music_volume;               // Текущая громкость музыки для эффекта затухания
 var is_message_box;             // Переменная, хранящая состояние блока вывода текста
 var type_interval;              // Переменная для хранения идентификатора интервала при печати печатающей машинки
-var filters_timeouts = [];      // Переменная для хранения массива идентификаторов таймаутов, использующихся для фильтров
-var effects_timeouts = [];      // Переменная для хранения массива идентификаторов таймаутов, использующихся для эффектов
-var effects_intervals = [];     // Переменная для хранения массива идентификаторов интервалов, использующихся для эффектов
+var effect_intervals = [];      // Переменная для хранения массива идентификаторов интервалов эффектов
+var effect_timeout;             // Переменная для хранения идентификатора таймаута эффектов
 var animation_interval;         // Переменная для хранения идентификатора интервала, использующегося для анимации
-var is_promo = false;           // Информация о том, был ли произведён клик на баннер или нет
+var is_promo = true;            // Информация о том, был ли произведён клик на баннер или нет
 var vn;                         // Объект класса интерпретатора
 var is_php_enabled;             // Имеется ли поддержка php на сервере
 var is_skip_enabled;            // Активна ли кнопка быстрого пропуска
@@ -75,7 +74,6 @@ $(document).ready(function()
 // Функция проверки поддержки php на сервере
 function check_php_enabled(callback)
 {
-	let func_name = get_function_name(arguments.callee);
 	$.get('php/check_php.php')
 		.done(function(data)
 		{
@@ -87,7 +85,7 @@ function check_php_enabled(callback)
 		})
 		.always(function()
 		{
-			if (config.log_level == LOG_ALL) console.log(func_name + ': ' + is_php_enabled);
+			if (config.log_level == LOG_ALL) console.log('check_php_enabled: ' + is_php_enabled);
 			$('#info_php_enabled').text(is_php_enabled);
 			if (callback !== undefined)
 				callback();
@@ -153,19 +151,22 @@ function exec_window_resize_events()
 			'width': resolution.width + 'px',
 			'height': resolution.height + 'px'
 		});
-		resolution.ratio = resolution.width / vn.game.resolution.width;
+		text_size_ratio = resolution.width / vn.game.resolution.width;
+		if (text_size_ratio < 0.82)
+			text_size_ratio = 0.82;
+/*		resolution.ratio = resolution.width / vn.game.resolution.width;
 		if ($('#message_box').height() <= 170)
 			text_size_ratio = 1;
 		else
-			text_size_ratio = resolution.ratio;
-
+			text_size_ratio = resolution.ratio;*/
 		$('#message_box_name').css('font-size', text_size_ratio * (Number(vn.game.text_size) + (1 / vn.game.text_size) * 0.1 + config.text_size_factor / 10) + 'em');
 		$('#message_box_text').css(
 		{
 			'font-size': text_size_ratio * (Number(vn.game.text_size) + config.text_size_factor / 10) + 'em',
 			'line-height': vn.game.line_height
 		});
-}
+		set_choice_button_size();
+	}
 	else
 	{
 		resolution.width = null;
@@ -173,10 +174,46 @@ function exec_window_resize_events()
 	}
 }
 
+// Функция подбора размера кнопок меню и шрифта в них
+function set_choice_button_size()
+{
+	let $choice_menu = $('#choice_menu');
+	let i = 15;
+	while (($choice_menu.height() >= resolution.height) && (i > 0))
+	{
+		$choice_menu.find('button').css(
+		{
+			'font-size': (i / 10) + 'em',
+			'margin': (i / 2) + 'px 0',
+			'padding': (i / 2) + 'px 0'
+		});
+		i--;
+	}
+	let max_width;
+	do
+	{
+		$choice_menu.find('button').css(
+		{
+			'font-size': (i / 10) + 'em',
+			'width': '100%'
+		});
+		max_width = 0;
+		$.each($choice_menu, function()
+		{
+			if ($(this).width() > max_width)
+				max_width = $(this).width();
+		});
+		max_width = (max_width + 30);
+		i--;
+	}
+	while ((max_width >= resolution.width) && (i > 0));
+	$choice_menu.find('button').width(max_width + 'px');
+}
+
 // Функция создания окна лога
 function init_log()
 {
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('init_log');
 	let $info = $('#info');
 	$info.find('span').hide();
 
@@ -186,7 +223,7 @@ function init_log()
 		{
 			$info.animate(
 			{
-				top: '-222px',
+				top: '-237px',
 				left: '-180px',
 				'padding-bottom': '30px'
 			}, 200);
@@ -215,7 +252,7 @@ function init_log()
 // Функция создания окна копирайта
 function init_thanks()
 {
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('init_thanks');
 	let $thanks = $('#thanks');
 
 	$thanks.on('click', function()
@@ -246,7 +283,7 @@ function init_thanks()
 // Функция, получающая список игр и их настройки
 function create_main_menu()
 {
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('create_main_menu');
 	let $main_screen = $('#main_screen')
 	$main_screen.stop().fadeIn(config.effect_speed);;
 	show_promo();
@@ -258,6 +295,16 @@ function create_main_menu()
 		.appendTo('head');
 	$('#info_game_name').text('');
 	$('#info_game_resolution').text('');
+	$('#info_script_name').text('');
+	$('#info_script_line_num').text('');
+	$('#info_bg_color').text('');
+	$('#info_background').text('');
+	$('#info_sprites').text('');
+	$('#info_animation').text('');
+	$('#info_video').text('');
+	$('#info_music').text('');
+	$('#info_sound').text('');
+	$('#info_sfx').text('');
 	let games_list_source;
 	if (is_php_enabled)
 		games_list_source = "php/get_games_list.php";
@@ -332,6 +379,14 @@ function create_main_menu()
 							vn.game.line_height = value.line_height;
 						else
 							vn.game.line_height = 'normal';
+						if (value.bg_color)
+							vn.game.bg_color = value.bg_color;
+						else
+							vn.game.bg_color = '#555';
+						if (vn.game.bg_color.length === 4)
+							vn.game.bg_color += 'B';
+						else if (vn.game.bg_color.length === 7)
+							vn.game.bg_color += 'B0';
 						vn.game.icons =
 						{
 							small: value.icon_s,
@@ -343,17 +398,17 @@ function create_main_menu()
 							big: value.thumb_b
 						}
 						vn.game.script_line_num = 0;
-						exec_window_resize_events();
 						$main_screen.stop().fadeOut(config.effect_speed, function()
 						{
-							$('title').text(title + ' : ' + vn.game.full_name);
+							$('title').text(title + ' : ' + vn.game.full_name.replace(/<[^>]+>/g,''));
 							$('#favicon').remove();
 							$('<link id="favicon" rel="icon" />')
 								.attr('href', vn.game.icons.small)
 								.appendTo('head');
-							$('#info_game_name').text(vn.game.full_name);
+							$('#info_game_name').text(vn.game.full_name.replace(/<[^>]+>/g,''));
 							$('#info_game_resolution').text(vn.game.resolution.width + 'x' + vn.game.resolution.height);
 							$('#game_screen').stop().fadeIn(config.effect_speed);
+							$('#message_box').css('background-color', vn.game.bg_color);
 							if (vn.game.font !== null)
 							{
 								$('#message_box_name').css('font-family', vn.game.short_name + '_font');
@@ -366,6 +421,7 @@ function create_main_menu()
 							}
 							$('#message_box_name').css('font-size', Number(vn.game.text_size) + 0.1 + 'em');
 							$('#message_box_text').css('font-size', Number(vn.game.text_size) + 'em');
+							exec_window_resize_events();
 							create_game_menu();
 						});
 					});
@@ -407,7 +463,7 @@ function supports_local_storage()
 // Функция загрузки параметров сессии
 function load_settings()
 {
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('load_settings');
 	if (supports_local_storage())
 	{
 		try
@@ -450,7 +506,7 @@ function load_settings()
 // Функция сохранения параметров сессии
 function save_settings()
 {
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('save_settings');
 	if (supports_local_storage())
 	{
 		try
@@ -495,7 +551,7 @@ function show_message_box()
 	let $message_box = $('#message_box');
 	if ($message_box.is(':visible'))
 		return;
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('show_message_box');
 	$message_box.stop().fadeTo(config.effect_speed, 1, function()
 	{
 		$('#game_screen')
@@ -515,7 +571,7 @@ function hide_message_box(is_clear, callback)
 			callback();
 		return;
 	}
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('hide_message_box');
 	remove_message_box_events();
 	$message_box.stop().fadeOut(config.effect_speed, function()
 	{
@@ -532,7 +588,7 @@ function hide_message_box(is_clear, callback)
 // Очистка всех событий блока сообщений
 function remove_message_box_events()
 {
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('remove_message_box_events');
 	$('#message_box').find('a:not(#message_box_next)').off('click');
 	$(document).off('keydown.message_box');
 }
@@ -540,7 +596,7 @@ function remove_message_box_events()
 // Присвоение событий элементам блока сообщений
 function bind_message_box_events()
 {
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('bind_message_box_events');
 	let $message_box_menu_load = $('#message_box_menu_load');
 	let $message_box_menu_save = $('#message_box_menu_save');
 	let $message_box_menu_skip = $('#message_box_menu_skip');
@@ -623,7 +679,6 @@ function bind_message_box_events()
 				$message_box_menu_menu.trigger('click');
 		}
 	});
-
 	$message_box_menu_load.on('click', function()
 	{
 		create_save_load_menu(LOAD_MOD);
@@ -717,7 +772,7 @@ function bind_message_box_events()
 function set_skip_enabled(state)
 {
 	if (is_skip_enabled === state) return;
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee) + ': ' + state);
+	if (config.log_level == LOG_ALL) console.log('set_skip_enabled: ' + state);
 	is_skip_enabled = state;
 	if (state)
 		$('#message_box_menu_skip').removeClass('inactive');
@@ -732,7 +787,7 @@ function set_skip_enabled(state)
 function set_skip(state)
 {
 	if (config.is_skip === state) return;
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee) + ': ' + state);
+	if (config.log_level == LOG_ALL) console.log('set_skip: ' + state);
 	config.is_skip = state;
 	let $message_box_text = $('#message_box_text');
 	let $message_box_next = $('#message_box_next');
@@ -762,7 +817,7 @@ function set_skip(state)
 function set_auto(state)
 {
 	if (config.is_auto === state) return;
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee) + ': ' + state);
+	if (config.log_level == LOG_ALL) console.log('set_auto: ' + state);
 	config.is_auto = state;
 	let $message_box_next = $('#message_box_next');
 	if (config.is_auto)
@@ -784,9 +839,10 @@ function set_auto(state)
 // Функция переключения проигрывания звуков
 function set_sound(state)
 {
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee) + ': ' + state);
+	if (config.log_level == LOG_ALL) console.log('set_sound: ' + state);
 	config.is_sound = state;
 	$('#sound').prop('muted', !config.is_sound);
+	$('#sfx').prop('muted', !config.is_sound);
 	$('#music').prop('muted', !config.is_sound);
 	if (config.is_sound)
 		$('#message_box_menu_sound').removeClass('disabled');
@@ -798,12 +854,11 @@ function set_sound(state)
 // Вывод модального оповещения
 function show_notification(str, delay = 0)
 {
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('show_notification');
 	if (vn)
 		vn.is_pause = true;
 	$('#modal_box_next').hide();
 	$('#modal_box_text').html(str);
-	
 	$('#modal_screen').stop().fadeIn(config.effect_speed, function()
 	{
 		if (delay > 0) setTimeout(close_notification, delay);
@@ -814,7 +869,7 @@ function show_notification(str, delay = 0)
 // Закрытие модального оповещения
 function close_notification(callback)
 {
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('close_notification');
 	$('#modal_screen').stop().fadeOut(config.effect_speed, function()
 	{
 		if (vn)
@@ -827,7 +882,7 @@ function close_notification(callback)
 // Вывод модального оповещения
 function show_dialog(str, callback)
 {
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('show_dialog');
 	if (vn)
 		vn.is_pause = true;
 	$('#modal_box_next').show();
@@ -855,7 +910,7 @@ function show_dialog(str, callback)
 // Функция, отображающая главное меню
 function create_game_menu()
 {
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('create_game_menu');
 	window.location.hash = vn.game.short_name;
 	let $background = $('#background');
 	let $game_menu = $('#game_menu');
@@ -864,6 +919,8 @@ function create_game_menu()
 	config.is_check = false;
 	if (config.is_skip) set_skip(false);
 	if (config.is_auto) set_auto(false);
+	vn.anim('~');
+	vn.relay('~');
 
 	$('#game_menu_start').on('click', function()
 	{
@@ -878,6 +935,7 @@ function create_game_menu()
 		$game_menu.find('*').off('click');
 		$('#sprites').find('img').remove();
 		$('#sound').trigger('pause');
+		$('#sfx').trigger('pause');
 		$('#music').trigger('pause');
 		$overlay.stop().fadeOut(config.effect_speed);
 		$game_menu.stop().fadeOut(config.effect_speed, function()
@@ -885,7 +943,7 @@ function create_game_menu()
 			hide_message_box(true, function()
 			{
 				vn.drop();
-				vn.execute({command: 'jump', params: 'main.scr'});
+				vn.perform({command: 'jump', params: 'main.scr'});
 			});
 		});
 		return false;
@@ -1001,6 +1059,7 @@ function create_game_menu()
 			$('#sprites').find('img').remove();
 			$('#background').css({'background-image': ''});
 			$('#sound').trigger('pause');
+			$('#sfx').trigger('pause');
 			$('#music').trigger('pause');
 			vn = undefined;
 			create_main_menu();
@@ -1009,7 +1068,8 @@ function create_game_menu()
 	});
 
 	let filename = vn.game.thumbs.big;
-	if ($background.css('background-image') === 'none')
+	let bg_image = $background.css('background-image');
+	if ((bg_image) && (bg_image === 'none'))
 	{
 		$.get(filename).done(function()
 		{
@@ -1029,7 +1089,7 @@ function create_game_menu()
 // callback: функция, вызываемая по нажатию кнопки "Вернуться"
 function create_save_load_menu(mod, callback)
 {
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('create_save_load_menu');
 	let $save_load_menu = $('#save_load_menu');
 	let $overlay = $('#overlay');
  	vn.is_pause = true;
@@ -1059,17 +1119,25 @@ function create_save_load_menu(mod, callback)
 		if (Boolean(load_game))
 		{
 			$id.removeClass('center');
-			if (load_game.bg.indexOf('#') === -1)
+			let bg = '#333';
+			if (!$.isEmptyObject(load_game.bg))
+			{
+				if (load_game.bg.file === undefined) // Костыль для совместимости со старыми сохранениями
+					bg = load_game.bg;
+				else
+					bg = load_game.bg.file;
+			}
+			if (bg.indexOf('#') === -1)
 			{
 				$('<img />')
-					.attr('src', vn.game.dir + '/background/' + load_game.bg)
+					.attr('src', vn.game.dir + '/background/' + bg)
 					.appendTo($id);
 			}
 			else
 			{
 				$('<img />')
 					.attr('src', 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=')
-					.css('background-color', load_game.bg)
+					.css('background-color', bg)
 					.appendTo($id);
 			}
 				
@@ -1139,18 +1207,20 @@ function create_save_load_menu(mod, callback)
 function resize_save_load_menu()
 {
 	let $save_load_menu = $('#save_load_menu');
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('resize_save_load_menu');
 	let button_height = Math.floor(resolution.height / 11) + 2;
 	let button_margin = Math.floor(button_height / 3);
 	button_height = button_height - button_margin;
 	let button_width = Math.floor(resolution.width / 3);
-	$save_load_menu.find('button').css({
+	$save_load_menu.find('button').css(
+	{
 		'height': button_height + 'px',
 		'width': button_width + 'px',
 		'margin-top': button_margin / 2 + 'px',
 		'margin-bottom': button_margin / 2 + 'px'
 	});
-	$save_load_menu.find('button').find('div').css({
+	$save_load_menu.find('button').find('div').css(
+	{
 		'height': (button_height - 6) + 'px',
 		'width': button_width + 'px'
 	});
@@ -1160,7 +1230,7 @@ function resize_save_load_menu()
 // Создание меню настроек
 function create_config_menu(callback)
 {
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('create_config_menu');
 	let $config_menu = $('#config_menu');
 	let $overlay = $('#overlay');
 	let $config_menu_text_size = $('#config_menu_text_size');
@@ -1172,6 +1242,11 @@ function create_config_menu(callback)
 	$config_menu_auto_text_pause.val(config.auto_text_pause / 200);
 	$('#config_menu_is_skip_unread').prop('checked', config.is_skip_unread);
 	$config_menu_sound_volume.val(config.sound_volume * 10);
+	$config_menu_sound_volume.on("input change", function()
+	{
+		config.sound_volume = Number($config_menu_sound_volume.val() / 10);
+		$('#music').prop('volume', config.sound_volume);
+	});
 	$('#config_menu_is_fullscreen').prop('checked', config.is_fullscreen);
 	$('#config_menu_log_' + config.log_level).prop('checked', true);
 	$overlay.stop().fadeTo(config.effect_speed, 1);
@@ -1190,7 +1265,6 @@ function create_config_menu(callback)
 		config.text_speed = Number(20 - $config_menu_text_speed.val());
 		config.auto_text_pause = Number($config_menu_auto_text_pause.val() * 200);
 		config.is_skip_unread = $('#config_menu_is_skip_unread').prop('checked');
-		config.sound_volume = Number($config_menu_sound_volume.val() / 10);
 		config.is_fullscreen = $('#config_menu_is_fullscreen').prop('checked');
 		config.log_level = $('input[name=log]:checked').val();
 		exec_window_resize_events();
@@ -1209,22 +1283,52 @@ function create_config_menu(callback)
  */
 
 // Функция, возвращающая название функции, из которой вызвана
-function get_function_name(fn)
+/*function get_function_name(fn)
 {
 	return fn.toString().match(/function ([^(]*)\(/)[1] + '()';
+}*/
+
+function get_function_name(fn)
+{
+  let str = fn.toString();
+  str = str.substr('function '.length);
+  str = str.substr(0, str.indexOf('('));
+  return str;
 }
 
 // Функция, проверяющая, является ли переданная строка шестнадцатеричным числом
-function is_hex(str)
+function is_hex_color(str)
 {
-	if (str === '')
+	if ((str === '') || (str.indexOf('#') === -1))
 		return false;
 	str = str.replace(/^#/, '');
+	if ((str.length !== 3) && (str.length !== 6))
+		return false;
 	str = str.replace(/^0+/, '');
 	if (str === '')
 		return true;
 	let hex = parseInt(str, 16);
 	return (hex.toString(16) === str.toLowerCase());
+}
+
+// Функция, проверяющая, является ли имя файла файлом изображения
+function is_image_file(filename)
+{
+	if (filename === '')
+		return false;
+	let extentions_list = ['jpg', 'jpeg', 'gif', 'png', 'webp', 'bmp'];
+	let ext = filename.split('.').pop().toLowerCase();
+	return (extentions_list.indexOf(ext) !== -1);
+}
+
+// Функция, проверяющая, является ли имя файла аудиофайлом
+function is_audio_file(filename)
+{
+	if (filename === '')
+		return false;
+	let extentions_list = ['mp3', 'aac', 'wav'];
+	let ext = filename.split('.').pop().toLowerCase();
+	return (extentions_list.indexOf(ext) !== -1);
 }
 
 // Сообщение об ошибке
@@ -1320,7 +1424,7 @@ function obj_to_str(obj)
 }
 
 // "Печатающая машинка"
-function type_writer(str, text_speed, prev_text = '')
+function type_writer(str, text_speed = 0, prev_text = '')
 {
 	let $message_box_name = $('#message_box_name');
 	var $message_box_text = $('#message_box_text');
@@ -1368,9 +1472,6 @@ function type_writer(str, text_speed, prev_text = '')
 	type_interval = setInterval(function()
 	{
 		message_box_font = $message_box_text.css('font-size') + ' ' + $message_box_text.css('font-family');
-//		padding_left = $message_box_text.css('padding-left').replace('px', '');
-//		padding_right = $message_box_text.css('padding-right').replace('px', '');
-//		message_box_width = $message_box_text.width() - padding_left - padding_right;
 		message_box_width = $message_box_text.width();
 		if (i < str.length)
 		{
@@ -1396,6 +1497,7 @@ function type_writer(str, text_speed, prev_text = '')
 					if (gt_pos > 1)
 					{
 						sub_str = str.substring(lt_pos, gt_pos);
+						sub_str = sub_str.replace('&#8209;', '-'); // внутри тэгов меняем неразрывный минус на обычный минус
 						type_str += sub_str;
 						i = gt_pos;
 					}
@@ -1419,7 +1521,7 @@ function type_writer(str, text_speed, prev_text = '')
 						if (next_space < 0)
 							next_space = str.length;
 						sub_str = str.substr(i, next_space);
-						if (get_text_width(line_str + sub_str, message_box_font) > message_box_width)
+						if (get_text_width_dom(line_str + sub_str, message_box_font) >= message_box_width)
 						{
 							type_str = type_str.replace('<br />', ' '); // Заменяем сделанный ранее принудительный перенос на пробел, чтобы резиновость работала нормально
 							type_str = type_str.slice(0, -1);
@@ -1442,7 +1544,7 @@ function type_writer(str, text_speed, prev_text = '')
 	return char_name + prev_text + str;
 }
 
-function get_text_width(str, font)
+function get_text_width(str, font) // Выдаёт приблизительное значение
 {
 	let canvas = get_text_width.canvas || (get_text_width.canvas = document.createElement('canvas'));
 	let context = canvas.getContext('2d');
@@ -1451,21 +1553,56 @@ function get_text_width(str, font)
 	return metrics.width;
 }
 
-// Кеширование картинок
+function get_text_width_dom(str, font) // Выдаёт точное значение
+{
+  let obj = $('<span>' + str + '</span>')
+							.css({'font': font, 'float': 'left', 'white-space': 'nowrap'})
+							.css({'visibility': 'hidden'})
+							.appendTo($('body'));
+	let width = obj.width();
+  obj.remove();
+  return width;
+}
+
+function get_text_height_dom(str, font) // Выдаёт точное значение
+{
+  let obj = $('<span>' + str + '</span>')
+							.css({'font': font, 'float': 'left', 'white-space': 'nowrap'})
+							.css({'visibility': 'hidden'})
+							.appendTo($('body'));
+	let height = obj.height();
+  obj.remove();
+  return height;
+}
+
+// Кэширование картинок
 function preload_images(images_list)
 {
-	let func_name = get_function_name(arguments.callee);
-	if (config.log_level == LOG_ALL) console.log(func_name);
-
+	if (config.log_level == LOG_ALL) console.log('preload_images');
 	$.each(images_list, function(key, value)
 	{
-		$('<img />')
-			.attr('src', value)
-			.appendTo('#cache')
-			.on('load', function()
-			{
-				if (config.log_level == LOG_ALL) console.log(func_name + ': ' + value + ' done!');
-			});
+		if (value.indexOf('/background/') !== -1)
+		{
+			$('<div />')
+				.attr('id', 'cache_bg_' + key)
+				.appendTo('#cache')
+				.css(
+				{
+					'background-image': 'url(' + value + ')'
+				});
+			if (config.log_level == LOG_ALL) console.log('preload_images: ' + value + ' done!');
+		}
+		else
+		{
+			$('<img />')
+				.attr('src', value)
+				.attr('id', 'cache_img_' + key)
+				.appendTo('#cache')
+				.on('load', function()
+				{
+					if (config.log_level == LOG_ALL) console.log('preload_images: ' + value + ' done!');
+				});
+		}
 	});
 }
 
@@ -1563,8 +1700,8 @@ function show_promo()
 					is_promo = true;
 					$(window).off('resize', set_promo_opacity);
 					$promo.hide();
-				})
-				.show(config.effect_speed);
+				});
+			$promo.show();
 			$(window).on('resize', set_promo_opacity);
 			set_promo_opacity();
 		})
@@ -1589,264 +1726,150 @@ function show_promo()
 	}
 }
 
-// Эффекты - blur
-function filter_blur(obj, strength = 100, duration)
-{
-	strength = Math.ceil(strength / 10);
-	let filter = 'blur(' + strength + 'px)';
-	start_filter(obj, filter, duration);
-}
-
-// Эффекты - invert
-function filter_invert(obj, strength = 100, duration)
-{
-	let filter = 'invert(' + strength + '%)';
-	start_filter(obj, filter, duration);
-}
-
-// Эффекты - sepia
-function filter_sepia(obj, strength = 100, duration)
-{
-	let filter = 'sepia(' + strength + '%)';
-	start_filter(obj, filter, duration);
-}
-
-// Эффекты - saturate
-function filter_saturate(obj, strength = 100, duration)
-{
-	let filter = 'saturate(' + strength + '%)';
-	start_filter(obj, filter, duration);
-}
-
-// Эффекты - opacity
-function filter_opacity(obj, strength = 100, duration)
-{
-	let filter = 'opacity(' + strength + '%)';
-	start_filter(obj, filter, duration);
-}
-
-// Эффекты - grayscale
-function filter_grayscale(obj, strength = 100, duration)
-{
-	let filter = 'grayscale(' + strength + '%)';
-	start_filter(obj, filter, duration);
-}
-
-// Эффекты - h-shake
-function effect_hshake($images, strength = 100, duration)
-{
-	strength = Math.ceil(strength / 20);
-	start_effect($images, 'hshake', strength, duration);
-}
-
-// Эффекты - v-shake
-function effect_vshake($images, strength = 100, duration)
-{
-	strength = Math.ceil(strength / 20);
-	start_effect($images, 'vshake', strength, duration);
-}
-
-// Эффекты - zoom-in
-function effect_zoomin($images, strength = 100, duration)
-{
-	strength = (100 + Number(strength)) / 100;
-	duration = duration + 'ms';
-	start_effect($images, 'zoom', strength, duration);
-}
-
-// Эффекты - zoom-out
-function effect_zoomout($images, strength = 100, duration)
-{
-	strength = (100 - Number(strength)) / 100;
-	duration = duration + 'ms';
-	start_effect($images, 'zoom', strength, duration);
-}
-
 // Начать выполнение эффекта
-function start_effect($images, effect, strength, duration)
+function start_effect($images, effect_prop, effect_strength, effect_ease, effect_speed_mult, transform_css, duration)
 {
+	reset_effects_intervals();
 	$images.forEach(function($image)
 	{
-		if (effect.indexOf('shake') !== -1)
+		if (effect_prop)
 		{
-			$image.css(
+			if (effect_speed_mult > 1)
 			{
-				'-webkit-animation': effect + strength + ' infinite linear 0.1s',
-				'animation': effect + strength + ' infinite linear 0.1s',
-				'transform': 'translate(0, 0)'
-			});
+				first_duration = 20 * effect_speed_mult;
+				second_duration = 30 * effect_speed_mult;
+			}
+			else
+			{
+				first_duration = 50 * effect_speed_mult;
+				second_duration = 50 * effect_speed_mult;
+			}
+			let one_option = {}, sec_option = {};
+			one_option[effect_prop] = '-=' + effect_strength;
+			sec_option[effect_prop] = '+=' + effect_strength;
+			let effect_interval = setInterval(function()
+			{
+				$image
+					.css(
+					{
+						'-webkit-transition': 'none',
+						'transition': 'none'
+					})
+					.animate(one_option, first_duration, effect_ease)
+					.animate(sec_option, second_duration, effect_ease)
+			}, first_duration + second_duration);
+			effect_intervals.push(effect_interval);
+
 			if (duration !== undefined)
 			{
-				let effect_timeout = setTimeout(function()
+				effect_timeout = setTimeout(function()
 				{
-					stop_img_effects($image);
-					effects_timeouts.splice(effects_timeouts.indexOf(effect_timeout), 1);
+					reset_effects_intervals();
 				}, duration);
-				effects_timeouts.push(effect_timeout);
 			}
 		}
-		else if (effect === 'zoom')
+		if (transform_css)
 		{
 			$image.css(
 			{
-				'-webkit-transition': 'transform ' + duration,
-				'-moz-transition': 'transform ' + duration,
-				'-o-transition': 'transform ' + duration,
-				'-ms-transition': 'transform ' + duration,
-				'transition': 'transform ' + duration,
-				'-webkit-transform': 'scale(' + strength + ')',
-				'transform': 'scale(' + strength + ')'
+				'-webkit-transition': 'transform ' + duration + 'ms',
+				'transition': 'transform ' + duration + 'ms',
+				'-webkit-transform': transform_css,
+				'transform': transform_css
 			});
 		}
 	});
-}
-
-// Сброс всех таймаутов эффектов
-function reset_effects_timeouts()
-{
-	$.each(effects_timeouts, function(key, value)
-	{
-		clearTimeout(value);
-	});
-	effects_timeouts = [];
 }
 
 // Сброс всех интервалов эффектов
 function reset_effects_intervals()
 {
-	$.each(effects_intervals, function(key, value)
+	effect_intervals.forEach(function(effect_interval)
+	{
+		clearInterval(effect_interval);
+	});
+/*	$.each(effect_intervals, function(key, value)
 	{
 		clearInterval(value);
-	});
-	effects_intervals = [];
+	});*/
+	effect_intervals = [];
+	clearTimeout(effect_timeout);
 }
 
 // Завершение всех эффектов для спрайта
-function stop_all_effects($images)
+function stop_all_img_effects($images)
 {
-	reset_effects_timeouts();
 	reset_effects_intervals();
 	$images.forEach(function($image)
 	{
-		stop_img_effects($image);
+		stop_one_img_effects($image);
 	});
 }
-
-// Завершение всех эффектов для всех спрайтов
-function stop_overall_effects()
-{
-	reset_effects_timeouts();
-	reset_effects_intervals();
-	stop_img_effects($('#background'));
-	$('#sprites').find('img').each(function()
-	{
-		stop_img_effects($(this));
-	});
-}
-
 
 // Завершение эффекта для конкретного объекта
-function stop_img_effects($image)
+function stop_one_img_effects($image)
 {
 	$image.css(
 	{
-		'-webkit-animation': '',
-		'animation': '',
-		'transform': ''
-	});
-}
-
-// Применение эффекта
-function start_filter($images, filter, duration)
-{
-	let effect_speed = config.effect_speed / 1000;
-	$images.forEach(function($image)
-	{
-		$image.css(
-		{
-			'-webkit-filter': filter,
-			'filter': filter,
-			'-webkit-transition': 'filter linear ' + effect_speed + 's',
-			'-moz-transition':  'filter linear ' + effect_speed + 's',
-			'-o-transition': 'filter linear ' + effect_speed + 's',
-			'-ms-transition': 'filter linear ' + effect_speed + 's',
-			'transition': 'filter linear ' + effect_speed + 's'
-		});
-		if (duration !== undefined)
-		{
-			let filter_timeout = setTimeout(function()
-			{
-				stop_img_filters($image);
-				let pos;
-				filters_timeouts.splice(filters_timeouts.indexOf(filter_timeout), 1);
-			}, duration);
-			filters_timeouts.push(filter_timeout);
-		}
-	});
-}
-
-// Сброс всех таймаутов эффектов
-function reset_filters_timeouts()
-{
-	$.each(filters_timeouts, function(key, value)
-	{
-		clearTimeout(value);
-	});
-	filters_timeouts = [];
-}
-
-// Завершение всех фильтров для спрайта
-function stop_all_filters($images)
-{
-	reset_filters_timeouts();
-	$images.forEach(function($image)
-	{
-		stop_img_filters($image);
-	});
-}
-
-// Завершение всех фильтров для всех спрайтов
-function stop_overall_filters()
-{
-	reset_filters_timeouts();
-	stop_img_filters($('#background'));
-	$('#sprites').find('img').each(function()
-	{
-		stop_img_filters($(this));
+		'-webkit-transition': 'none',
+		'transition': 'none',
+		'-webkit-transform': 'none',
+		'transform': 'none'
 	});
 }
 
 // Завершение фильтра для конкретного объекта
-function stop_img_filters($image)
+function stop_one_img_filters($image, effect_speed = 0)
 {
-	let effect_speed = config.effect_speed / 1000;
+	let filter_str;
+	if ($image.css('filter') !== undefined)
+	{
+		let split_line = $image.css('filter').split('(');
+		filter_str = split_line[0] + '(0%)';
+	}
+	else
+		filter_str = 'none';
 	$image.css(
 	{
-		'-webkit-filter': 'none',
-		'filter': 'none',
-		'-webkit-transition': 'filter linear ' + effect_speed + 's',
-		'-moz-transition':  'filter linear ' + effect_speed + 's',
-		'-o-transition': 'filter linear ' + effect_speed + 's',
-		'-ms-transition': 'filter linear ' + effect_speed + 's',
-		'transition': 'filter linear ' + effect_speed + 's'
+		'-webkit-filter': filter_str,
+		'filter': filter_str,
+		'-webkit-transition': 'filter linear ' + effect_speed + 'ms',
+		'transition': 'filter linear ' + effect_speed + 'ms'
 	});
 }
 
-// Завершение всех эффектов и фильтров для всех спрайтов
-function stop_overall_effects_filters()
+// Завершение всех эффектов для спрайта и для фона
+function stop_all_effects()
 {
-	reset_effects_timeouts();
 	reset_effects_intervals();
 	let $background = $('#background');
-	stop_img_effects($background);
-	stop_img_filters($background);
+	stop_one_img_effects($background);
 	$background
 		.stop(true, true)
 		.css('prop', $background.css('prop'));
 	$('#sprites').find('img').each(function()
 	{
-		stop_img_effects($(this));
-		stop_img_filters($(this));
+		stop_one_img_effects($(this));
+		$(this)
+			.stop(true, true)
+			.css('prop', $(this).css('prop'));
+	});
+}
+
+// Завершение всех эффектов и фильтров для всех спрайтов
+function stop_all_effects_filters()
+{
+	reset_effects_intervals();
+	let $background = $('#background');
+	stop_one_img_effects($background);
+	stop_one_img_filters($background);
+	$background
+		.stop(true, true)
+		.css('prop', $background.css('prop'));
+	$('#sprites').find('img').each(function()
+	{
+		stop_one_img_effects($(this));
+		stop_one_img_filters($(this));
 		$(this)
 			.stop(true, true)
 			.css('prop', $(this).css('prop'));
@@ -1860,8 +1883,7 @@ function animation_snow(strength = 100) // В эффекте использов�
 	let min_size = 7;          // минимальный размер снежинки
 	let max_size = 15;         // максимальный размер снежинки
 	let delay = (101 - strength) * 10; // задержка между снежинками в миллисекундах
-	let $flake = $('<div class="flake" />').css('position', 'absolute');
-
+	let $flake = $('<div class="flake" />');
 	$flake.html(flake_char);
 
 	animation_interval = setInterval(function()
@@ -1873,31 +1895,39 @@ function animation_snow(strength = 100) // В эффекте использов�
 		let start_opacity = 1;
 		let end_opacity = 0.5 + Math.random();
 		let flake_size = min_size + Math.random() * max_size;
-		let fall_speed = (end_y - start_y) * 10 + Math.random() * (max_size - flake_size) * 500;
+		let flake_speed = (end_y - start_y) * 10 + Math.random() * (max_size - flake_size) * 500;
 		$flake
 			.clone()
 			.appendTo('#sprites')
 			.css(
 				{
-					'left': start_x,
-					'top': start_y,
+					'left': start_x + 'px',
+					'top': start_y + 'px',
 					'opacity': start_opacity,
-					'font-size': flake_size,
-					'-moz-text-shadow': '0 0 0.15em #FFF',
-					'-webkit-text-shadow': '0 0 0.15em #FFF',
-					'text-shadow': '0 0 0.15em #FFF',
-					'color': '#EEE'
+					'font-size': flake_size + 'px'
 				})
 			.animate(
 				{
-					'left': end_x,
-					'top': end_y,
+					'left': end_x + 'px',
+					'top': end_y + 'px',
 					'opacity': end_opacity
-				}, fall_speed, 'linear', function()
+				}, flake_speed, 'linear', function()
 				{
 					$(this).remove();
 				});
 	}, delay);
+}
+
+// Анимации - fog
+function animation_fog(strength = 100)
+{
+	strength = strength / 20;
+	let $fog = $('<div class="fog" />');
+	for (let i = 1; i <= strength; i++)
+		$fog
+			.clone()
+			.appendTo('#sprites')
+			.fadeIn(config.effect_speed * 5);
 }
 
 // Завершение анимации
@@ -1906,6 +1936,7 @@ function stop_animation()
 	clearInterval(animation_interval);
 	animation_interval = undefined;
 	$('.flake').remove();
+	$('.fog').remove();
 }
 
 // Сброс всех таймаутов

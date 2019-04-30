@@ -7,6 +7,7 @@
 		$gameFont = null;
 		$textSize = null;
 		$lineHeight = null;
+		$bgColor = null;
 		$content = @file_get_contents($gameDir . '/info.txt');
 		if ($content === FALSE)
 			$errorMessage = 'Ошибка чтения файла ' . $gameDir . '/info.txt';
@@ -42,6 +43,14 @@
 			else
 				$errorMessage = 'Ошибка в файле ' . $gameDir . '/info.txt<br><br>Неверная высота строки';
 		}
+		if (preg_match('/bg_color=#?(.+)/', $content, $matches))
+		{
+			$match = strtolower(trim($matches[1]));
+			if ((ctype_xdigit($match)) && ((strlen($match) == 3) || (strlen($match) == 6)))
+				$bgColor = '#' . $match;
+			else
+				$errorMessage = 'Ошибка в файле ' . $gameDir . '/info.txt<br><br>Неверный код цвета';
+		}
 
 		$content = @file_get_contents($gameDir . '/img.ini');
 		if ($content === FALSE)
@@ -71,9 +80,10 @@
 			'font' => $gameFont,
 			'text_size' => $textSize,
 			'line_height' => $lineHeight,
+			'bg_color' => $bgColor,
 			'error' => $errorMessage
 		);
-		unset($gameName, $gameWidth, $gameHeight, $errorMessage);
+		unset($gameName, $gameWidth, $gameHeight);
 	}
 	print json_encode($gamesList);
 

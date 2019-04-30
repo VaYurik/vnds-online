@@ -5,7 +5,7 @@
             <Prefix Keywords1="no" Keywords2="no" Keywords3="no" Keywords4="yes" Keywords5="no" Keywords6="no" Keywords7="yes" Keywords8="no" />
         </Settings>
         <KeywordLists>
-            <Keywords name="Comments">00 01 02 03; 03// 04((EOL)) 04((EOL))</Keywords>
+            <Keywords name="Comments">00# 00; 01 02((EOL)) 02((EOL)) 03// 04((EOL))</Keywords>
             <Keywords name="Numbers, prefix1">-</Keywords>
             <Keywords name="Numbers, prefix2"></Keywords>
             <Keywords name="Numbers, extras1"></Keywords>
@@ -24,15 +24,15 @@
             <Keywords name="Folders in comment, open"></Keywords>
             <Keywords name="Folders in comment, middle"></Keywords>
             <Keywords name="Folders in comment, close"></Keywords>
-            <Keywords name="Keywords1">setvar gsetvar var &#x000D;&#x000A;bgload bg &#x000D;&#x000A;setimg img sprite &#x000D;&#x000A;effect eff &#x000D;&#x000A;animation anim &#x000D;&#x000A;sound snd &#x000D;&#x000A;music mus&#x000D;&#x000A;label goto jump &#x000D;&#x000A;cleartext clt&#x000D;&#x000A;cls&#x000D;&#x000A;text mes msg &#x000D;&#x000A;note &#x000D;&#x000A;random rand &#x000D;&#x000A;if fi &#x000D;&#x000A;choice select sel &#x000D;&#x000A;pause wait delay &#x000D;&#x000A;reset &#x000D;&#x000A;stopskip stop ss&#x000D;&#x000A;check&#x000D;&#x000A;video&#x000D;&#x000A;quit</Keywords>
+            <Keywords name="Keywords1">setvar gsetvar var &#x000D;&#x000A;bgload bg bgc&#x000D;&#x000A;setimg img sprite &#x000D;&#x000A;relay rel&#x000D;&#x000A;effect eff filter&#x000D;&#x000A;animation anim &#x000D;&#x000A;sound snd sfx&#x000D;&#x000A;music mus&#x000D;&#x000A;label goto jump &#x000D;&#x000A;cleartext clt&#x000D;&#x000A;cls&#x000D;&#x000A;text mes msg &#x000D;&#x000A;note &#x000D;&#x000A;random rand &#x000D;&#x000A;if fi &#x000D;&#x000A;choice select sel &#x000D;&#x000A;pause wait delay &#x000D;&#x000A;reset &#x000D;&#x000A;stopskip stop ss&#x000D;&#x000A;check&#x000D;&#x000A;video&#x000D;&#x000A;quit&#x000D;&#x000A;exec</Keywords>
             <Keywords name="Keywords2">selected&#x000D;&#x000A;*</Keywords>
             <Keywords name="Keywords3">~</Keywords>
             <Keywords name="Keywords4">$ #</Keywords>
-            <Keywords name="Keywords5">dissolve blur grayscale saturate sepia invert opacity&#x000D;&#x000A;jump h-shake v-shake zoom-in zoom-out slide flip&#x000D;&#x000A;snow&#x000D;&#x000A;easy</Keywords>
-            <Keywords name="Keywords6">|</Keywords>
+            <Keywords name="Keywords5">dissolve blur grayscale saturate sepia invert opacity brightness&#x000D;&#x000A;jump h-shake v-shake zoom-in zoom-out slide flip hop rotate-left rotate-right&#x000D;&#x000A;snow&#x000D;&#x000A;fog&#x000D;&#x000A;easy</Keywords>
+            <Keywords name="Keywords6">| &lt; &gt; &lt;= &gt;= == != =</Keywords>
             <Keywords name="Keywords7">@</Keywords>
             <Keywords name="Keywords8">left right center top bottom&#x000D;&#x000A;left-side right-side left-in right-in left-out right-out&#x000D;&#x000A;top-side bottom-side top-in bottom-in top-out bottom-out</Keywords>
-            <Keywords name="Delimiters">00&quot; 00&apos; 01 02&quot; 02&apos; 03&lt; 04 05&gt; 06[ 06{ 07 08] 08} 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23</Keywords>
+            <Keywords name="Delimiters">00&quot; 00&apos; 01 02&quot; 02&apos; 03 04 05 06[ 06{ 07 08] 08} 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23</Keywords>
         </KeywordLists>
         <Styles>
             <WordsStyle name="DEFAULT" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />

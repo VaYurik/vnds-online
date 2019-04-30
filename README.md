@@ -13,6 +13,4 @@ VNDS2 ports:<br>
   Essence Hunt (rus): https://yadi.sk/d/Y531BYsO3VM9fv<br>
   Air Pressure (rus): https://yadi.sk/d/38SwZN0P3YBSg3<br>
   Шепотки (rus): https://yadi.sk/d/Bk72Bogg3YBShS<br>
-  Katawa Shoujo (rus, monday): https://yadi.sk/d/BCTjsKAz3Zqwnv
-  
-Вннимание! В папке games висит неполный кусок папки Katawa Shoujo! Полная версия - по ссылке выше, а там обрубок, который я не могу удалить, потому что местные кодеры ниасилили прикрутить удаление папок.
+  Katawa Shoujo (rus, 1 act): https://yadi.sk/d/EWDcdB8r3adSdk
