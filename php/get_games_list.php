@@ -4,19 +4,59 @@
 	foreach (glob('games/*', GLOB_ONLYDIR) as $gameDir)
 	{
 		$errorMessage = null;
+		$gameFont = null;
+		$textSize = null;
+		$lineHeight = null;
+		$bgColor = null;
 		$content = @file_get_contents($gameDir . '/info.txt');
 		if ($content === FALSE)
-			$errorMessage = 'Error reading file ' . $gameDir . '/info.txt';
-		if (preg_match('/title=(.+)/', $content, $matches) == 0)
-			$errorMessage = 'Error file format ' . $gameDir . '/info.txt';
+			$errorMessage = 'Ошибка чтения файла ' . $gameDir . '/info.txt';
+		if (preg_match('/title=(.+)/u', $content, $matches) == 0)
+			$errorMessage = 'Неверный формат файла ' . $gameDir . '/info.txt<br><br>Отсутствует название игры';
 		else
 			$gameName = $matches[1];
+		if (preg_match('/font=(.+)/', $content, $matches))
+		{
+			$match = trim($matches[1]);
+			if (!file_exists($gameDir . '/font/' . $match))
+				$errorMessage = 'Ошибка в файле ' . $gameDir . '/info.txt<br><br>Шрифт ' . $gameDir . '/font/' . $match . ' не найден';
+			else
+				$gameFont = $gameDir . '/font/' . $match;
+		}
+		if (preg_match('/text_size=(.+)/', $content, $matches))
+		{
+			$match = trim($matches[1]);
+			if ((preg_match('/(.+)em/', $match, $matches)) && (is_numeric($matches[1])))
+				$textSize = $matches[1];
+			else if ((preg_match('/(.+)px/', $match, $matches)) && (is_numeric($matches[1])))
+				$textSize = $matches[1] / 16;
+			else if ((preg_match('/(.+)%/', $match, $matches)) && (is_numeric($matches[1])))
+				$textSize = $matches[1] / 100;
+			else
+				$errorMessage = 'Ошибка в файле ' . $gameDir . '/info.txt<br><br>Неверный размер шрифта';
+		}
+		if (preg_match('/line_height=(.+)/', $content, $matches))
+		{
+			$match = trim($matches[1]);
+			if (is_numeric($match))
+				$lineHeight = $match;
+			else
+				$errorMessage = 'Ошибка в файле ' . $gameDir . '/info.txt<br><br>Неверная высота строки';
+		}
+		if (preg_match('/bg_color=#?(.+)/', $content, $matches))
+		{
+			$match = strtolower(trim($matches[1]));
+			if ((ctype_xdigit($match)) && ((strlen($match) == 3) || (strlen($match) == 6)))
+				$bgColor = '#' . $match;
+			else
+				$errorMessage = 'Ошибка в файле ' . $gameDir . '/info.txt<br><br>Неверный код цвета';
+		}
 
 		$content = @file_get_contents($gameDir . '/img.ini');
 		if ($content === FALSE)
-			$errorMessage = 'Error reading file ' . $gameDir . '/img.ini';
+			$errorMessage = 'Ошибка чтения файла ' . $gameDir . '/img.ini';
 		if (preg_match('/width=(\d+)\s*height=(\d+)/', $content, $matches) == 0)
-			$errorMessage = 'Error file format ' . $gameDir . '/img.ini';
+			$errorMessage = 'Неверный формат файла ' . $gameDir . '/img.ini';
 		else
 		{
 			$gameWidth = $matches[1];
@@ -37,9 +77,13 @@
 			'icon_b' => $gameIconBig,
 			'thumb_s' => $gameThumbSmall,
 			'thumb_b' => $gameThumbBig,
+			'font' => $gameFont,
+			'text_size' => $textSize,
+			'line_height' => $lineHeight,
+			'bg_color' => $bgColor,
 			'error' => $errorMessage
 		);
-		unset($gameName, $gameWidth, $gameHeight, $errorMessage);
+		unset($gameName, $gameWidth, $gameHeight);
 	}
 	print json_encode($gamesList);
 
@@ -49,4 +93,5 @@
 		if (count($fileList) == 1)
 			return $fileList[0];
 	}
+
 ?>

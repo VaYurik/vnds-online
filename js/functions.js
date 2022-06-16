@@ -8,49 +8,56 @@ const SAVE_MOD = 1;
 
 var config =
 {
-	sound_volume: 0.5,          // громкость звука
-	is_sound: true,             // включён или выключен звук
+	sound_volume: 0.5,            // Громкость звука
+	is_sound: true,               // Включён или выключен звук
 
-	text_size: 0,               // размер шрифта и некоторых других элементов интерфейса
+	text_size_factor: 0,          // Коэффициент увеличения размера шрифта и некоторых других элементов интерфейса
 
-	effect_speed: 350,          // скорость эффектов (меньше - быстрее)
-	text_speed: 20,             // скорость вывода текста (меньше - выше)
+	effect_speed: 250,            // Скорость эффектов (меньше - быстрее)
+	text_speed: 20,               // Скорость вывода текста (меньше - быстрее)
 
-	is_skip: false,             // включён или выключен быстрый пропуск
-	is_skip_unread: false,      // пропускать ли непрочитанное
-	skip_effect_speed: 100,     // скорость эффектов при быстром пропуске (меньше - быстрее)
-	skip_text_speed: 0,         // скорость вывода текста при быстром пропуске (меньше - выше)
-	skip_text_pause: 100,       // задержка после вывода текста перед сменой экрана
+	is_skip: false,               // Включён или выключен быстрый пропуск
+	is_skip_unread: false,        // Пропускать ли непрочитанное
+	skip_effect_speed: 100,       // Скорость эффектов при быстром пропуске (меньше - быстрее)
+	skip_text_speed: 0,           // Скорость вывода текста при быстром пропуске (меньше - быстрее)
+	skip_text_pause: 100,         // Задержка после вывода текста перед сменой экрана
 
-	is_auto: false,             // включено или выключено авточтение
-	auto_text_pause: 2000,      // задержка после вывода текста перед сменой экрана
+	is_auto: false,               // Включено или выключено авточтение
+	auto_text_pause: 2000,        // Задержка после вывода текста перед сменой экрана
 
-	notification_delay: 1200,   // Задержка вывода оповещения
+	notification_delay: 1200,     // Задержка вывода оповещения
 	
-	log_level: LOG_DISABLE,     // Выводить ли в консоль информацию
+	log_level: LOG_DISABLE,       // Выводить ли в консоль информацию
 
-	is_error_log: true,         // Сохранять ли ошибки в log-файлы (только при is_php_enabled: true)
+	is_error_log: true,           // Сохранять ли ошибки в log-файлы (только при is_php_enabled: true)
+	is_check: false,              // Режим проверки скрипта
 
-	is_fullscreen: false,       // включён ли полноэкранный режим
-	min_width: 640,             // минимальное разрешение экрана: ширина
-	min_height: 480             // минимальное разрешение экрана: высота
+	is_fullscreen: false,         // Включён ли полноэкранный режим
+	min_width: 640,               // Минимальное разрешение экрана: ширина
+	min_height: 480               // Минимальное разрешение экрана: высота
 };
 
-var title;                    // Дефолтный заголовок страницы
-var favicon;                  // Дефолтный фавикон
-var old_effect_speed;         // Предыдущая скорость эффектов в окне сообщений
-var old_text_speed;           // Предыдущая скорость вывода текста в окне сообщений
-var is_message_box;           // Переменная, хранящая состояние блока вывода текста
-var type_interval;            // Переменная для хранения ссылки на интервал при печати печатающей машинки
-var is_promo = false;         // Информация о том, был ли произведён клик на баннер или нет
-var vn;                       // Объект класса интерпретатора
-var is_php_enabled;   // Имеется ли поддержка php на сервере
-var is_skip_enabled;  // Активна ли кнопка быстрого пропуска
-var resolution =              // Разрешение окна игры (равное или разрешению игры, или размеру окна экрана браузера)
+var title;                      // Дефолтный заголовок страницы
+var favicon;                    // Дефолтный фавикон
+var old_effect_speed;           // Предыдущая скорость эффектов в окне сообщений
+var old_text_speed;             // Предыдущая скорость вывода текста в окне сообщений
+var music_volume;               // Текущая громкость музыки для эффекта затухания
+var is_message_box;             // Переменная, хранящая состояние блока вывода текста
+var type_interval;              // Переменная для хранения идентификатора интервала при печати печатающей машинки
+var effect_intervals = [];      // Переменная для хранения массива идентификаторов интервалов эффектов
+var effect_timeout;             // Переменная для хранения идентификатора таймаута эффектов
+var animation_interval;         // Переменная для хранения идентификатора интервала, использующегося для анимации
+var is_promo = true;            // Информация о том, был ли произведён клик на баннер или нет
+var vn;                         // Объект класса интерпретатора
+var is_php_enabled;             // Имеется ли поддержка php на сервере
+var is_skip_enabled;            // Активна ли кнопка быстрого пропуска
+var resolution =                // Разрешение окна игры (равное или разрешению игры, или размеру окна экрана браузера)
 		{
-			width: null,            // ширина
-			height: null            // высота
+			width: null,              // ширина
+			height: null,             // высота
+			ratio: null               // коэффициент относительно разрешения игры
 		}
+var text_size_ratio;            // Коэффициент размера шрифта, в зависимости от размера окна
 
 $(document).ready(function()
 {
@@ -67,7 +74,6 @@ $(document).ready(function()
 // Функция проверки поддержки php на сервере
 function check_php_enabled(callback)
 {
-	let func_name = get_function_name(arguments.callee);
 	$.get('php/check_php.php')
 		.done(function(data)
 		{
@@ -79,7 +85,7 @@ function check_php_enabled(callback)
 		})
 		.always(function()
 		{
-			if (config.log_level == LOG_ALL) console.log(func_name + ': ' + is_php_enabled);
+			if (config.log_level == LOG_ALL) console.log('check_php_enabled: ' + is_php_enabled);
 			$('#info_php_enabled').text(is_php_enabled);
 			if (callback !== undefined)
 				callback();
@@ -96,8 +102,8 @@ function bind_window_resize_events()
 // Функция, выполняемая при наступлении события изменения размера экрана браузера и некоторых других
 function exec_window_resize_events()
 {
-	let win_width = (window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth) - 1;
-	let win_height = (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight) - 1;
+	let win_width = (window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth) - 2;
+	let win_height = (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight) - 2;
 	$('#info_screen_resolution').text(win_width + 'x' + win_height);
 	if ((vn !== undefined) && (vn.game.resolution.width !== null) && (vn.game.resolution.height !== null))
 	{
@@ -106,8 +112,7 @@ function exec_window_resize_events()
 		if (resolution.height === null)
 			resolution.height = vn.game.resolution.height;
 
-		let height;
-		let width;
+		let width, height;
 		if (!config.is_fullscreen && (win_width >= vn.game.resolution.width))
 		{
 			if (win_height >= vn.game.resolution.height)
@@ -146,6 +151,21 @@ function exec_window_resize_events()
 			'width': resolution.width + 'px',
 			'height': resolution.height + 'px'
 		});
+		text_size_ratio = resolution.width / vn.game.resolution.width;
+		if (text_size_ratio < 0.82)
+			text_size_ratio = 0.82;
+/*		resolution.ratio = resolution.width / vn.game.resolution.width;
+		if ($('#message_box').height() <= 170)
+			text_size_ratio = 1;
+		else
+			text_size_ratio = resolution.ratio;*/
+		$('#message_box_name').css('font-size', text_size_ratio * (Number(vn.game.text_size) + (1 / vn.game.text_size) * 0.1 + config.text_size_factor / 10) + 'em');
+		$('#message_box_text').css(
+		{
+			'font-size': text_size_ratio * (Number(vn.game.text_size) + config.text_size_factor / 10) + 'em',
+			'line-height': vn.game.line_height
+		});
+		set_choice_button_size();
 	}
 	else
 	{
@@ -154,10 +174,46 @@ function exec_window_resize_events()
 	}
 }
 
+// Функция подбора размера кнопок меню и шрифта в них
+function set_choice_button_size()
+{
+	let $choice_menu = $('#choice_menu');
+	let i = 15;
+	while (($choice_menu.height() >= resolution.height) && (i > 0))
+	{
+		$choice_menu.find('button').css(
+		{
+			'font-size': (i / 10) + 'em',
+			'margin': (i / 2) + 'px 0',
+			'padding': (i / 2) + 'px 0'
+		});
+		i--;
+	}
+	let max_width;
+	do
+	{
+		$choice_menu.find('button').css(
+		{
+			'font-size': (i / 10) + 'em',
+			'width': '100%'
+		});
+		max_width = 0;
+		$.each($choice_menu, function()
+		{
+			if ($(this).width() > max_width)
+				max_width = $(this).width();
+		});
+		max_width = (max_width + 30);
+		i--;
+	}
+	while ((max_width >= resolution.width) && (i > 0));
+	$choice_menu.find('button').width(max_width + 'px');
+}
+
 // Функция создания окна лога
 function init_log()
 {
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('init_log');
 	let $info = $('#info');
 	$info.find('span').hide();
 
@@ -167,7 +223,7 @@ function init_log()
 		{
 			$info.animate(
 			{
-				top: '-175px',
+				top: '-237px',
 				left: '-180px',
 				'padding-bottom': '30px'
 			}, 200);
@@ -196,7 +252,7 @@ function init_log()
 // Функция создания окна копирайта
 function init_thanks()
 {
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('init_thanks');
 	let $thanks = $('#thanks');
 
 	$thanks.on('click', function()
@@ -224,13 +280,12 @@ function init_thanks()
 	});
 }
 
-
 // Функция, получающая список игр и их настройки
 function create_main_menu()
 {
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('create_main_menu');
 	let $main_screen = $('#main_screen')
-	$main_screen.stop().fadeIn(config.effect_speed);
+	$main_screen.stop().fadeIn(config.effect_speed);;
 	show_promo();
 
 	$('title').text(title);
@@ -240,6 +295,16 @@ function create_main_menu()
 		.appendTo('head');
 	$('#info_game_name').text('');
 	$('#info_game_resolution').text('');
+	$('#info_script_name').text('');
+	$('#info_script_line_num').text('');
+	$('#info_bg_color').text('');
+	$('#info_background').text('');
+	$('#info_sprites').text('');
+	$('#info_animation').text('');
+	$('#info_video').text('');
+	$('#info_music').text('');
+	$('#info_sound').text('');
+	$('#info_sfx').text('');
 	let games_list_source;
 	if (is_php_enabled)
 		games_list_source = "php/get_games_list.php";
@@ -269,6 +334,7 @@ function create_main_menu()
 					{
 						$('<button>')
 							.attr('id', id)
+							.attr('name', value.short_name)
 							.attr('value', key)
 							.appendTo('#main_menu');
 						$id = $('#' + id);
@@ -279,6 +345,16 @@ function create_main_menu()
 								.appendTo($id);
 						}
 						$id.append('<div>' + value.full_name + '</div>');
+						if (value.font !== null)
+						{
+							$('head').append('<style type="text/css">\n' + 
+								'@font-face\n' +
+								'{\n' +
+									'\tfont-family: "' + value.short_name + '_font";\n' + 
+									'\tsrc: url(' + value.font + ');\n' + 
+								'}\n' +
+								'</style>');
+						}
 					}
 					$id.on('click', function()
 					{
@@ -294,6 +370,23 @@ function create_main_menu()
 							height: value.height,
 							ratio: value.height / value.width
 						};
+						vn.game.font = value.font;
+						if (value.text_size)
+							vn.game.text_size = value.text_size;
+						else
+							vn.game.text_size = 1;
+						if (value.line_height)
+							vn.game.line_height = value.line_height;
+						else
+							vn.game.line_height = 'normal';
+						if (value.bg_color)
+							vn.game.bg_color = value.bg_color;
+						else
+							vn.game.bg_color = '#555';
+						if (vn.game.bg_color.length === 4)
+							vn.game.bg_color += 'B';
+						else if (vn.game.bg_color.length === 7)
+							vn.game.bg_color += 'B0';
 						vn.game.icons =
 						{
 							small: value.icon_s,
@@ -305,26 +398,45 @@ function create_main_menu()
 							big: value.thumb_b
 						}
 						vn.game.script_line_num = 0;
-						exec_window_resize_events();
 						$main_screen.stop().fadeOut(config.effect_speed, function()
 						{
-							$('title').text(title + ' : ' + vn.game.full_name);
+							$('title').text(title + ' : ' + vn.game.full_name.replace(/<[^>]+>/g,''));
 							$('#favicon').remove();
 							$('<link id="favicon" rel="icon" />')
 								.attr('href', vn.game.icons.small)
 								.appendTo('head');
-							$('#info_game_name').text(vn.game.full_name);
+							$('#info_game_name').text(vn.game.full_name.replace(/<[^>]+>/g,''));
 							$('#info_game_resolution').text(vn.game.resolution.width + 'x' + vn.game.resolution.height);
 							$('#game_screen').stop().fadeIn(config.effect_speed);
+							$('#message_box').css('background-color', vn.game.bg_color);
+							if (vn.game.font !== null)
+							{
+								$('#message_box_name').css('font-family', vn.game.short_name + '_font');
+								$('#message_box_text').css('font-family', vn.game.short_name + '_font');
+							}
+							else
+							{
+								$('#message_box_name').css('font-family', '');
+								$('#message_box_text').css('font-family', '');
+							}
+							$('#message_box_name').css('font-size', Number(vn.game.text_size) + 0.1 + 'em');
+							$('#message_box_text').css('font-size', Number(vn.game.text_size) + 'em');
+							exec_window_resize_events();
 							create_game_menu();
 						});
 					});
 				}
 			});
+			let hash = window.location.hash.slice(1);
+			if (hash)
+			{
+				let button_name = 'button[name="' + hash + '"]';
+				$(button_name).trigger('click');
+			}
 		})
 		.fail(function(jqXHR, textStatus, errorThrown)
 		{
-			show_error('Incorrect AJAX-request: ' + errorThrown);
+			show_error('Неверный запрос: ' + errorThrown);
 		});
 }
 
@@ -337,13 +449,13 @@ function supports_local_storage()
 			return true;
 		else
 		{
-			show_error('Browser not support local storage');
+			show_error('Браузер не поддерживает локальное хранилище');
 			return false;
 		}
 	}
 	catch (e)
 	{
-		show_error('Browser not support local storage');
+		show_error('Браузер не поддерживает локальное хранилище');
 		return false;
 	}
 }
@@ -351,7 +463,7 @@ function supports_local_storage()
 // Функция загрузки параметров сессии
 function load_settings()
 {
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('load_settings');
 	if (supports_local_storage())
 	{
 		try
@@ -375,16 +487,16 @@ function load_settings()
 			item = localStorage.getItem('is_fullscreen');
 			if (item !== null)
 				config.is_fullscreen = Boolean(Number(item));
-			item = localStorage.getItem('text_size');
+			item = localStorage.getItem('text_size_factor');
 			if (item !== null)
-				config.text_size = Number(item);
+				config.text_size_factor = Number(item);
 			item = localStorage.getItem('log_level');
 			if (item !== null)
 				config.log_level = Number(item);
 		}
 		catch (e)
 		{
-			show_warning('Error in local storage ' + e.name);
+			show_warning('Ошибка в локальном хранилище: ' + e.name);
 			return false;
 		}
 	}
@@ -394,7 +506,7 @@ function load_settings()
 // Функция сохранения параметров сессии
 function save_settings()
 {
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('save_settings');
 	if (supports_local_storage())
 	{
 		try
@@ -404,13 +516,13 @@ function save_settings()
 			localStorage.setItem('text_speed', Number(config.text_speed));
 			localStorage.setItem('auto_text_pause', Number(config.auto_text_pause));
 			localStorage.setItem('is_skip_unread', Number(config.is_skip_unread));
-			localStorage.setItem('text_size', Number(config.text_size));
+			localStorage.setItem('text_size_factor', Number(config.text_size_factor));
 			localStorage.setItem('is_fullscreen', Number(config.is_fullscreen));
 			localStorage.setItem('log_level', Number(config.log_level));
 		}
 		catch (e)
 		{
-			show_warning('Error in local storage ' + e.name);
+			show_warning('Ошибка в локальном хранилище: ' + e.name);
 			return false;
 		}
 	}
@@ -420,11 +532,17 @@ function save_settings()
 // Функция, изменяющая стили в зависимости от настройки размера шрифта в настройках
 function apply_text_size()
 {
-	$('#message_box').css('height', (12 + config.text_size * 2.5) * 10 + 'px');
-	$('#message_box_text').css('height', (8.5 + config.text_size * 2.5) * 10 + 'px');
-	$('#message_box_menu').css('font-size', (9 + config.text_size) / 10 + 'em');
-	$('#message_box_name').css('font-size', (11 + config.text_size) / 10 + 'em');
-	$('#message_box_text').css('font-size', (10 + config.text_size) / 10 + 'em');
+	let $message_box = $('#message_box');
+	if ($message_box.height() <= 170)
+		$message_box.css('height', (120 + config.text_size_factor * 25) + 'px');
+	$('#message_box_menu').css('font-size', (0.9 + config.text_size_factor / 10) + 'em');
+	let text_size;
+	if (vn === undefined)
+		text_size = 1;
+	else
+		text_size = Number(vn.game.text_size);
+	$('#message_box_name').css('font-size', text_size_ratio * (text_size + (1 / text_size) * 0.1 + config.text_size_factor / 10) + 'em');
+	$('#message_box_text').css('font-size', text_size_ratio * (text_size + config.text_size_factor / 10) + 'em');
 }
 
 // Функция отображения блока сообщений
@@ -433,8 +551,8 @@ function show_message_box()
 	let $message_box = $('#message_box');
 	if ($message_box.is(':visible'))
 		return;
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
-	$message_box.stop().fadeIn(config.effect_speed, function()
+	if (config.log_level == LOG_ALL) console.log('show_message_box');
+	$message_box.stop().fadeTo(config.effect_speed, 1, function()
 	{
 		$('#game_screen')
 			.css('cursor', 'default')
@@ -444,7 +562,7 @@ function show_message_box()
 }
 
 // Функция скрытия блока сообщений
-function hide_message_box(callback)
+function hide_message_box(is_clear, callback)
 {
 	let $message_box = $('#message_box');
 	if (!$message_box.is(':visible'))
@@ -453,10 +571,15 @@ function hide_message_box(callback)
 			callback();
 		return;
 	}
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('hide_message_box');
 	remove_message_box_events();
 	$message_box.stop().fadeOut(config.effect_speed, function()
 	{
+		if (is_clear)
+		{
+			$('#message_box_name').html('');
+			$('#message_box_text').html('');
+		}
 		if (callback !== undefined)
 			callback();
 	});
@@ -465,7 +588,7 @@ function hide_message_box(callback)
 // Очистка всех событий блока сообщений
 function remove_message_box_events()
 {
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('remove_message_box_events');
 	$('#message_box').find('a:not(#message_box_next)').off('click');
 	$(document).off('keydown.message_box');
 }
@@ -473,7 +596,7 @@ function remove_message_box_events()
 // Присвоение событий элементам блока сообщений
 function bind_message_box_events()
 {
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('bind_message_box_events');
 	let $message_box_menu_load = $('#message_box_menu_load');
 	let $message_box_menu_save = $('#message_box_menu_save');
 	let $message_box_menu_skip = $('#message_box_menu_skip');
@@ -556,7 +679,6 @@ function bind_message_box_events()
 				$message_box_menu_menu.trigger('click');
 		}
 	});
-
 	$message_box_menu_load.on('click', function()
 	{
 		create_save_load_menu(LOAD_MOD);
@@ -609,7 +731,7 @@ function bind_message_box_events()
 	});
 	$message_box_menu_hide.on('click', function()
 	{
-		hide_message_box(function()
+		hide_message_box(false, function()
 		{
 			let $game_screen = $('#game_screen');
 			$game_screen
@@ -617,6 +739,17 @@ function bind_message_box_events()
 				.on('click', function()
 				{
 					show_message_box();
+					let $sprites = $('#sprites');
+					$sprites
+						.css('cursor', 'pointer')
+						.on('click', function(e)
+						{
+							let $message_box_next = $('#message_box_next');
+							if ($message_box_next.is(':visible'))
+								$message_box_next.trigger('click');
+							else
+								$sprites.off('click');
+						});
 					return false;
 				});
 			$(document).on('keydown.message_box', function(e)
@@ -639,7 +772,7 @@ function bind_message_box_events()
 function set_skip_enabled(state)
 {
 	if (is_skip_enabled === state) return;
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee) + ': ' + state);
+	if (config.log_level == LOG_ALL) console.log('set_skip_enabled: ' + state);
 	is_skip_enabled = state;
 	if (state)
 		$('#message_box_menu_skip').removeClass('inactive');
@@ -654,8 +787,9 @@ function set_skip_enabled(state)
 function set_skip(state)
 {
 	if (config.is_skip === state) return;
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee) + ': ' + state);
+	if (config.log_level == LOG_ALL) console.log('set_skip: ' + state);
 	config.is_skip = state;
+	let $message_box_text = $('#message_box_text');
 	let $message_box_next = $('#message_box_next');
 	if (config.is_skip)
 	{
@@ -665,8 +799,9 @@ function set_skip(state)
 		config.effect_speed = config.skip_effect_speed;
 		config.text_speed = config.skip_text_speed;
 		$message_box_next.hide();
-		$('#message_box_text').css('cursor', 'default');
 		$('#message_box_menu_skip').addClass('enabled');
+		if (type_interval !== undefined)
+			$message_box_next.trigger('click');
 		$message_box_next.trigger('click');
 	}
 	else
@@ -682,24 +817,32 @@ function set_skip(state)
 function set_auto(state)
 {
 	if (config.is_auto === state) return;
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee) + ': ' + state);
+	if (config.log_level == LOG_ALL) console.log('set_auto: ' + state);
 	config.is_auto = state;
+	let $message_box_next = $('#message_box_next');
 	if (config.is_auto)
 	{
 		if (config.is_skip) set_skip(false);
 		$('#message_box_menu_auto').addClass('enabled');
-		$('#message_box_next').trigger('click');
+		vn.text_timeout = setTimeout(function()
+		{
+			$message_box_next.trigger('click');
+		}, config.auto_text_pause);
 	}
 	else
+	{
+		clearTimeout(vn.text_timeout);
 		$('#message_box_menu_auto').removeClass('enabled');
+	}
 }
 
 // Функция переключения проигрывания звуков
 function set_sound(state)
 {
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee) + ': ' + state);
+	if (config.log_level == LOG_ALL) console.log('set_sound: ' + state);
 	config.is_sound = state;
 	$('#sound').prop('muted', !config.is_sound);
+	$('#sfx').prop('muted', !config.is_sound);
 	$('#music').prop('muted', !config.is_sound);
 	if (config.is_sound)
 		$('#message_box_menu_sound').removeClass('disabled');
@@ -709,14 +852,13 @@ function set_sound(state)
 }
 
 // Вывод модального оповещения
-function show_notification(str, delay)
+function show_notification(str, delay = 0)
 {
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
-	if (delay === undefined)
-		delay = 0;
+	if (config.log_level == LOG_ALL) console.log('show_notification');
+	if (vn)
+		vn.is_pause = true;
 	$('#modal_box_next').hide();
 	$('#modal_box_text').html(str);
-	
 	$('#modal_screen').stop().fadeIn(config.effect_speed, function()
 	{
 		if (delay > 0) setTimeout(close_notification, delay);
@@ -727,20 +869,22 @@ function show_notification(str, delay)
 // Закрытие модального оповещения
 function close_notification(callback)
 {
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
-	if (callback !== undefined)
-		$('#modal_screen').stop().fadeOut(config.effect_speed, function()
-		{
+	if (config.log_level == LOG_ALL) console.log('close_notification');
+	$('#modal_screen').stop().fadeOut(config.effect_speed, function()
+	{
+		if (vn)
+			vn.is_pause = false;
+		if (callback !== undefined)
 			callback();
-		});
-	else
-		$('#modal_screen').stop().fadeOut(config.effect_speed);
+	});
 }
 
 // Вывод модального оповещения
 function show_dialog(str, callback)
 {
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('show_dialog');
+	if (vn)
+		vn.is_pause = true;
 	$('#modal_box_next').show();
 	$('#modal_box_text').html(str);
 	$('#modal_screen').stop().fadeIn(config.effect_speed, function()
@@ -766,23 +910,41 @@ function show_dialog(str, callback)
 // Функция, отображающая главное меню
 function create_game_menu()
 {
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('create_game_menu');
+	window.location.hash = vn.game.short_name;
 	let $background = $('#background');
 	let $game_menu = $('#game_menu');
 	let $overlay = $('#overlay');
 	show_promo();
+	config.is_check = false;
 	if (config.is_skip) set_skip(false);
 	if (config.is_auto) set_auto(false);
+	vn.anim('~');
+	vn.relay('~');
 
 	$('#game_menu_start').on('click', function()
 	{
+		let post_array = 
+		{
+			type: 'Start',
+			game_name: vn.game.full_name
+		}
+		if (is_php_enabled)
+			$.post('php/save_games_log.php', post_array);
 		set_skip_enabled(config.is_skip_unread);
 		$game_menu.find('*').off('click');
+		$('#sprites').find('img').remove();
+		$('#sound').trigger('pause');
+		$('#sfx').trigger('pause');
+		$('#music').trigger('pause');
 		$overlay.stop().fadeOut(config.effect_speed);
 		$game_menu.stop().fadeOut(config.effect_speed, function()
 		{
-			vn.drop();
-			vn.execute({command: 'jump', params: 'main.scr'});
+			hide_message_box(true, function()
+			{
+				vn.drop();
+				vn.perform({command: 'jump', params: 'main.scr'});
+			});
 		});
 		return false;
 	});
@@ -793,6 +955,14 @@ function create_game_menu()
 		$game_menu_cont.removeClass('disabled');
 		$game_menu_cont.on('click', function()
 		{
+			let post_array = 
+			{
+				type: 'Cont',
+				game_name: vn.game.full_name
+			}
+			if (is_php_enabled)
+				$.post('php/save_games_log.php', post_array);
+			set_skip_enabled(config.is_skip_unread);
 			$game_menu.find('*').off('click');
 			$overlay.stop().fadeOut(config.effect_speed);
 			$game_menu.stop().fadeOut(config.effect_speed, function()
@@ -838,6 +1008,14 @@ function create_game_menu()
 			$game_menu_load.removeClass('disabled');
 			$game_menu_load.on('click', function()
 			{
+				let post_array = 
+				{
+					type: 'Load',
+					game_name: vn.game.full_name
+				}
+				if (is_php_enabled)
+					$.post('php/save_games_log.php', post_array);
+				set_skip_enabled(config.is_skip_unread);
 				$game_menu.find('*').off('click');
 				$overlay.stop().fadeOut(config.effect_speed);
 				$game_menu.stop().fadeOut(config.effect_speed, function()
@@ -863,18 +1041,25 @@ function create_game_menu()
 
 	$('#game_menu_exit').on('click', function()
 	{
-		$game_menu.find('*').off('click');
-		hide_message_box(function()
+		history.pushState('', document.title, window.location.pathname);
+		let post_array = 
 		{
-			$('#message_box_name').html('');
-			$('#message_box_text').html('');
-			$('message_box_next').off('click');
+			type: 'Exit',
+			game_name: vn.game.full_name
+		}
+		if (is_php_enabled)
+			$.post('php/save_games_log.php', post_array);
+		$game_menu.find('*').off('click');
+		hide_message_box(true, function()
+		{
+			$('#message_box_next').off('click');
 		});
 		$('#game_screen').stop().fadeOut(config.effect_speed, function()
 		{
 			$('#sprites').find('img').remove();
 			$('#background').css({'background-image': ''});
 			$('#sound').trigger('pause');
+			$('#sfx').trigger('pause');
 			$('#music').trigger('pause');
 			vn = undefined;
 			create_main_menu();
@@ -883,7 +1068,8 @@ function create_game_menu()
 	});
 
 	let filename = vn.game.thumbs.big;
-	if ($background.css('background-image') === 'none')
+	let bg_image = $background.css('background-image');
+	if ((bg_image) && (bg_image === 'none'))
 	{
 		$.get(filename).done(function()
 		{
@@ -895,6 +1081,7 @@ function create_game_menu()
 	{
 		$game_menu.fadeIn(config.effect_speed);
 	});
+
 }
 
 // Создание списка сохранений
@@ -902,10 +1089,15 @@ function create_game_menu()
 // callback: функция, вызываемая по нажатию кнопки "Вернуться"
 function create_save_load_menu(mod, callback)
 {
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('create_save_load_menu');
 	let $save_load_menu = $('#save_load_menu');
 	let $overlay = $('#overlay');
-	$overlay.stop().fadeIn(config.effect_speed);
+ 	vn.is_pause = true;
+	$overlay.stop().fadeTo(config.effect_speed, 1);
+	show_promo();
+	config.is_check = false;
+	if (config.is_skip) set_skip(false);
+	if (config.is_auto) set_auto(false);
 	if (mod)
 		$save_load_menu.prepend('<h2>Сохранение</h2>');
 	else
@@ -927,9 +1119,28 @@ function create_save_load_menu(mod, callback)
 		if (Boolean(load_game))
 		{
 			$id.removeClass('center');
-			$('<img />')
-				.attr('src', vn.game.dir + '/background/' + load_game.bg)
-				.appendTo($id);
+			let bg = '#333';
+			if (!$.isEmptyObject(load_game.bg))
+			{
+				if (load_game.bg.file === undefined) // Костыль для совместимости со старыми сохранениями
+					bg = load_game.bg;
+				else
+					bg = load_game.bg.file;
+			}
+			if (bg.indexOf('#') === -1)
+			{
+				$('<img />')
+					.attr('src', vn.game.dir + '/background/' + bg)
+					.appendTo($id);
+			}
+			else
+			{
+				$('<img />')
+					.attr('src', 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=')
+					.css('background-color', bg)
+					.appendTo($id);
+			}
+				
 			$id.append('<div>' + get_file_name(load_game.script_name) + ' <span>[' + load_game.script_line_num + ']</span></div>');
 			$id.find('div').css('text-align', 'left');
 		}
@@ -952,6 +1163,7 @@ function create_save_load_menu(mod, callback)
 					vn.save(selected);
 				else
 					vn.load(selected);
+				vn.is_pause = false;
 			});
 
 			return false;
@@ -981,31 +1193,34 @@ function create_save_load_menu(mod, callback)
 		{
 			$save_load_menu.find('button').remove();
 			$save_load_menu.find('h2').remove();
+			vn.is_pause = false;
 			if (callback !== undefined)
 				callback();
 		});
 	});
 	resize_save_load_menu();
-	$save_load_menu.find('button').fadeIn(config.effect_speed);
-	$save_load_menu.stop().fadeIn(config.effect_speed);
+	$save_load_menu.find('button').fadeTo(config.effect_speed, 1);
+	$save_load_menu.stop().fadeTo(config.effect_speed, 1);
 }
 
 // Изменение размеров кнопок меню загрузки и сохранения
 function resize_save_load_menu()
 {
 	let $save_load_menu = $('#save_load_menu');
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('resize_save_load_menu');
 	let button_height = Math.floor(resolution.height / 11) + 2;
 	let button_margin = Math.floor(button_height / 3);
 	button_height = button_height - button_margin;
 	let button_width = Math.floor(resolution.width / 3);
-	$save_load_menu.find('button').css({
+	$save_load_menu.find('button').css(
+	{
 		'height': button_height + 'px',
 		'width': button_width + 'px',
 		'margin-top': button_margin / 2 + 'px',
 		'margin-bottom': button_margin / 2 + 'px'
 	});
-	$save_load_menu.find('button').find('div').css({
+	$save_load_menu.find('button').find('div').css(
+	{
 		'height': (button_height - 6) + 'px',
 		'width': button_width + 'px'
 	});
@@ -1015,22 +1230,27 @@ function resize_save_load_menu()
 // Создание меню настроек
 function create_config_menu(callback)
 {
-	if (config.log_level == LOG_ALL) console.log(get_function_name(arguments.callee));
+	if (config.log_level == LOG_ALL) console.log('create_config_menu');
 	let $config_menu = $('#config_menu');
 	let $overlay = $('#overlay');
 	let $config_menu_text_size = $('#config_menu_text_size');
 	let $config_menu_text_speed = $('#config_menu_text_speed');
 	let $config_menu_auto_text_pause = $('#config_menu_auto_text_pause');
 	let $config_menu_sound_volume = $('#config_menu_sound_volume');
-	$config_menu_text_size.val(config.text_size);
+	$config_menu_text_size.val(config.text_size_factor);
 	$config_menu_text_speed.val(20 - config.text_speed);
 	$config_menu_auto_text_pause.val(config.auto_text_pause / 200);
 	$('#config_menu_is_skip_unread').prop('checked', config.is_skip_unread);
 	$config_menu_sound_volume.val(config.sound_volume * 10);
+	$config_menu_sound_volume.on("input change", function()
+	{
+		config.sound_volume = Number($config_menu_sound_volume.val() / 10);
+		$('#music').prop('volume', config.sound_volume);
+	});
 	$('#config_menu_is_fullscreen').prop('checked', config.is_fullscreen);
 	$('#config_menu_log_' + config.log_level).prop('checked', true);
-	$overlay.stop().fadeIn(config.effect_speed);
-	$config_menu.stop().fadeIn(config.effect_speed);
+	$overlay.stop().fadeTo(config.effect_speed, 1);
+	$config_menu.stop().fadeTo(config.effect_speed, 1);
 	let $config_menu_exit = $('#config_menu_exit');
 	$(document).on('keydown.config', function(e)
 	{
@@ -1041,11 +1261,10 @@ function create_config_menu(callback)
 	{
 		$config_menu.find('button').off('click');
 		$(document).off('keydown.config');
-		config.text_size = Number($config_menu_text_size.val());
+		config.text_size_factor = Number($config_menu_text_size.val());
 		config.text_speed = Number(20 - $config_menu_text_speed.val());
 		config.auto_text_pause = Number($config_menu_auto_text_pause.val() * 200);
 		config.is_skip_unread = $('#config_menu_is_skip_unread').prop('checked');
-		config.sound_volume = Number($config_menu_sound_volume.val() / 10);
 		config.is_fullscreen = $('#config_menu_is_fullscreen').prop('checked');
 		config.log_level = $('input[name=log]:checked').val();
 		exec_window_resize_events();
@@ -1064,18 +1283,61 @@ function create_config_menu(callback)
  */
 
 // Функция, возвращающая название функции, из которой вызвана
-function get_function_name(fn)
+/*function get_function_name(fn)
 {
 	return fn.toString().match(/function ([^(]*)\(/)[1] + '()';
+}*/
+
+function get_function_name(fn)
+{
+  let str = fn.toString();
+  str = str.substr('function '.length);
+  str = str.substr(0, str.indexOf('('));
+  return str;
+}
+
+// Функция, проверяющая, является ли переданная строка шестнадцатеричным числом
+function is_hex_color(str)
+{
+	if ((str === '') || (str.indexOf('#') === -1))
+		return false;
+	str = str.replace(/^#/, '');
+	if ((str.length !== 3) && (str.length !== 6))
+		return false;
+	str = str.replace(/^0+/, '');
+	if (str === '')
+		return true;
+	let hex = parseInt(str, 16);
+	return (hex.toString(16) === str.toLowerCase());
+}
+
+// Функция, проверяющая, является ли имя файла файлом изображения
+function is_image_file(filename)
+{
+	if (filename === '')
+		return false;
+	let extentions_list = ['jpg', 'jpeg', 'gif', 'png', 'webp', 'bmp'];
+	let ext = filename.split('.').pop().toLowerCase();
+	return (extentions_list.indexOf(ext) !== -1);
+}
+
+// Функция, проверяющая, является ли имя файла аудиофайлом
+function is_audio_file(filename)
+{
+	if (filename === '')
+		return false;
+	let extentions_list = ['mp3', 'aac', 'wav'];
+	let ext = filename.split('.').pop().toLowerCase();
+	return (extentions_list.indexOf(ext) !== -1);
 }
 
 // Сообщение об ошибке
-function show_error(message, delay)
+function show_error(message, delay = 0)
 {
-	if (delay === undefined)
-		delay = 0;
 	let post_array;
 	if (vn)
+	{
+		message = 'Критическая ошибка в скрипте ' + vn.game.script_name + ' в строке ' + vn.game.script_line_num + '!<br><br>' + message;
 		post_array = 
 		{
 			message: message,
@@ -1084,6 +1346,7 @@ function show_error(message, delay)
 			script_name: vn.game.script_name,
 			script_line_num: vn.game.script_line_num
 		}
+	}
 	else
 		post_array = 
 		{
@@ -1092,8 +1355,8 @@ function show_error(message, delay)
 		}
 	
 	if (config.is_error_log && is_php_enabled)
-		$.post('php/save_log.php', post_array);
-	console.error(message);
+		$.post('php/save_error_log.php', post_array);
+	console.error(message.replace(/<br>/g, ' '));
 	show_notification(message, delay);
 }
 
@@ -1102,6 +1365,8 @@ function show_warning(message, callback)
 {
 	let post_array;
 	if (vn)
+	{
+		message = 'Ошибка в скрипте ' + vn.game.script_name + ' в строке ' + vn.game.script_line_num + '!<br><br>' + message;
 		post_array = 
 		{
 			message: message,
@@ -1110,6 +1375,7 @@ function show_warning(message, callback)
 			script_name: vn.game.script_name,
 			script_line_num: vn.game.script_line_num
 		}
+	}
 	else
 		post_array = 
 		{
@@ -1118,8 +1384,8 @@ function show_warning(message, callback)
 		}
 		
 	if (config.is_error_log && is_php_enabled)
-		$.post('php/save_log.php', post_array);
-	console.warn(message);
+		$.post('php/save_error_log.php', post_array);
+	console.warn(message.replace(/<br>/g, ' '));
 	if (callback !== undefined)
 		show_dialog(message, callback);
 	else
@@ -1158,47 +1424,55 @@ function obj_to_str(obj)
 }
 
 // "Печатающая машинка"
-function type_writer(str)
+function type_writer(str, text_speed = 0, prev_text = '')
 {
-	var $message_box_name = $('#message_box_name');
+	let $message_box_name = $('#message_box_name');
 	var $message_box_text = $('#message_box_text');
-	var message_box_font = $message_box_text.css('font-size') + ' ' + $message_box_text.css('font-family');
-	var padding_left = $message_box_text.css('padding-left').replace('px', '');
-	var padding_right = $message_box_text.css('padding-right').replace('px', '');
-	var message_box_width = $message_box_text.width() - padding_left - padding_right;
+	var message_box_font;
+	var padding_left, padding_right;
+	var message_box_width;
 	
 	clearInterval(type_interval);
-	var i = 0;
+	type_interval = undefined;
+	let char_name = '';
 	let rb_pos = str.indexOf(']');
 	if ((str[0] === '[') && (rb_pos > 0) && (rb_pos + 1 < str.length))
 	{
 		$message_box_name.show();
-		$message_box_name.html(str.substring(1, rb_pos++).trim());
-		str = str.substring(++rb_pos);
+		char_name = str.substring(1, rb_pos++).trim();
+		$message_box_name.html(char_name);
+		char_name = '[' + char_name + ']';
+		str = str.substring(rb_pos);
 		str = '<i>' + str + '</i>';
 	}
 	else
 		$message_box_name.hide();
+	rb_pos = prev_text.indexOf(']');
+	if ((prev_text[0] === '[') && (rb_pos > 0) && (rb_pos + 1 < prev_text.length))
+		prev_text = prev_text.substring(++rb_pos).trim();
+	if (str === '')
+		return char_name + prev_text;
+	var type_str = prev_text;
 	if (config.is_skip)
 	{
 		setTimeout(function()
 		{
-			$message_box_text.html(str);
+			$message_box_text.html(type_str + str);
 		}, config.skip_text_speed);
-		return false;
+		return char_name + type_str + str;
 	}
-	if (config.text_speed === 0)
-		$message_box_text.html(str);
-	else
+	if (text_speed === 0)
 	{
-		var type_str = '';
-		var line_str = '';
-		var sub_str = '';
-		type_interval = setInterval(print_str, config.text_speed);
+		$message_box_text.html(type_str + str);
+		return char_name + type_str + str;
 	}
-
-	function print_str()
+	var line_str = '';
+	var sub_str = '';
+	var i = 0;
+	type_interval = setInterval(function()
 	{
+		message_box_font = $message_box_text.css('font-size') + ' ' + $message_box_text.css('font-family');
+		message_box_width = $message_box_text.width();
 		if (i < str.length)
 		{
 			while (str[i] === '&') // Обработка сущностей
@@ -1207,36 +1481,53 @@ function type_writer(str)
 				let gt_pos = str.indexOf(';', lt_pos) + 1;
 				if (gt_pos > 0)
 				{
-					type_str = str.substr(0, gt_pos);
+					type_str += str.substring(lt_pos, gt_pos);
+					line_str += '_';
 					i = gt_pos;
 				}
 			}
-			while (str[i] === '<') // Обработка тэгов
+			if (str[i] === '<')
 			{
-				let lt_pos = i;
-				let gt_pos = str.indexOf('>', lt_pos) + 1;
-				if (gt_pos > 0)
+				let lt_pos;
+				let gt_pos;
+				while (str[i] === '<') // Обработка тэгов
 				{
-					type_str = str.substr(0, gt_pos);
-					i = gt_pos;
+					lt_pos = i;
+					gt_pos = str.indexOf('>', lt_pos) + 1;
+					if (gt_pos > 1)
+					{
+						sub_str = str.substring(lt_pos, gt_pos);
+						sub_str = sub_str.replace('&#8209;', '-'); // внутри тэгов меняем неразрывный минус на обычный минус
+						type_str += sub_str;
+						i = gt_pos;
+					}
 				}
 			}
 			if (i < str.length)
 			{
 				type_str += str[i];
-				line_str += str[i];
 				i++;
-				if (str[i - 1] == ' ')
+				if (sub_str.toLowerCase() === '<br>')
 				{
-					let next_space = str.indexOf(' ', i) - i;
-					if (next_space < 0)
-						next_space = str.length;
-					sub_str = str.substr(i, next_space);
-					if (get_text_width(line_str + sub_str, message_box_font) > message_box_width)
+					sub_str = '';
+					line_str = '';
+				}
+				else
+				{
+					line_str += str[i - 1];
+					if (str[i - 1] == ' ')
 					{
-						type_str = type_str.slice(0, -1);
-						type_str += '<br>';
-						line_str = '';
+						let next_space = str.reIndexOf(/[\s<]/, i) - i;
+						if (next_space < 0)
+							next_space = str.length;
+						sub_str = str.substr(i, next_space);
+						if (get_text_width_dom(line_str + sub_str, message_box_font) >= message_box_width)
+						{
+							type_str = type_str.replace('<br />', ' '); // Заменяем сделанный ранее принудительный перенос на пробел, чтобы резиновость работала нормально
+							type_str = type_str.slice(0, -1);
+							type_str += '<br />'; // Делаем принудительный перенос, если следующее слово не влезает
+							line_str = '';
+						}
 					}
 				}
 			}
@@ -1244,12 +1535,16 @@ function type_writer(str)
 		}
 		else
 		{
+			type_str = type_str.replace('<br />', ' '); // Тут тоже нужно добавленные переносы поменять
+			$message_box_text.html(type_str);
 			clearInterval(type_interval);
+			type_interval = undefined;
 		}
-	}
+	}, text_speed);
+	return char_name + prev_text + str;
 }
 
-function get_text_width(str, font)
+function get_text_width(str, font) // Выдаёт приблизительное значение
 {
 	let canvas = get_text_width.canvas || (get_text_width.canvas = document.createElement('canvas'));
 	let context = canvas.getContext('2d');
@@ -1258,21 +1553,56 @@ function get_text_width(str, font)
 	return metrics.width;
 }
 
-// Кеширование картинок
+function get_text_width_dom(str, font) // Выдаёт точное значение
+{
+  let obj = $('<span>' + str + '</span>')
+							.css({'font': font, 'float': 'left', 'white-space': 'nowrap'})
+							.css({'visibility': 'hidden'})
+							.appendTo($('body'));
+	let width = obj.width();
+  obj.remove();
+  return width;
+}
+
+function get_text_height_dom(str, font) // Выдаёт точное значение
+{
+  let obj = $('<span>' + str + '</span>')
+							.css({'font': font, 'float': 'left', 'white-space': 'nowrap'})
+							.css({'visibility': 'hidden'})
+							.appendTo($('body'));
+	let height = obj.height();
+  obj.remove();
+  return height;
+}
+
+// Кэширование картинок
 function preload_images(images_list)
 {
-	let func_name = get_function_name(arguments.callee);
-	if (config.log_level == LOG_ALL) console.log(func_name);
-
+	if (config.log_level == LOG_ALL) console.log('preload_images');
 	$.each(images_list, function(key, value)
 	{
-		$('<img />')
-			.attr('src', value)
-			.appendTo('#cache')
-			.on('load', function()
-			{
-				if (config.log_level == LOG_ALL) console.log(func_name + ': ' + value + ' done!');
-			});
+		if (value.indexOf('/background/') !== -1)
+		{
+			$('<div />')
+				.attr('id', 'cache_bg_' + key)
+				.appendTo('#cache')
+				.css(
+				{
+					'background-image': 'url(' + value + ')'
+				});
+			if (config.log_level == LOG_ALL) console.log('preload_images: ' + value + ' done!');
+		}
+		else
+		{
+			$('<img />')
+				.attr('src', value)
+				.attr('id', 'cache_img_' + key)
+				.appendTo('#cache')
+				.on('load', function()
+				{
+					if (config.log_level == LOG_ALL) console.log('preload_images: ' + value + ' done!');
+				});
+		}
 	});
 }
 
@@ -1310,6 +1640,24 @@ function get_file_ext(filename)
 	let delimiter_pos = filename.lastIndexOf('.') + 1;
 	let str = filename.substr(delimiter_pos);
 	return str;
+}
+
+// Получение времени в миллисекундах
+function get_duration(effect_duration)
+{
+	if (effect_duration === undefined)
+		return false;
+	effect_duration = effect_duration.toString().toLowerCase();
+	if (effect_duration.indexOf('ms') !== -1)
+		effect_duration = effect_duration.slice(0, -2); // уже миллисекунды, приводить не надо
+	else if (effect_duration.indexOf('s') !== -1)
+		effect_duration = effect_duration.slice(0, -1) * 1000; // приводим к миллисекундам
+	else
+		effect_duration = effect_duration / 0.12; // приводим к 60 fps
+	if (!$.isNumeric(effect_duration))
+		return false;
+	else
+		return effect_duration;
 }
 
 // Вывод верхнего баннера
@@ -1352,8 +1700,8 @@ function show_promo()
 					is_promo = true;
 					$(window).off('resize', set_promo_opacity);
 					$promo.hide();
-				})
-				.show(config.effect_speed);
+				});
+			$promo.show();
 			$(window).on('resize', set_promo_opacity);
 			set_promo_opacity();
 		})
@@ -1376,4 +1724,248 @@ function show_promo()
 				$promo.stop().fadeTo(config.effect_speed, 1);
 		}
 	}
+}
+
+// Начать выполнение эффекта
+function start_effect($images, effect_prop, effect_strength, effect_ease, effect_speed_mult, transform_css, duration)
+{
+	reset_effects_intervals();
+	$images.forEach(function($image)
+	{
+		if (effect_prop)
+		{
+			if (effect_speed_mult > 1)
+			{
+				first_duration = 20 * effect_speed_mult;
+				second_duration = 30 * effect_speed_mult;
+			}
+			else
+			{
+				first_duration = 50 * effect_speed_mult;
+				second_duration = 50 * effect_speed_mult;
+			}
+			let one_option = {}, sec_option = {};
+			one_option[effect_prop] = '-=' + effect_strength;
+			sec_option[effect_prop] = '+=' + effect_strength;
+			let effect_interval = setInterval(function()
+			{
+				$image
+					.css(
+					{
+						'-webkit-transition': 'none',
+						'transition': 'none'
+					})
+					.animate(one_option, first_duration, effect_ease)
+					.animate(sec_option, second_duration, effect_ease)
+			}, first_duration + second_duration);
+			effect_intervals.push(effect_interval);
+
+			if (duration !== undefined)
+			{
+				effect_timeout = setTimeout(function()
+				{
+					reset_effects_intervals();
+				}, duration);
+			}
+		}
+		if (transform_css)
+		{
+			$image.css(
+			{
+				'-webkit-transition': 'transform ' + duration + 'ms',
+				'transition': 'transform ' + duration + 'ms',
+				'-webkit-transform': transform_css,
+				'transform': transform_css
+			});
+		}
+	});
+}
+
+// Сброс всех интервалов эффектов
+function reset_effects_intervals()
+{
+	effect_intervals.forEach(function(effect_interval)
+	{
+		clearInterval(effect_interval);
+	});
+/*	$.each(effect_intervals, function(key, value)
+	{
+		clearInterval(value);
+	});*/
+	effect_intervals = [];
+	clearTimeout(effect_timeout);
+}
+
+// Завершение всех эффектов для спрайта
+function stop_all_img_effects($images)
+{
+	reset_effects_intervals();
+	$images.forEach(function($image)
+	{
+		stop_one_img_effects($image);
+	});
+}
+
+// Завершение эффекта для конкретного объекта
+function stop_one_img_effects($image)
+{
+	$image.css(
+	{
+		'-webkit-transition': 'none',
+		'transition': 'none',
+		'-webkit-transform': 'none',
+		'transform': 'none'
+	});
+}
+
+// Завершение фильтра для конкретного объекта
+function stop_one_img_filters($image, effect_speed = 0)
+{
+	let filter_str;
+	if ($image.css('filter') !== undefined)
+	{
+		let split_line = $image.css('filter').split('(');
+		filter_str = split_line[0] + '(0%)';
+	}
+	else
+		filter_str = 'none';
+	$image.css(
+	{
+		'-webkit-filter': filter_str,
+		'filter': filter_str,
+		'-webkit-transition': 'filter linear ' + effect_speed + 'ms',
+		'transition': 'filter linear ' + effect_speed + 'ms'
+	});
+}
+
+// Завершение всех эффектов для спрайта и для фона
+function stop_all_effects()
+{
+	reset_effects_intervals();
+	let $background = $('#background');
+	stop_one_img_effects($background);
+	$background
+		.stop(true, true)
+		.css('prop', $background.css('prop'));
+	$('#sprites').find('img').each(function()
+	{
+		stop_one_img_effects($(this));
+		$(this)
+			.stop(true, true)
+			.css('prop', $(this).css('prop'));
+	});
+}
+
+// Завершение всех эффектов и фильтров для всех спрайтов
+function stop_all_effects_filters()
+{
+	reset_effects_intervals();
+	let $background = $('#background');
+	stop_one_img_effects($background);
+	stop_one_img_filters($background);
+	$background
+		.stop(true, true)
+		.css('prop', $background.css('prop'));
+	$('#sprites').find('img').each(function()
+	{
+		stop_one_img_effects($(this));
+		stop_one_img_filters($(this));
+		$(this)
+			.stop(true, true)
+			.css('prop', $(this).css('prop'));
+	});
+}
+
+// Анимации - snow
+function animation_snow(strength = 100) // В эффекте использован код плагина Ивана Лазаревича (http://workshop.rs)
+{
+	let flake_char = '&#149;'; // символ снежинки
+	let min_size = 7;          // минимальный размер снежинки
+	let max_size = 15;         // максимальный размер снежинки
+	let delay = (101 - strength) * 10; // задержка между снежинками в миллисекундах
+	let $flake = $('<div class="flake" />');
+	$flake.html(flake_char);
+
+	animation_interval = setInterval(function()
+	{
+		let start_x = Math.random() * (resolution.width - 75) + 75;
+		let end_x = start_x - 150 + Math.random() * 300;
+		let start_y = 0;
+		let end_y = resolution.height;
+		let start_opacity = 1;
+		let end_opacity = 0.5 + Math.random();
+		let flake_size = min_size + Math.random() * max_size;
+		let flake_speed = (end_y - start_y) * 10 + Math.random() * (max_size - flake_size) * 500;
+		$flake
+			.clone()
+			.appendTo('#sprites')
+			.css(
+				{
+					'left': start_x + 'px',
+					'top': start_y + 'px',
+					'opacity': start_opacity,
+					'font-size': flake_size + 'px'
+				})
+			.animate(
+				{
+					'left': end_x + 'px',
+					'top': end_y + 'px',
+					'opacity': end_opacity
+				}, flake_speed, 'linear', function()
+				{
+					$(this).remove();
+				});
+	}, delay);
+}
+
+// Анимации - fog
+function animation_fog(strength = 100)
+{
+	strength = strength / 20;
+	let $fog = $('<div class="fog" />');
+	for (let i = 1; i <= strength; i++)
+		$fog
+			.clone()
+			.appendTo('#sprites')
+			.fadeIn(config.effect_speed * 5);
+}
+
+// Завершение анимации
+function stop_animation()
+{
+	clearInterval(animation_interval);
+	animation_interval = undefined;
+	$('.flake').remove();
+	$('.fog').remove();
+}
+
+// Сброс всех таймаутов
+function reset_all_timeouts()
+{
+	var max_timeout_id = setTimeout(';');
+	for (let i = 0 ; i < max_timeout_id ; i++)
+		clearTimeout(i);
+}
+
+// Сброс всех интервалов
+function reset_all_intervals()
+{
+	var max_interval_id = setInterval(';');
+	for (let i = 0 ; i < max_interval_id ; i++)
+		clearInterval(i);
+}
+
+// Метод для поиска вхождения регулярки в строку
+String.prototype.reIndexOf = function(regexp, start_pos)
+{
+	var found_pos = this.substring(start_pos || 0).search(regexp);
+	return (found_pos >= 0) ? (found_pos + (start_pos || 0)) : found_pos;
+}
+
+function function_exists(function_name)
+{
+	if (typeof function_name == 'string')
+		return (typeof window[function_name] == 'function');
+	else
+		return (function_name instanceof Function);
 }

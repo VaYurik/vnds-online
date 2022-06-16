@@ -1,0 +1,46 @@
+label game
+
+	var $hi = "<font color='#9EF8C4'>Хисао</font>"
+	var $mystery = "???"
+	var $iw = "Иванако"
+	var $father = "Отец"
+	var $doctor = "Доктор"
+	var $mu_ = "Высокий мужчина"
+	var $mu = "Муто"
+	var $mi_shi = "<font color='#FFA4BA'>Сидзунэ</font>"
+	var $mi_not_shi = "<font color='#FFA4BA'><s>Сидзунэ</s> Миша</font>"
+	var $mi = "<font color='#FFA4BA'>Миша</font>"
+	var $shi = "<font color='#97C4F6'>Сидзунэ</font>"
+	var $nk_ = "Улыбчивый человек"
+	var $nk = "Фельдшер"
+	var $ke_ = "<font color='#F3BB82'>Сосед в очках</font>"
+	var $ke = "<font color='#F3BB82'>Кендзи</font>"
+	var $li_ = "<font color='#F9EAA0'>Светловолосая девушка</font>"
+	var $li = "<font color='#F9EAA0'>Лилли</font>"
+	var $yu_ = "<font color='#44C44A'>Библиотекарь</font>"
+	var $yu = "<font color='#44C44A'>Юко</font>"
+	var $ha_ = "<font color='#B8ABEC'>Девушка с чёлкой</font>"
+	var $ha = "<font color='#B8ABEC'>Ханако</font>"
+	var $emi_ = "<font color='#FF8D7C'>Девочка с хвостиками</font>"
+	var $emi = "<font color='#FF8D7C'>Эми</font>"
+	var $rin_ = "<font color='#EDBABA'>Странная девушка</font>"
+	var $rin = "<font color='#EDBABA'>Рин</font>"
+	var $emi_w_rin_ = "<font color='#FF8D7C'>Эми</font> & <font color='#EDBABA'>Странная девушка</font>"
+	var $emi_w_rin = "<font color='#FF8D7C'>Эми</font> & <font color='#EDBABA'>Рин</font>"
+	var $no_ = "<font color='#E0E0E0'>Седой мужчина</font>"
+	var $no = "<font color='#E0E0E0'>Номия</font>"
+	var $aki_ = "<font color='#EB243B'>Хорошо одетый человек</font>"
+	var $aki = "<font color='#EB243B'>Акира</font>"
+	var $shiraki = "Сираки"
+	var $ke_hi = "<font color='#F3BB82'>Кендзи</font> & <font color='#9EF8C4'>Хисао</font>"
+
+	var $attraction_fail = 0
+	var $attraction_sc = 0
+	var $attraction_lilly = 0
+	var $attraction_hanako = 0
+	var $attraction_rin = 0
+	var $attraction_emi = 0
+	var $attraction_shizune = 0
+	var $attraction_kenji = 0
+
+	jump "prolog.scr"

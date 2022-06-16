@@ -1,4 +1,4 @@
-﻿;setvar timer_range = 0
+;setvar timer_range = 0
 ;setvar timer_jump = 0
     
 
@@ -1003,7 +1003,6 @@ if selected == 2
 	text [Ты] Кто?
 	setimg s/sarahohplease.png 30 25
 	setimg s/sarahconfused.png ~
-	#"The only brother I have is a beaver-faced alien named Buckteeth.
 	text [Ты] У меня есть только один брат, и это инопланетное существо по имени Бобрик.
 	setimg s/sarahexasperated.png 30 25
 	setimg s/sarahohplease.png ~

@@ -1,1 +1,3 @@
 title=Who is Mike?
+text_size=1.2em
+line_height=1

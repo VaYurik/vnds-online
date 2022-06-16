@@ -1,14 +1,38 @@
 [
 	{
-		"dir":        "games\/mike",
-		"full_name":  "Who is Mike?",
-		"short_name": "mike",
-		"width":      "1280",
-		"height":     "800",
-		"icon_s":     "games\/mike\/icon.png",
-		"icon_b":     "games\/mike\/icon-high.png",
-		"thumb_s":    "games\/mike\/thumbnail.png",
-		"thumb_b":    "games\/mike\/thumbnail-high.png",
-		"error":      null
+		"dir":				"games\/ever17",
+		"full_name":	"Ever17",
+		"short_name":	"ever17",
+		"width":			"640",
+		"height":			"480",
+		"icon_s":			"games\/ever17\/icon.png",
+		"icon_b":			"games\/ever17\/icon-high.png",
+		"thumb_s":		"games\/ever17\/thumbnail.png",
+		"thumb_b":		"games\/ever17\/thumbnail-high.jpg",
+		"error":			null
+	},
+	{
+		"dir":				"games\/mike",
+		"full_name":	"Who is Mike?",
+		"short_name":	"mike",
+		"width":			"1280",
+		"height":			"800",
+		"icon_s":			"games\/mike\/icon.png",
+		"icon_b":			"games\/mike\/icon-high.png",
+		"thumb_s":		"games\/mike\/thumbnail.png",
+		"thumb_b":		"games\/mike\/thumbnail-high.png",
+		"error":			null
+	},
+	{
+		"dir":				"games\/ks",
+		"full_name":	"Katawa Shoujo (1 act)",
+		"short_name":	"ks",
+		"width":			"800",
+		"height":			"600",
+		"icon_s":			"games\/ks\/icon.png",
+		"icon_b":			"games\/ks\/icon-high.png",
+		"thumb_s":		"games\/ks\/thumbnail.png",
+		"thumb_b":		"games\/ks\/thumbnail-high.png",
+		"error":			null
 	}
 ]
