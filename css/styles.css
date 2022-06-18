@@ -865,7 +865,7 @@ input[type=radio]:hover + label:before
 	z-index: 99;
 	position: fixed;
 	display: table;
-	top: -237px;
+	top: -252px;
 	left: -180px;
 	padding: 5px 10px 30px;
 	min-width: 200px;

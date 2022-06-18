@@ -14,3 +14,8 @@ VNDS2 ports:<br>
   Air Pressure (rus): https://yadi.sk/d/38SwZN0P3YBSg3<br>
   Шепотки (rus): https://yadi.sk/d/Bk72Bogg3YBShS<br>
   Katawa Shoujo (rus, 1 act): https://yadi.sk/d/EWDcdB8r3adSdk
+
+
+## Run on Windows
+
+You don't need to install PHP or anything to run vnds-online on Windows - just run `CivetWeb32.exe`, it'll start a web server for you. Now you could open http://127.0.0.1:8080/ in your browser. Or right click on CivetWeb tray icon and select "Start browser" there.

@@ -49,7 +49,8 @@ var effect_timeout;             // Переменная для хранения 
 var animation_interval;         // Переменная для хранения идентификатора интервала, использующегося для анимации
 var is_promo = true;            // Информация о том, был ли произведён клик на баннер или нет
 var vn;                         // Объект класса интерпретатора
-var is_php_enabled;             // Имеется ли поддержка php на сервере
+var is_php_enabled = false;     // Имеется ли поддержка php на сервере
+var is_lua_enabled = false;     // Имеется ли поддержка lua на сервере - если да, то значит запущено локально через CivetWeb
 var is_skip_enabled;            // Активна ли кнопка быстрого пропуска
 var resolution =                // Разрешение окна игры (равное или разрешению игры, или размеру окна экрана браузера)
 		{
@@ -79,14 +80,26 @@ function check_php_enabled(callback)
 		{
 			is_php_enabled = (typeof(data) === 'string') && (data == "1");
 		})
-		.fail(function()
-		{
-			is_php_enabled = false;
-		})
 		.always(function()
 		{
 			if (config.log_level == LOG_ALL) console.log('check_php_enabled: ' + is_php_enabled);
 			$('#info_php_enabled').text(is_php_enabled);
+			check_lua_enabled(create_main_menu)
+		});
+}
+
+// Функция проверки поддержки lua на сервере
+function check_lua_enabled(callback)
+{
+	$.get('lua/check_lua.lua')
+		.done(function(data)
+		{
+			is_lua_enabled = (typeof(data) === 'string') && (data == "1");
+		})
+		.always(function()
+		{
+			if (config.log_level == LOG_ALL) console.log('check_lua_enabled: ' + is_lua_enabled);
+			$('#info_lua_enabled').text(is_lua_enabled);
 			if (callback !== undefined)
 				callback();
 		});
@@ -223,7 +236,7 @@ function init_log()
 		{
 			$info.animate(
 			{
-				top: '-237px',
+				top: '-252px',
 				left: '-180px',
 				'padding-bottom': '30px'
 			}, 200);
@@ -308,8 +321,11 @@ function create_main_menu()
 	let games_list_source;
 	if (is_php_enabled)
 		games_list_source = "php/get_games_list.php";
+	else if (is_lua_enabled)
+		games_list_source = "lua/get_games_list.lua";
 	else
 		games_list_source = "games/games_list.json";
+	
 
 	$.get(games_list_source)
 		.done(function(data)
