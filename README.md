@@ -1,4 +1,5 @@
 # vnds-online
+
 Javascript-implementation of the VNDS engine 
 
 VNDS ports:<br>
@@ -18,4 +19,18 @@ VNDS2 ports:<br>
 
 ## Run on Windows
 
-You don't need to install PHP or anything to run vnds-online on Windows - just run `CivetWeb32.exe`, it'll start a web server for you. Now you could open http://127.0.0.1:8080/ in your browser. Or right click on CivetWeb tray icon and select "Start browser" there.
+Just run `vnds-online.exe` - it's both web server and browser in a single executable. You don't need anything else. 
+
+`vnds-online.exe` could ask you to install WebView2 from Microsoft on older Windows systems (Win10 and elder). It's required for the application to be able to inline system web browser.
+
+And otherwise - you don't need to copy vnds-online.exe to your actual web server.
+
+
+## Run on Windows - Alternative way
+
+Use [CivetWeb](http://civetweb.github.io/civetweb/). You don't need to install PHP or anything to run vnds-online on Windows - copy `CivetWeb32.exe` into the root and run it. It'll start a web server for you. Now you could open http://127.0.0.1:8080/ in your browser. Or right click on CivetWeb tray icon and select "Start browser" there.
+
+
+## Adding new games
+
+Unzip your new game and put int `games` folder. Also, you'll need to unzip all zip-files inside. For example, `background`, `foreground`, `sound` etc could be zipped as well.
