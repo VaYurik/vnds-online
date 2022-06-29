@@ -33,4 +33,4 @@ Use [CivetWeb](http://civetweb.github.io/civetweb/). You don't need to install P
 
 ## Adding new games
 
-Unzip your new game and put int `games` folder. Also, you'll need to unzip all zip-files inside. For example, `background`, `foreground`, `sound` etc could be zipped as well.
+Unzip your new game and put int `games` folder. Also, you'll need to unzip all zip-files inside. For example, background, foreground, sound etc could be zipped as well.
